@@ -17,7 +17,8 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $config = $this->getConfig();
         Db::create($config['dsn'], $config['user'], $config['password'])->cleanup();
 
-        $this->module = new \Codeception\Module\Db(make_container(), $config);
+        $container = \Codeception\Util\Stub::make('Codeception\Lib\ModuleContainer');
+        $this->module = new \Codeception\Module\Db($container, $config);
         $this->module->_beforeSuite();
         $this->module->_before(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
         $this->assertTrue($this->module->_isPopulated());
