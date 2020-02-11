@@ -156,7 +156,7 @@ class PostgreSql extends Db
                 FROM   pg_index i
                 JOIN   pg_attribute a ON a.attrelid = i.indrelid
                                      AND a.attnum = ANY(i.indkey)
-                WHERE  i.indrelid = (SELECT oid FROM pg_class WHERE relname = '$tableName')
+                WHERE  i.indrelid IN (SELECT oid FROM pg_class WHERE relname = '$tableName')
                 AND    i.indisprimary";
             $stmt = $this->executeQuery($query, []);
             $columns = $stmt->fetchAll(\PDO::FETCH_ASSOC);
