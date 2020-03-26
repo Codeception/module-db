@@ -104,6 +104,15 @@ use Codeception\Util\ActionSequence;
  *                    user: 'userdb2'
  *                    password: ''
  *
+ * ## Example with Sqlite
+ *
+ *     modules:
+ *        enabled:
+ *           - Db:
+ *              dsn: 'sqlite:relative/path/to/sqlite-database.db'
+ *              user: ''
+ *              password: ''
+ *
  * ## SQL data dump
  *
  * There are two ways of loading the dump into your database:
@@ -148,7 +157,7 @@ use Codeception\Util\ActionSequence;
  *
  *  PDO dsn elements for the supported drivers:
  *  * MySQL: [PDO_MYSQL DSN](https://secure.php.net/manual/en/ref.pdo-mysql.connection.php)
- *  * SQLite: [PDO_SQLITE DSN](https://secure.php.net/manual/en/ref.pdo-sqlite.connection.php)
+ *  * SQLite: [PDO_SQLITE DSN](https://secure.php.net/manual/en/ref.pdo-sqlite.connection.php) - use _relative_ path from the project root
  *  * PostgreSQL: [PDO_PGSQL DSN](https://secure.php.net/manual/en/ref.pdo-pgsql.connection.php)
  *  * MSSQL: [PDO_SQLSRV DSN](https://secure.php.net/manual/en/ref.pdo-sqlsrv.connection.php)
  *  * Oracle: [PDO_OCI DSN](https://secure.php.net/manual/en/ref.pdo-oci.connection.php)
