@@ -28,7 +28,9 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
       
     - name: Start MySQL Server
-      run: sudo service mysql start
+      run: |
+        sudo mysqld_safe --skip-grant-tables --skip-networking &
+        sudo service mysql start
 
     - name: Run test suite
       run: |
