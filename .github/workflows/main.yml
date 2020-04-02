@@ -33,7 +33,7 @@ jobs:
         sudo service mysql start
         mysql -uroot -proot -e "create database codeception_test;"
         sudo apt install postgresql postgresql-contrib
-        pg_ctl -D /var/lib/postgresql/10/main -l logfile start
+        /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
         psql -c "create database codeception_test;" -U postgres
 
     - name: Run test suite
