@@ -12,7 +12,7 @@ class MysqlTest extends Unit
     protected static $config = [
         'dsn' => 'mysql:host=localhost;dbname=codeception_test',
         'user' => 'root',
-        'password' => ''
+        'password' => 'root'
     ];
 
     protected static $sql;
