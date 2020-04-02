@@ -39,5 +39,6 @@ jobs:
 
     - name: Run test suite
       run: |
-        php -r "new PDO('mysql:hostname=mysql;dbname=codeception_test', 'root', '');"
+        php -r "new PDO('mysql:hostname=127.0.0.1:${{ job.services.mysql.ports['3306'] }};dbname=codeception_test', 'root', '');"
+        php -r "new PDO('mysql:hostname=localhost:${{ job.services.mysql.ports['3306'] }};dbname=codeception_test', 'root', '');"
         php ./vendor/bin/codecept run
