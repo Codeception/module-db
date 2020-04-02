@@ -8,14 +8,10 @@ jobs:
 
     services:
       mysql:
-        image: mysql
-        options: --name=mysql
-      postgres:
-        image: postgres
+        image: mysql:5.7
         env:
-          POSTGRES_HOST_AUTH_METHOD: trust
-        # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5 --name=postgres
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: codeception_test
 
     strategy:
       matrix:
@@ -29,7 +25,7 @@ jobs:
       uses: shivammathur/setup-php@v1
       with:
         php-version: ${{ matrix.php }}
-        extensions: mbstring, php-xml, ext-dom, pgsql, mysql
+        extensions: mbstring, php-xml, ext-dom, pgsql, mysql, pdo
         coverage: none
 
     - name: Validate composer.json and composer.lock
@@ -37,11 +33,6 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
-
-    - name: Create databases
-      run: |
-        docker exec postgres psql -c "create database codeception_test;" -U postgres
-        docker exec mysql mysql -e "create database codeception_test;"
 
     - name: Run test suite
       run: php ./vendor/bin/codecept run
