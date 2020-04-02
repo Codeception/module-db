@@ -33,4 +33,7 @@ jobs:
     - name: Run test suite
       run: |
         php -r "new PDO('mysql:host=localhost', 'root', 'root');"
+        echo $DSN
         php ./vendor/bin/codecept run
+        env:
+          DSN: toto
