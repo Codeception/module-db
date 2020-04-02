@@ -42,7 +42,7 @@ jobs:
 
     - name: Create databases
       run: |
-        psql -c "create database codeception_test;" -U postgres
+        psql -h "postgres" -c "create database codeception_test;" -U postgres
 
     - name: Run test suite
       run: php ./vendor/bin/codecept run
