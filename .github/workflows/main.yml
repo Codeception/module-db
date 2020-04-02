@@ -31,7 +31,7 @@ jobs:
       run: |
         sudo mysqld_safe --skip-grant-tables --skip-networking &
         sudo service mysql start
-        sudo service postgres start
+        sudo service postgresql start
         mysql -uroot -proot -e "create database codeception_test;"
         psql -c "create database codeception_test;" -U postgres
 
