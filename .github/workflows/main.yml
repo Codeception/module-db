@@ -39,5 +39,5 @@ jobs:
 
     - name: Run test suite
       run: |
-        php -r "new PDO('mysql:hostname=localhost;dbname=codeception_test', 'root', '');"
+        php -r "new PDO('mysql:hostname=mysql;dbname=codeception_test', 'root', '');"
         php ./vendor/bin/codecept run
