@@ -9,10 +9,9 @@ jobs:
     services:
       postgres:
         image: postgres
+        options: --name=postgres
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
         ports:
         # will assign a random free host port
         - 5432/5432
@@ -42,7 +41,7 @@ jobs:
 
     - name: Create databases
       run: |
-        psql -c "create database codeception_test;" -U postgres
+        docker exec postgres psql -c "create database codeception_test;" -U postgres
 
     - name: Run test suite
       run: php ./vendor/bin/codecept run
