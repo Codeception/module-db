@@ -31,14 +31,10 @@ jobs:
       run: |
         sudo mysqld_safe --skip-grant-tables --skip-networking &
         sudo service mysql start
+        sudo service postgres start
         mysql -uroot -proot -e "create database codeception_test;"
+        psql -c "create database codeception_test;" -U postgres
 
     - name: Run test suite
       run: |
-        php -r "new PDO('mysql:host=localhost', 'root', 'root');"
-        echo $DSN
         php ./vendor/bin/codecept run
-        env:
-          DSN: toto
-          USER: titi
-          PASSWORD: tutu
