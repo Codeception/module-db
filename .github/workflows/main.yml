@@ -7,6 +7,9 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
+      mysql:
+        image: mysql
+        options: --name=mysql
       postgres:
         image: postgres
         env:
@@ -38,6 +41,7 @@ jobs:
     - name: Create databases
       run: |
         docker exec postgres psql -c "create database codeception_test;" -U postgres
+        docker exec mysql mysql -e "create database codeception_test;"
 
     - name: Run test suite
       run: php ./vendor/bin/codecept run
