@@ -31,7 +31,7 @@ jobs:
       run: |
         sudo mysqld_safe --skip-grant-tables --skip-networking &
         sudo service mysql start
-        mysql -e "create database codeception_test;"
+        mysql -uroot -proot -e "create database codeception_test;"
 
     - name: Run test suite
       run: |
