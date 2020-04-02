@@ -9,8 +9,8 @@ jobs:
     services:
       mysql:
         image: mysql
-      postgresql:
-        image:postgresql
+      postgres:
+        image: postgres
 
     strategy:
       matrix:
