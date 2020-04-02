@@ -7,10 +7,17 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      mysql:
-        image: mysql
       postgres:
         image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     strategy:
       matrix:
@@ -35,7 +42,6 @@ jobs:
 
     - name: Create databases
       run: |
-        mysql -e "create database codeception_test;"
         psql -c "create database codeception_test;" -U postgres
 
     - name: Run test suite
