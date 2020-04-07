@@ -10,7 +10,7 @@ class PostgreSqlDbTest extends TestsForDb
 {
     public function getPopulator()
     {
-        if (getenv('APPVEYOR')) {
+        if (getenv('APPVEYOR') || getenv('DB_POSTGRESQL_PASSWORD')) {
             $this->markTestSkipped('Disabled on Appveyor');
         }
         return "psql -d codeception_test -U postgres  < tests/data/dumps/postgres.sql";
