@@ -7,6 +7,14 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
+      mysql:
+        image: mysql
+        env:
+          MYSQL_DATABASE: codeception_test
+          MYSQL_PASSWORD: root
+        ports: 
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       postgres:
         image: postgres
         env:
@@ -43,10 +51,11 @@ jobs:
 
     - name: Start MySQL Server
       run: |
-        sudo mysqld_safe --skip-grant-tables --skip-networking &
+        #sudo mysqld_safe --skip-grant-tables --skip-networking &
         #sudo service mysql start
-        sudo systemctl start mysql
-        mysql -uroot -proot -e "create database codeception_test;"
+        #sudo systemctl start mysql
+        #mysql -uroot -proot -e "create database codeception_test;"
+        sudo service mysql status
 
     - name: Run test suite
       run: |
