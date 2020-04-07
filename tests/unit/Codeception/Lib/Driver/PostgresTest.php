@@ -12,7 +12,7 @@ class PostgresTest extends Unit
     protected static $config = [
         'dsn' => 'pgsql:host=localhost;dbname=codeception_test',
         'user' => 'postgres',
-        'password' => getenv('DB_POSTGRESQL_PASSWORD') ? getenv('DB_POSTGRESQL_PASSWORD') : null,
+        'password' => getenv('DB_POSTGRESQL_PASSWORD'),
     ];
 
     protected static $sql;
