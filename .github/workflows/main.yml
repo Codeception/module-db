@@ -8,7 +8,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql
+        image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: codeception_test
