@@ -12,7 +12,7 @@ class MysqlTest extends Unit
     protected static $config = [
         'dsn' => 'mysql:host=localhost;dbname=codeception_test',
         'user' => 'root',
-        'password' => 'root'
+        'password' => ''
     ];
 
     protected static $sql;
@@ -23,8 +23,8 @@ class MysqlTest extends Unit
     
     public static function _setUpBeforeClass()
     {
-        if (getenv('APPVEYOR')) {
-            self::$config['password'] = 'Password12!';
+        if (getenv('DB_MYSQL_PASSWORD')) {
+            self::$config['password'] = 'root';
         }
         $sql = file_get_contents(\Codeception\Configuration::dataDir() . '/dumps/mysql.sql');
         $sql = preg_replace('%/\*(?:(?!\*/).)*\*/%s', "", $sql);
