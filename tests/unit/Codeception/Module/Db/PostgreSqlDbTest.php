@@ -24,7 +24,7 @@ class PostgreSqlDbTest extends TestsForDb
         return [
             'dsn' => 'pgsql:host=localhost;dbname=codeception_test',
             'user' => 'postgres',
-            'password' => getenv('APPVEYOR') ? 'Password12!' : null,
+            'password' => 'postgres',
             'dump' => 'tests/data/dumps/postgres.sql',
             'reconnect' => true,
             'cleanup' => true,
