@@ -55,7 +55,9 @@ jobs:
         #sudo systemctl start mysql
         #mysql -uroot -proot -e "create database codeception_test;"
         #sudo service mysql status
-        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -proot -e "SHOW DATABASES"
+        mysql --host 127.0.0.1 --port $DB_MYSQL_PORT -uroot -proot -e "SHOW DATABASES"
+      env:
+        DB_MYSQL_PORT: job.services.mysql.ports['3306']
 
     - name: Run test suite
       run: |
@@ -63,3 +65,4 @@ jobs:
       env:
         DB_MYSQL_PASSWORD: root
         PGPASSWORD: postgres
+        DB_MYSQL_PORT: job.services.mysql.ports['3306']
