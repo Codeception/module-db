@@ -32,12 +32,12 @@ jobs:
         sudo mysqld_safe --skip-grant-tables --skip-networking &
         sudo service mysql start
         mysql -uroot -proot -e "create database codeception_test;"
-        sudo apt install postgresql postgresql-contrib
-        sudo systemctl start postgresql.service
+        #sudo apt install postgresql postgresql-contrib
+        #sudo systemctl start postgresql.service
         #sudo /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
-        sudo service postgresql status
-        ps aux | grep -i post
-        sudo -u postgres psql -c "create database codeception_test;" -U postgres
+        #sudo service postgresql status
+        #ps aux | grep -i post
+        #sudo -u postgres psql -c "create database codeception_test;" -U postgres
 
     - name: Run test suite
       run: |
