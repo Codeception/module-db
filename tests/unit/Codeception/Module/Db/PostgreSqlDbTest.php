@@ -13,7 +13,7 @@ class PostgreSqlDbTest extends TestsForDb
         if (getenv('APPVEYOR')) {
             $this->markTestSkipped('Disabled on Appveyor');
         }
-        return "psql -d codeception_test -U postgres  < tests/data/dumps/postgres.sql";
+        return "psql -h localhost -d codeception_test -U postgres  < tests/data/dumps/postgres.sql";
     }
 
     public function getConfig()
