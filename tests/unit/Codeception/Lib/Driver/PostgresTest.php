@@ -20,9 +20,6 @@ class PostgresTest extends Unit
 
     public static function _setUpBeforeClass()
     {
-        if (!function_exists('pg_connect')) {
-            return;
-        }
         if (getenv('APPVEYOR')) {
             self::$config['password'] = 'Password12!';
         }
