@@ -65,4 +65,4 @@ jobs:
       env:
         DB_MYSQL_PASSWORD: root
         PGPASSWORD: postgres
-        DB_MYSQL_PORT: job.services.mysql.ports['3306']
+        DB_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
