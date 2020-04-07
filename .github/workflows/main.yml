@@ -55,7 +55,7 @@ jobs:
         #sudo systemctl start mysql
         #mysql -uroot -proot -e "create database codeception_test;"
         #sudo service mysql status
-        mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -proot -e "SHOW DATABASES"
+        mysql --host localhost --port ${{ job.services.mysql.ports['3306'] }} -uroot -proot -e "SHOW DATABASES"
 
     - name: Run test suite
       run: |
