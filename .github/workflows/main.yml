@@ -26,18 +26,23 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
+
       
+    - name: Start PostgreSQL Server
+      run: |
+        ps aux | grep -i post
+        sudo systemctl start postgresql.service
+        ps aux | grep -i post
+        #sudo apt install postgresql postgresql-contrib
+        #sudo /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
+        #sudo service postgresql status
+        #sudo -u postgres psql -c "create database codeception_test;" -U postgres
+
     - name: Start MySQL Server
       run: |
         sudo mysqld_safe --skip-grant-tables --skip-networking &
         sudo service mysql start
         mysql -uroot -proot -e "create database codeception_test;"
-        #sudo apt install postgresql postgresql-contrib
-        #sudo systemctl start postgresql.service
-        #sudo /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
-        #sudo service postgresql status
-        #ps aux | grep -i post
-        #sudo -u postgres psql -c "create database codeception_test;" -U postgres
 
     - name: Run test suite
       run: |
