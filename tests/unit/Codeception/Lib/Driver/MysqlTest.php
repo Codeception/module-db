@@ -27,6 +27,7 @@ class MysqlTest extends Unit
             self::$config['password'] = 'Password12!';
         }
         elseif (getenv('DB_MYSQL_PASSWORD')) {
+            self::$config['dsn'] = 'mysql:host=127.0.0.1;dbname=codeception_test';
             self::$config['password'] = getenv('DB_MYSQL_PASSWORD');
         }
         $sql = file_get_contents(\Codeception\Configuration::dataDir() . '/dumps/mysql.sql');
