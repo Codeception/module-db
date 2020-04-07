@@ -49,6 +49,7 @@ jobs:
 
     - name: Run test suite
       run: |
+        psql -d codeception_test -U postgres  < tests/data/dumps/postgres.sql
         php ./vendor/bin/codecept run
       env:
         DB_MYSQL_PASSWORD: root
