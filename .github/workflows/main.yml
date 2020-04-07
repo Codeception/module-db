@@ -44,7 +44,8 @@ jobs:
     - name: Start MySQL Server
       run: |
         sudo mysqld_safe --skip-grant-tables --skip-networking &
-        sudo service mysql start
+        #sudo service mysql start
+        sudo systemctl start mysql
         mysql -uroot -proot -e "create database codeception_test;"
 
     - name: Run test suite
