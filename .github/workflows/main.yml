@@ -58,3 +58,4 @@ jobs:
         php ./vendor/bin/codecept run
       env:
         DB_MYSQL_PASSWORD: root
+        DB_POSTGRESQL_PASSWORD: postgres
