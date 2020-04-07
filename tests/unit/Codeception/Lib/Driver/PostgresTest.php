@@ -33,12 +33,8 @@ class PostgresTest extends Unit
 
     public function _setUp()
     {
-        try {
-            $this->postgres = Db::create(self::$config['dsn'], self::$config['user'], self::$config['password']);
-            $this->postgres->cleanup();
-        } catch (\Exception $e) {
-            $this->markTestSkipped('Coudn\'t establish connection to database: ' . $e->getMessage());
-        }
+        $this->postgres = Db::create(self::$config['dsn'], self::$config['user'], self::$config['password']);
+        $this->postgres->cleanup();
         $this->postgres->load(self::$sql);
     }
 
