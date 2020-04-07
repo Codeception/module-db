@@ -24,7 +24,7 @@ class MysqlTest extends Unit
     public static function _setUpBeforeClass()
     {
         if (getenv('DB_MYSQL_PASSWORD')) {
-            self::$config['password'] = 'root';
+            self::$config['password'] = getenv('DB_MYSQL_PASSWORD');
         }
         $sql = file_get_contents(\Codeception\Configuration::dataDir() . '/dumps/mysql.sql');
         $sql = preg_replace('%/\*(?:(?!\*/).)*\*/%s', "", $sql);
