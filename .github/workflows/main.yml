@@ -9,6 +9,9 @@ jobs:
     services:
       mysql:
         image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: codeception_test
       postgres:
         image: postgres
         env:
