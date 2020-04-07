@@ -23,7 +23,7 @@ class MySqlDbTest extends TestsForDb
         return [
             'dsn' => 'mysql:host=localhost;dbname=codeception_test',
             'user' => 'root',
-            'password' => getenv('DB_MYSQL_PASSWORD') ? 'root' : '',,
+            'password' => getenv('DB_MYSQL_PASSWORD') ? getenv('DB_MYSQL_PASSWORD') : '',,
             'dump' => 'tests/data/dumps/mysql.sql',
             'reconnect' => true,
             'cleanup' => true,
