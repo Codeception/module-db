@@ -23,8 +23,8 @@ class PostgresTest extends Unit
         if (getenv('APPVEYOR')) {
             self::$config['password'] = 'Password12!';
         }
-        elseif (getenv('DB_MYSQL_PASSWORD')) {
-            self::$config['password'] = getenv('DB_MYSQL_PASSWORD');
+        elseif (getenv('DB_POSTGRESQL_PASSWORD')) {
+            self::$config['password'] = getenv('DB_POSTGRESQL_PASSWORD');
         }
         $sql = file_get_contents(codecept_data_dir('dumps/postgres.sql'));
         $sql = preg_replace('%/\*(?:(?!\*/).)*\*/%s', '', $sql);
