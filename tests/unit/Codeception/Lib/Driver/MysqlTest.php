@@ -23,7 +23,10 @@ class MysqlTest extends Unit
     
     public static function _setUpBeforeClass()
     {
-        if (getenv('DB_MYSQL_PASSWORD')) {
+        if (getenv('APPVEYOR')) {
+            self::$config['password'] = 'Password12!';
+        }
+        elseif (getenv('DB_MYSQL_PASSWORD')) {
             self::$config['password'] = getenv('DB_MYSQL_PASSWORD');
         }
         $sql = file_get_contents(\Codeception\Configuration::dataDir() . '/dumps/mysql.sql');
