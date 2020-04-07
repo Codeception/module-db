@@ -49,7 +49,7 @@ jobs:
         #sudo service mysql start
         #sudo systemctl start mysql
         #mysql -uroot -proot -e "create database codeception_test;"
-        sudo service mysql status
+        #sudo service mysql status
 
     - name: Run test suite
       run: |
