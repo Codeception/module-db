@@ -20,10 +20,16 @@ class MySqlDbTest extends TestsForDb
 
     public function getConfig()
     {
+        if (getenv('APPVEYOR')) {
+            $password = 'Password12!';
+        }
+        elseif (getenv('DB_MYSQL_PASSWORD')) {
+            $password = getenv('DB_MYSQL_PASSWORD');
+        }
         return [
             'dsn' => 'mysql:host=localhost;dbname=codeception_test',
             'user' => 'root',
-            'password' => getenv('DB_MYSQL_PASSWORD') ? getenv('DB_MYSQL_PASSWORD') : '',
+            'password' => $password ? $password : '',
             'dump' => 'tests/data/dumps/mysql.sql',
             'reconnect' => true,
             'cleanup' => true,
