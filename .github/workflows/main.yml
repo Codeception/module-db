@@ -6,6 +6,25 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
+    # Service containers to run with `runner-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
     strategy:
       matrix:
         php: [5.6, 7.0, 7.1, 7.2, 7.3, 7.4]
@@ -26,17 +45,6 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
-
-      
-    - name: Start PostgreSQL Server
-      run: |
-        ps aux | grep -i post
-        sudo systemctl start postgresql.service
-        ps aux | grep -i post
-        #sudo apt install postgresql postgresql-contrib
-        #sudo /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
-        #sudo service postgresql status
-        #sudo -u postgres psql -c "create database codeception_test;" -U postgres
 
     - name: Start MySQL Server
       run: |
