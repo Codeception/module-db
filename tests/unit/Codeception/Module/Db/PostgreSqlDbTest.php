@@ -9,7 +9,7 @@ class PostgreSqlDbTest extends TestsForDb
 {
     public function getPopulator()
     {
-        return "psql -h localhost -d codeception_test -U postgres  < tests/data/dumps/postgres.sql";
+        return "psql -d codeception_test -U postgres  < tests/data/dumps/postgres.sql";
     }
 
     public function getConfig()
