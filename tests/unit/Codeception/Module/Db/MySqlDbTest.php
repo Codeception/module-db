@@ -16,10 +16,11 @@ class MySqlDbTest extends TestsForDb
 
     public function getConfig()
     {
+        $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';
         $password = getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : '';
 
         return [
-            'dsn' => 'mysql:host=127.0.0.1;dbname=codeception_test',
+            'dsn' => 'mysql:host='.$host.';dbname=codeception_test',
             'user' => 'root',
             'password' => $password,
             'dump' => 'tests/data/dumps/mysql.sql',
