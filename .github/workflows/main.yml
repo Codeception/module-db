@@ -63,7 +63,6 @@ jobs:
         MYSQL_USER: root
         MYSQL_PASSWORD: root
         POSTGRESQL_HOST: 127.0.0.1
-        POSTGRESQL_PORT: ${{ job.services.mysql.ports['3306'] }}
         POSTGRESQL_DATABASE: codeception_test
         POSTGRESQL_USER: root
         POSTGRESQL_PASSWORD: root
