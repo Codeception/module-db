@@ -58,7 +58,7 @@ jobs:
       env:
         DB_MYSQL_PASSWORD: root
         PGPASSWORD: postgres
-        DB_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+        DB_MYSQL_PORT: 3306
         MYSQL_HOST: 127.0.0.1
         MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
         MYSQL_DATABASE: codeception_test
