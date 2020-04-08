@@ -27,7 +27,7 @@ class MySqlDbTest extends TestsForDb
             $password = getenv('DB_MYSQL_PASSWORD');
         }
         return [
-            'dsn' => 'mysql:host=localhost;dbname=codeception_test',
+            'dsn' => 'mysql:host=localhost;port=3306;dbname=codeception_test',
             'user' => 'root',
             'password' => $password ? $password : '',
             'dump' => 'tests/data/dumps/mysql.sql',
