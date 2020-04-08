@@ -15,7 +15,7 @@ class MySqlDbTest extends TestsForDb
         }
         $config = $this->getConfig();
         $password = $config['password'] ? '-p'.$config['password'] : '';
-        return "mysql -h 127.0.0.1 -P ".getenv('DB_MYSQL_PORT')." -u \$user $password \$dbname < {$config['dump']}";
+        return "mysql -u \$user $password \$dbname < {$config['dump']}";
     }
 
     public function getConfig()
