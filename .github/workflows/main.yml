@@ -59,7 +59,3 @@ jobs:
         PGPASSWORD: postgres
         MYSQL_HOST: 127.0.0.1
         MYSQL_PASSWORD: root
-        POSTGRESQL_HOST: 127.0.0.1
-        POSTGRESQL_DATABASE: codeception_test
-        POSTGRESQL_USER: root
-        POSTGRESQL_PASSWORD: root
