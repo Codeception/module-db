@@ -49,21 +49,19 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Start MySQL Server
-      run: |
-        #sudo mysqld_safe --skip-grant-tables --skip-networking &
-        #sudo service mysql start
-        #sudo systemctl start mysql
-        #mysql -uroot -proot -e "create database codeception_test;"
-        #sudo service mysql status
-        mysql --host 127.0.0.1 --port $DB_MYSQL_PORT -uroot -proot -e "SHOW DATABASES"
-      env:
-        DB_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-
     - name: Run test suite
-      run: |
-        php ./vendor/bin/codecept run
+      run: php ./vendor/bin/codecept run
       env:
         DB_MYSQL_PASSWORD: root
         PGPASSWORD: postgres
         DB_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+        MYSQL_HOST: 127.0.0.1
+        MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+        MYSQL_DATABASE: codeception_test
+        MYSQL_USER: root
+        MYSQL_PASSWORD: root
+        POSTGRESQL_HOST: 127.0.0.1
+        POSTGRESQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+        POSTGRESQL_DATABASE: codeception_test
+        POSTGRESQL_USER: root
+        POSTGRESQL_PASSWORD: root
