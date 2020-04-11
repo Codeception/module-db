@@ -10,7 +10,7 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-            MYSQL_ROOT_PASSWORD: root
+            MYSQL_ALLOW_EMPTY_PASSWORD: true
             MYSQL_DATABASE: codeception_test
         ports:
           - 3306:3306
@@ -54,8 +54,7 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-interaction --no-suggest
 
     - name: Run test suite
-      run: php ./vendor/bin/codecept run
+      run: php vendor/bin/codecept run
       env:
         PGPASSWORD: postgres
         MYSQL_HOST: 127.0.0.1
-        MYSQL_PASSWORD: root
