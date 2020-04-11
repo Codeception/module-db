@@ -41,10 +41,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Setup PHP
-      uses: shivammathur/setup-php@v1
+      uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php }}
-        extensions: mbstring, php-xml, ext-dom, pdo, pgsql, mysql, sqlite
+        extensions: pdo, pgsql, mysql, sqlite
         coverage: none
 
     - name: Validate composer.json and composer.lock
