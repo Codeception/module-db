@@ -3,17 +3,13 @@
 require_once \Codeception\Configuration::testsDir().'unit/Codeception/Module/Db/TestsForDb.php';
 
 /**
- * @group appveyor
  * @group db
  */
 class PostgreSqlDbTest extends TestsForDb
 {
     public function getPopulator()
     {
-        if (getenv('APPVEYOR')) {
-            $this->markTestSkipped('Disabled on Appveyor');
-        }
-        return "psql -d codeception_test -U postgres  < tests/data/dumps/postgres.sql";
+        return "psql -h localhost -d codeception_test -U postgres  < tests/data/dumps/postgres.sql";
     }
 
     public function getConfig()
@@ -21,10 +17,12 @@ class PostgreSqlDbTest extends TestsForDb
         if (!function_exists('pg_connect')) {
             $this->markTestSkipped();
         }
+        $password = getenv('PGPASSWORD') ? getenv('PGPASSWORD') : null;
+        
         return [
             'dsn' => 'pgsql:host=localhost;dbname=codeception_test',
             'user' => 'postgres',
-            'password' => getenv('APPVEYOR') ? 'Password12!' : null,
+            'password' => $password,
             'dump' => 'tests/data/dumps/postgres.sql',
             'reconnect' => true,
             'cleanup' => true,

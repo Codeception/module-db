@@ -23,9 +23,7 @@ class PostgresTest extends Unit
         if (!function_exists('pg_connect')) {
             return;
         }
-        if (getenv('APPVEYOR')) {
-            self::$config['password'] = 'Password12!';
-        }
+        self::$config['password'] = getenv('PGPASSWORD') ? getenv('PGPASSWORD') : null;
         $sql = file_get_contents(codecept_data_dir('dumps/postgres.sql'));
         $sql = preg_replace('%/\*(?:(?!\*/).)*\*/%s', '', $sql);
         self::$sql = explode("\n", $sql);

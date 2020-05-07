@@ -1,6 +1,6 @@
 # Db module for Codeception
 
-[![Build Status](https://travis-ci.org/Codeception/module-db.svg?branch=master)](https://travis-ci.org/Codeception/module-db)
+![Build Status](https://github.com/Codeception/module-db/workflows/CI/badge.svg)
 
 ## Installation
 

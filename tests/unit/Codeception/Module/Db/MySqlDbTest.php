@@ -3,16 +3,12 @@
 require_once \Codeception\Configuration::testsDir().'unit/Codeception/Module/Db/TestsForDb.php';
 
 /**
- * @group appveyor
  * @group db
  */
 class MySqlDbTest extends TestsForDb
 {
     public function getPopulator()
     {
-        if (getenv('APPVEYOR')) {
-            $this->markTestSkipped('Disabled on Appveyor');
-        }
         $config = $this->getConfig();
         $password = $config['password'] ? '-p'.$config['password'] : '';
         return "mysql -u \$user $password \$dbname < {$config['dump']}";
@@ -20,10 +16,13 @@ class MySqlDbTest extends TestsForDb
 
     public function getConfig()
     {
+        $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';
+        $password = getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : '';
+
         return [
-            'dsn' => 'mysql:host=localhost;dbname=codeception_test',
+            'dsn' => 'mysql:host='.$host.';dbname=codeception_test',
             'user' => 'root',
-            'password' => getenv('APPVEYOR') ? 'Password12!' : '',
+            'password' => $password,
             'dump' => 'tests/data/dumps/mysql.sql',
             'reconnect' => true,
             'cleanup' => true,
