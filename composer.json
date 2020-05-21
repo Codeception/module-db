@@ -1,7 +1,7 @@
 {
     "name":"codeception/module-db",
-    "description":"WebDriver module for Codeception",
-    "keywords":["codeception", "browser-testing", "acceptance-testing"],
+    "description":"DB module for Codeception",
+    "keywords":["codeception", "db-testing", "database-testing"],
     "homepage":"http://codeception.com/",
     "type":"library",
     "license":"MIT",
