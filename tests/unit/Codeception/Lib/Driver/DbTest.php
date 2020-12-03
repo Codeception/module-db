@@ -23,12 +23,14 @@ class DbTest extends Unit
     public function getWhereCriteria()
     {
         return [
-            'like' => [['email like' => 'mail.ua'], 'WHERE "email" LIKE ? '],
-            '<='   => [['id <=' => '5'],            'WHERE "id" <= ? '],
-            '<'    => [['id <' => '5'],             'WHERE "id" < ? '],
-            '>='   => [['id >=' => '5'],            'WHERE "id" >= ? '],
-            '>'    => [['id >' => '5'],             'WHERE "id" > ? '],
-            '!='   => [['id !=' => '5'],            'WHERE "id" != ? '],
+            'like'        => [['email like' => 'mail.ua'], 'WHERE "email" LIKE ? '],
+            '<='          => [['id <=' => '5'],            'WHERE "id" <= ? '],
+            '<'           => [['id <' => '5'],             'WHERE "id" < ? '],
+            '>='          => [['id >=' => '5'],            'WHERE "id" >= ? '],
+            '>'           => [['id >' => '5'],             'WHERE "id" > ? '],
+            '!='          => [['id !=' => '5'],            'WHERE "id" != ? '],
+            'is null'     => [['id' => null],              'WHERE "id" IS NULL '],
+            'is not null' => [['id !=' => null],           'WHERE "id" IS NOT NULL '],
         ];
     }
 }

@@ -215,8 +215,8 @@ class Db
         $params = [];
         foreach ($criteria as $k => $v) {
             if ($v === null) {
-                if (stripos($k, ' !=') > 0) {
-                    $params[] = $this->getQuotedName(str_ireplace(" !=", '', $k)) . " IS NOT NULL ";
+                if (strpos($k, ' !=') > 0) {
+                    $params[] = $this->getQuotedName(str_replace(" !=", '', $k)) . " IS NOT NULL ";
                 } else {
                     $params[] = $this->getQuotedName($k) . " IS NULL ";
                 }
