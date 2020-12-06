@@ -224,6 +224,18 @@ use Codeception\Util\ActionSequence;
  * ```sql
  * SELECT COUNT(*) FROM `users` WHERE `name` = 'Davert' AND `email` LIKE 'davert%'
  * ```
+ * Null comparisons are also available, as shown here:
+ *
+ * ```php
+ * <?php
+ * $I->seeInDatabase('users', ['name' => null, 'email !=' => null]);
+ *
+ * ```
+ * Will generate:
+ *
+ * ```sql
+ * SELECT COUNT(*) FROM `users` WHERE `name` IS NULL AND `email` IS NOT NULL
+ * ```
  * ## Public Properties
  * * dbh - contains the PDO connection
  * * driver - contains the Connection Driver
