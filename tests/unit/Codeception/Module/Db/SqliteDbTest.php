@@ -39,9 +39,9 @@ class SqliteDbTest extends TestsForDb
 
     public function testConnectionIsResetOnEveryTestWhenReconnectIsTrue()
     {
-        $testCase1 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
-        $testCase2 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
-        $testCase3 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase1 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase2 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase3 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
 
 
         $this->module->_setConfig(['reconnect' => false]);
@@ -104,8 +104,8 @@ class SqliteDbTest extends TestsForDb
         );
         $this->module->_beforeSuite();
 
-        $testCase1 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
-        $testCase2 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase1 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase2 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
         $testDataInDb1 = ['name' => 'userdb1', 'email' => 'userdb1@example.org'];
         $testDataInDb2 = ['name' => 'userdb2', 'email' => 'userdb2@example.org'];
 
@@ -209,8 +209,8 @@ class SqliteDbTest extends TestsForDb
 
     public function testMultiDatabaseWithRemoveInserted()
     {
-        $testCase1 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
-        $testCase2 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase1 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase2 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
         $config = array_merge($this->getConfig(), [
             'dsn' => 'sqlite:tests/data/sqlite1.db',
             'cleanup' => false

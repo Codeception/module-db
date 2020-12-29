@@ -35,9 +35,9 @@ class MySqlDbTest extends TestsForDb
      */
     public function testConnectionIsResetOnEveryTestWhenReconnectIsTrue()
     {
-        $testCase1 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
-        $testCase2 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
-        $testCase3 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase1 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase2 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase3 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
 
 
         $this->module->_setConfig(['reconnect' => false]);
@@ -72,7 +72,7 @@ class MySqlDbTest extends TestsForDb
             'USE ' . $dbName . ';',
         ];
         $this->module->_reconfigure($config);
-        $this->module->_before(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
         $usedDatabaseName = $this->module->dbh->query('SELECT DATABASE();')->fetch(PDO::FETCH_COLUMN);
 
         $this->assertEquals($dbName, $usedDatabaseName);
