@@ -17,23 +17,23 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $config = $this->getConfig();
         Db::create($config['dsn'], $config['user'], $config['password'])->cleanup();
 
-        $container = \Codeception\Util\Stub::make('Codeception\Lib\ModuleContainer');
+        $container = \Codeception\Stub::make('Codeception\Lib\ModuleContainer');
         $this->module = new \Codeception\Module\Db($container, $config);
         $this->module->_beforeSuite();
-        $this->module->_before(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
         $this->assertTrue($this->module->_isPopulated());
     }
 
     protected function _tearDown()
     {
         $this->module->_resetConfig();
-        $this->module->_after(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_after(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
     }
 
     public function testConnectionIsKeptForTheWholeSuite()
     {
-        $testCase1 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
-        $testCase2 = \Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase1 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase2 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
 
         $this->module->_reconfigure(['reconnect' => false]);
         $this->module->_beforeSuite();
@@ -102,9 +102,9 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $this->assertIsInt($userId);
         $this->module->seeInDatabase('users', ['name' => 'john', 'email' => 'john@jon.com']);
         $this->module->dontSeeInDatabase('users', ['name' => 'john', 'email' => null]);
-        $this->module->_after(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_after(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
 
-        $this->module->_before(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
         $this->module->dontSeeInDatabase('users', ['name' => 'john']);
     }
 
@@ -118,9 +118,9 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $this->module->haveInDatabase('composite_pk', $testData);
         $this->module->seeInDatabase('composite_pk', $testData);
         $this->module->_reconfigure(['cleanup' => false]);
-        $this->module->_after(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_after(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
 
-        $this->module->_before(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
         $this->module->dontSeeInDatabase('composite_pk', $testData);
         $this->module->seeInDatabase('composite_pk', ['group_id' => 1, 'id' => 2, 'status' => 'test']);
         $this->module->seeInDatabase('composite_pk', ['group_id' => 2, 'id' => 1, 'status' => 'test2']);
@@ -131,9 +131,9 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $testData = ['status' => 'test'];
         $this->module->haveInDatabase('no_pk', $testData);
         $this->module->seeInDatabase('no_pk', $testData);
-        $this->module->_after(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_after(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
 
-        $this->module->_before(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
         $this->module->dontSeeInDatabase('no_pk', $testData);
     }
 
@@ -194,9 +194,9 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $this->module->_insertInDatabase('no_pk', $testData);
         $this->module->seeInDatabase('no_pk', $testData);
         $this->module->_reconfigure(['cleanup' => false]);
-        $this->module->_after(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_after(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
 
-        $this->module->_before(\Codeception\Util\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
         $this->module->seeInDatabase('no_pk', $testData);
     }
 
