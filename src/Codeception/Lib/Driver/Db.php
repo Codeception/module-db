@@ -65,7 +65,8 @@ class Db
      */
     public static function create($dsn, $user, $password, $options = null)
     {
-        $provider = self::getProvider($dsn);
+	    list($real_dsn) = self::checkForFakePdo($dsn);
+        $provider = self::getProvider($real_dsn);
 
         switch ($provider) {
             case 'sqlite':
