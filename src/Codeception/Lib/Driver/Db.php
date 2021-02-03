@@ -7,7 +7,7 @@ use Vimeo\MysqlEngine\FakePdo;
 
 class Db
 {
-	const FAKE_PDO = 'fake:';
+    const FAKE_PDO = 'fake:';
 
     /**
      * @var \PDO
@@ -38,14 +38,14 @@ class Db
 
     public static function connect($dsn, $user, $password, $options = null)
     {
-	    list($real_dsn, $fake) = self::checkForFakePdo($dsn);
-	    if ($fake){
-		    $dbh = new FakePdo($real_dsn, $user, $password, $options);
-	    }
-	    else {
-		    $dbh = new \PDO($dsn, $user, $password, $options);
-		    $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-	    }
+        list($real_dsn, $fake) = self::checkForFakePdo($dsn);
+        if ($fake){
+            $dbh = new FakePdo($real_dsn, $user, $password, $options);
+        }
+        else {
+            $dbh = new \PDO($dsn, $user, $password, $options);
+            $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        }
 
         return $dbh;
     }
@@ -104,13 +104,13 @@ class Db
     {
         list($real_dsn, $fake) = self::checkForFakePdo($dsn);
 
-	    if ($fake){
-		    $this->dbh = new FakePdo($real_dsn, $user, $password, $options);
-	    }
-	    else {
-		    $this->dbh = new \PDO($dsn, $user, $password, $options);
-		    $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-	    }
+        if ($fake){
+            $this->dbh = new FakePdo($real_dsn, $user, $password, $options);
+        }
+        else {
+            $this->dbh = new \PDO($dsn, $user, $password, $options);
+            $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        }
 
         $this->dsn = $real_dsn;
         $this->user = $user;
@@ -376,7 +376,7 @@ class Db
      *
      * @return array{string, bool}
      */
-	private static function checkForFakePdo($dsn)
+    private static function checkForFakePdo($dsn)
     {
         if (strpos($dsn, self::FAKE_PDO)===0){
             $real_dsn = substr($dsn, strlen(self::FAKE_PDO));
