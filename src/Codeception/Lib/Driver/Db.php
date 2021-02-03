@@ -65,7 +65,7 @@ class Db
      */
     public static function create($dsn, $user, $password, $options = null)
     {
-	    list($real_dsn) = self::checkForFakePdo($dsn);
+        list($real_dsn) = self::checkForFakePdo($dsn);
         $provider = self::getProvider($real_dsn);
 
         switch ($provider) {
@@ -102,7 +102,7 @@ class Db
      */
     public function __construct($dsn, $user, $password, $options = null)
     {
-    	list($real_dsn, $fake) = self::checkForFakePdo($dsn);
+        list($real_dsn, $fake) = self::checkForFakePdo($dsn);
 
 	    if ($fake){
 		    $this->dbh = new FakePdo($real_dsn, $user, $password, $options);
@@ -372,18 +372,18 @@ class Db
     }
 
     /**
-	 * @param string $dsn
-	 *
-	 * @return array{string, bool}
-	 */
+     * @param string $dsn
+     *
+     * @return array{string, bool}
+     */
 	private static function checkForFakePdo($dsn)
-	{
-		if (strpos($dsn, self::FAKE_PDO)===0){
-			$real_dsn = substr($dsn, strlen(self::FAKE_PDO));
+    {
+        if (strpos($dsn, self::FAKE_PDO)===0){
+            $real_dsn = substr($dsn, strlen(self::FAKE_PDO));
 
-			return [$real_dsn, true];
-		}
+            return [$real_dsn, true];
+        }
 
-		return [$dsn, false];
-	}
+        return [$dsn, false];
+    }
 }
