@@ -3,9 +3,12 @@
 namespace Codeception\Lib\Driver;
 
 use Codeception\Exception\ModuleException;
+use Vimeo\MysqlEngine\FakePdo;
 
 class Db
 {
+	const FAKE_PDO = 'fake:';
+
     /**
      * @var \PDO
      */
@@ -35,8 +38,14 @@ class Db
 
     public static function connect($dsn, $user, $password, $options = null)
     {
-        $dbh = new \PDO($dsn, $user, $password, $options);
-        $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+	    list($real_dsn, $fake) = self::checkForFakePdo($dsn);
+	    if ($fake){
+		    $dbh = new FakePdo($real_dsn, $user, $password, $options);
+	    }
+	    else {
+		    $dbh = new \PDO($dsn, $user, $password, $options);
+		    $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+	    }
 
         return $dbh;
     }
@@ -92,10 +101,17 @@ class Db
      */
     public function __construct($dsn, $user, $password, $options = null)
     {
-        $this->dbh = new \PDO($dsn, $user, $password, $options);
-        $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    	list($real_dsn, $fake) = self::checkForFakePdo($dsn);
 
-        $this->dsn = $dsn;
+	    if ($fake){
+		    $this->dbh = new FakePdo($real_dsn, $user, $password, $options);
+	    }
+	    else {
+		    $this->dbh = new \PDO($dsn, $user, $password, $options);
+		    $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+	    }
+
+        $this->dsn = $real_dsn;
         $this->user = $user;
         $this->password = $password;
         $this->options = $options;
@@ -353,4 +369,20 @@ class Db
     {
         return $this->options;
     }
+
+    /**
+	 * @param string $dsn
+	 *
+	 * @return array{string, bool}
+	 */
+	private static function checkForFakePdo($dsn)
+	{
+		if (strpos($dsn, self::FAKE_PDO)===0){
+			$real_dsn = substr($dsn, strlen(self::FAKE_PDO));
+
+			return [$real_dsn, true];
+		}
+
+		return [$dsn, false];
+	}
 }
