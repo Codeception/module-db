@@ -10,7 +10,7 @@ class Sqlite extends Db
     protected $filename = '';
     protected $con = null;
 
-    public function __construct($dsn, $user, $password, $options = null)
+    public function __construct($dsn, $user, $password, $options = null, $pdo_class = null)
     {
         $filename = substr($dsn, 7);
         if ($filename === ':memory:') {
@@ -19,7 +19,7 @@ class Sqlite extends Db
 
         $this->filename = Configuration::projectDir() . $filename;
         $this->dsn = 'sqlite:' . $this->filename;
-        parent::__construct($this->dsn, $user, $password, $options);
+        parent::__construct($this->dsn, $user, $password, $options, $pdo_class);
     }
 
     public function cleanup()
@@ -27,7 +27,7 @@ class Sqlite extends Db
         $this->dbh = null;
         gc_collect_cycles();
         file_put_contents($this->filename, '');
-        $this->dbh = self::connect($this->dsn, $this->user, $this->password);
+        $this->dbh = self::connect($this->dsn, $this->user, $this->password, $this->pdo_class);
     }
 
     public function load($sql)
