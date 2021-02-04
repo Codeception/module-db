@@ -55,6 +55,7 @@ use Codeception\Util\ActionSequence;
  * * ssl_cipher - list of one or more permissible ciphers to use for SSL encryption (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-cipher)
  * * databases - include more database configs and switch between them in tests.
  * * initial_queries - list of queries to be executed right after connection to the database has been initiated, i.e. creating the database if it does not exist or preparing the database collation
+ * * pdo_class - a fully qualified class name of a class which extends \PDO. This allows for custom stubbing of PDO to provide customised interaction with the database, or alternative implementations which may aid in test debugging or test speed
  *
  * ## Example
  *
@@ -570,7 +571,7 @@ class Db extends CodeceptionModule implements DbInterface
 
         try {
             $this->debugSection('Connecting To Db', ['config' => $databaseConfig, 'options' => $options]);
-            $this->drivers[$databaseKey] = Driver::create($databaseConfig['dsn'], $databaseConfig['user'], $databaseConfig['password'], $options, $databaseConfig['pdo']);
+            $this->drivers[$databaseKey] = Driver::create($databaseConfig['dsn'], $databaseConfig['user'], $databaseConfig['password'], $options, $databaseConfig['pdo_class']);
         } catch (\PDOException $e) {
             $message = $e->getMessage();
             if ($message === 'could not find driver') {
