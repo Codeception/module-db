@@ -58,6 +58,7 @@ class Db
     {
         $class_name = self::pdoClass($pdo_class);
         $dbh = new $class_name($dsn, $user, $password, $options);
+        self::assertIsPdo($dbh, $pdo_class);
         $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         return $dbh;
@@ -118,6 +119,7 @@ class Db
     {
         $class_name = self::pdoClass($pdo_class);
         $this->dbh = new $class_name($dsn, $user, $password, $options);
+        self::assertIsPdo($this->dbh, $pdo_class);
         $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         $this->dsn = $dsn;
@@ -125,6 +127,20 @@ class Db
         $this->password = $password;
         $this->options = $options;
         $this->pdo_class = $pdo_class;
+    }
+
+    /**
+     * @param $dbh
+     * @param string|null $pdo_class
+     */
+    private static function assertIsPdo($dbh, $pdo_class)
+    {
+        if (!$dbh instanceof \PDO){
+            throw new ModuleException(
+                'Codeception\Module\Db',
+                "The provided config value 'pdo' ($pdo_class) did not resolve to a class that implements \\PDO"
+            );
+        }
     }
 
     public function __destruct()
