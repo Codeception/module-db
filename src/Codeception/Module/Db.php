@@ -288,6 +288,7 @@ class Db extends CodeceptionModule implements DbInterface
                     'waitlock' => 0,
                     'dump' => null,
                     'populator' => null,
+                    'pdo_class' => null,
                 ], $databaseConfig);
             }
         }

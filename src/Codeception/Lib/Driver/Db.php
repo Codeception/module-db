@@ -38,17 +38,20 @@ class Db
     protected $pdo_class;
 
     /**
-     * @param $pdo_class
+     * @param string|null $pdo_class
      * @return string
      */
     private static function pdoClass($pdo_class){
-        $fallback = \PDO::class;
         if (!$pdo_class){
-            return $fallback;
+            // If empty or null we use regular PDO
+            return \PDO::class;
         }
 
         if (!class_exists($pdo_class)){
-            return $fallback;
+            throw new ModuleException(
+                'Codeception\Module\Db',
+                "The class with provided config value 'pdo_class' ($pdo_class) does not exist"
+            );
         }
 
         return $pdo_class;
@@ -138,7 +141,7 @@ class Db
         if (!$dbh instanceof \PDO){
             throw new ModuleException(
                 'Codeception\Module\Db',
-                "The provided config value 'pdo' ($pdo_class) did not resolve to a class that implements \\PDO"
+                "The provided config value 'pdo_class' ($pdo_class) did not resolve to a class that implements \\PDO"
             );
         }
     }
