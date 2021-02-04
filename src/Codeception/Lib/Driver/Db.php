@@ -3,12 +3,9 @@
 namespace Codeception\Lib\Driver;
 
 use Codeception\Exception\ModuleException;
-use Vimeo\MysqlEngine\FakePdo;
 
 class Db
 {
-    const FAKE_PDO = 'fake:';
-
     /**
      * @var \PDO
      */
@@ -35,17 +32,33 @@ class Db
      * @var array
      */
     protected $primaryKeys = [];
+    /**
+     * @var string|null
+     */
+    protected $pdo_class;
 
-    public static function connect($dsn, $user, $password, $options = null)
+    /**
+     * @param $pdo_class
+     * @return string
+     */
+    private static function pdoClass($pdo_class){
+        $fallback = \PDO::class;
+        if (!$pdo_class){
+            return $fallback;
+        }
+
+        if (!class_exists($pdo_class)){
+            return $fallback;
+        }
+
+        return $pdo_class;
+    }
+
+    public static function connect($dsn, $user, $password, $options = null, $pdo_class = null)
     {
-        list($real_dsn, $fake) = self::checkForFakePdo($dsn);
-        if ($fake){
-            $dbh = new FakePdo($real_dsn, $user, $password, $options);
-        }
-        else {
-            $dbh = new \PDO($dsn, $user, $password, $options);
-            $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        }
+        $class_name = self::pdoClass($pdo_class);
+        $dbh = new $class_name($dsn, $user, $password, $options);
+        $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         return $dbh;
     }
@@ -57,32 +70,32 @@ class Db
      * @param $user
      * @param $password
      * @param [optional] $options
+     * @param [optional] $pdo_class
      *
      * @see http://php.net/manual/en/pdo.construct.php
      * @see http://php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
      *
      * @return Db|SqlSrv|MySql|Oci|PostgreSql|Sqlite
      */
-    public static function create($dsn, $user, $password, $options = null)
+    public static function create($dsn, $user, $password, $options = null, $pdo_class = null)
     {
-        list($real_dsn) = self::checkForFakePdo($dsn);
-        $provider = self::getProvider($real_dsn);
+        $provider = self::getProvider($dsn);
 
         switch ($provider) {
             case 'sqlite':
-                return new Sqlite($dsn, $user, $password, $options);
+                return new Sqlite($dsn, $user, $password, $options, $pdo_class);
             case 'mysql':
-                return new MySql($dsn, $user, $password, $options);
+                return new MySql($dsn, $user, $password, $options, $pdo_class);
             case 'pgsql':
-                return new PostgreSql($dsn, $user, $password, $options);
+                return new PostgreSql($dsn, $user, $password, $options, $pdo_class);
             case 'mssql':
             case 'dblib':
             case 'sqlsrv':
-                return new SqlSrv($dsn, $user, $password, $options);
+                return new SqlSrv($dsn, $user, $password, $options, $pdo_class);
             case 'oci':
-                return new Oci($dsn, $user, $password, $options);
+                return new Oci($dsn, $user, $password, $options, $pdo_class);
             default:
-                return new Db($dsn, $user, $password, $options);
+                return new Db($dsn, $user, $password, $options, $pdo_class);
         }
     }
 
@@ -96,26 +109,22 @@ class Db
      * @param $user
      * @param $password
      * @param [optional] $options
+     * @param [optional] $pdo_class
      *
      * @see http://php.net/manual/en/pdo.construct.php
      * @see http://php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
      */
-    public function __construct($dsn, $user, $password, $options = null)
+    public function __construct($dsn, $user, $password, $options = null, $pdo_class = null)
     {
-        list($real_dsn, $fake) = self::checkForFakePdo($dsn);
+        $class_name = self::pdoClass($pdo_class);
+        $this->dbh = new $class_name($dsn, $user, $password, $options);
+        $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
-        if ($fake){
-            $this->dbh = new FakePdo($real_dsn, $user, $password, $options);
-        }
-        else {
-            $this->dbh = new \PDO($dsn, $user, $password, $options);
-            $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        }
-
-        $this->dsn = $real_dsn;
+        $this->dsn = $dsn;
         $this->user = $user;
         $this->password = $password;
         $this->options = $options;
+        $this->pdo_class = $pdo_class;
     }
 
     public function __destruct()
@@ -369,21 +378,5 @@ class Db
     public function getOptions()
     {
         return $this->options;
-    }
-
-    /**
-     * @param string $dsn
-     *
-     * @return array{string, bool}
-     */
-    private static function checkForFakePdo($dsn)
-    {
-        if (strpos($dsn, self::FAKE_PDO)===0){
-            $real_dsn = substr($dsn, strlen(self::FAKE_PDO));
-
-            return [$real_dsn, true];
-        }
-
-        return [$dsn, false];
     }
 }

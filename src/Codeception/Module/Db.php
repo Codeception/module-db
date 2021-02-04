@@ -570,7 +570,7 @@ class Db extends CodeceptionModule implements DbInterface
 
         try {
             $this->debugSection('Connecting To Db', ['config' => $databaseConfig, 'options' => $options]);
-            $this->drivers[$databaseKey] = Driver::create($databaseConfig['dsn'], $databaseConfig['user'], $databaseConfig['password'], $options);
+            $this->drivers[$databaseKey] = Driver::create($databaseConfig['dsn'], $databaseConfig['user'], $databaseConfig['password'], $options, $databaseConfig['pdo']);
         } catch (\PDOException $e) {
             $message = $e->getMessage();
             if ($message === 'could not find driver') {
