@@ -288,7 +288,6 @@ class Db extends CodeceptionModule implements DbInterface
                     'waitlock' => 0,
                     'dump' => null,
                     'populator' => null,
-                    'pdo_class' => null,
                 ], $databaseConfig);
             }
         }
@@ -572,7 +571,8 @@ class Db extends CodeceptionModule implements DbInterface
 
         try {
             $this->debugSection('Connecting To Db', ['config' => $databaseConfig, 'options' => $options]);
-            $this->drivers[$databaseKey] = Driver::create($databaseConfig['dsn'], $databaseConfig['user'], $databaseConfig['password'], $options, $databaseConfig['pdo_class']);
+            $pdo_class = array_key_exists('pdo_class', $databaseConfig) ? $databaseConfig['pdo_class'] : null;
+            $this->drivers[$databaseKey] = Driver::create($databaseConfig['dsn'], $databaseConfig['user'], $databaseConfig['password'], $options, $pdo_class);
         } catch (\PDOException $e) {
             $message = $e->getMessage();
             if ($message === 'could not find driver') {
