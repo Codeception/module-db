@@ -771,7 +771,7 @@ class Db extends CodeceptionModule implements DbInterface
         if ($primaryKey) {
             foreach ($primaryKey as $column) {
                 if (isset($row[$column])) {
-                    $primary[$column] = $row[$column] ?? $id;
+                    $primary[$column] = isset($row[$column]) ? $row[$column] : $id;
                 } else {
                     throw new \InvalidArgumentException(
                         'Primary key field ' . $column . ' is not set for table ' . $table
