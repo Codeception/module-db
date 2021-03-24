@@ -769,17 +769,13 @@ class Db extends CodeceptionModule implements DbInterface
         $primaryKey = $this->_getDriver()->getPrimaryKey($table);
         $primary = [];
         if ($primaryKey) {
-            if ($id && count($primaryKey) === 1) {
-                $primary [$primaryKey[0]] = $id;
-            } else {
-                foreach ($primaryKey as $column) {
-                    if (isset($row[$column])) {
-                        $primary[$column] = $row[$column];
-                    } else {
-                        throw new \InvalidArgumentException(
-                            'Primary key field ' . $column . ' is not set for table ' . $table
-                        );
-                    }
+            foreach ($primaryKey as $column) {
+                if (isset($row[$column])) {
+                    $primary[$column] = $row[$column] ?? $id;
+                } else {
+                    throw new \InvalidArgumentException(
+                        'Primary key field ' . $column . ' is not set for table ' . $table
+                    );
                 }
             }
         } else {
