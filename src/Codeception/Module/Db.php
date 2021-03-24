@@ -770,7 +770,7 @@ class Db extends CodeceptionModule implements DbInterface
         $primary = [];
         if ($primaryKey) {
             foreach ($primaryKey as $column) {
-                if (isset($row[$column])) {
+                if (isset($row[$column]) || $id) {
                     $primary[$column] = isset($row[$column]) ? $row[$column] : $id;
                 } else {
                     throw new \InvalidArgumentException(
