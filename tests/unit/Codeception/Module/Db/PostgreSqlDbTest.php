@@ -1,11 +1,13 @@
 <?php
 
-require_once \Codeception\Configuration::testsDir().'unit/Codeception/Module/Db/TestsForDb.php';
+declare(strict_types=1);
+
+require_once \Codeception\Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
 
 /**
  * @group db
  */
-class PostgreSqlDbTest extends TestsForDb
+final class PostgreSqlDbTest extends AbstractDbTest
 {
     public function getPopulator()
     {
@@ -29,5 +31,4 @@ class PostgreSqlDbTest extends TestsForDb
             'populate' => true
         ];
     }
-
 }

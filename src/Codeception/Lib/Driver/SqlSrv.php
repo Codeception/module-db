@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Codeception\Lib\Driver;
 
 class SqlSrv extends Db
@@ -6,7 +9,7 @@ class SqlSrv extends Db
     public function getDb()
     {
         $matches = [];
-        $matched = preg_match('~Database=(.*);?~s', $this->dsn, $matches);
+        $matched = preg_match('#Database=(.*);?#s', $this->dsn, $matches);
 
         if (!$matched) {
             return false;
@@ -15,7 +18,7 @@ class SqlSrv extends Db
         return $matches[1];
     }
 
-    public function cleanup()
+    public function cleanup(): void
     {
         $this->dbh->exec(
             "
@@ -48,17 +51,15 @@ class SqlSrv extends Db
         );
     }
 
-    public function getQuotedName($name)
+    public function getQuotedName($name): string
     {
         return '[' . str_replace('.', '].[', $name) . ']';
     }
 
     /**
-     * @param string $tableName
-     *
-     * @return array[string]
+     * @return string[]
      */
-    public function getPrimaryKey($tableName)
+    public function getPrimaryKey(string $tableName): array
     {
         if (!isset($this->primaryKeys[$tableName])) {
             $primaryKey = [];

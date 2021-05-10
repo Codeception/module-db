@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Codeception\Lib\Driver;
 
 use Codeception\Configuration;
@@ -6,9 +9,15 @@ use Codeception\Exception\ModuleException;
 
 class Sqlite extends Db
 {
+    /**
+     * @var bool
+     */
     protected $hasSnapshot = false;
+    /**
+     * @var string
+     */
     protected $filename = '';
-    protected $con = null;
+    protected $con;
 
     public function __construct($dsn, $user, $password, $options = null)
     {
@@ -22,7 +31,7 @@ class Sqlite extends Db
         parent::__construct($this->dsn, $user, $password, $options);
     }
 
-    public function cleanup()
+    public function cleanup(): void
     {
         $this->dbh = null;
         gc_collect_cycles();
@@ -30,7 +39,7 @@ class Sqlite extends Db
         $this->dbh = self::connect($this->dsn, $this->user, $this->password);
     }
 
-    public function load($sql)
+    public function load($sql): void
     {
         if ($this->hasSnapshot) {
             $this->dbh = null;
@@ -47,11 +56,9 @@ class Sqlite extends Db
     }
 
     /**
-     * @param string $tableName
-     *
-     * @return array[string]
+     * @return string[]
      */
-    public function getPrimaryKey($tableName)
+    public function getPrimaryKey(string $tableName): array
     {
         if (!isset($this->primaryKeys[$tableName])) {
             if ($this->hasRowId($tableName)) {
@@ -75,11 +82,7 @@ class Sqlite extends Db
         return $this->primaryKeys[$tableName];
     }
 
-    /**
-     * @param $tableName
-     * @return bool
-     */
-    private function hasRowId($tableName)
+    private function hasRowId($tableName): bool
     {
         $params = ['type' => 'table', 'name' => $tableName];
         $select = $this->select('sql', 'sqlite_master', $params);

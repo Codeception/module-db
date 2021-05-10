@@ -1,17 +1,22 @@
 <?php
 
-require_once \Codeception\Configuration::testsDir().'unit/Codeception/Module/Db/TestsForDb.php';
+declare(strict_types=1);
+
+use Codeception\Stub;
+use Codeception\TestInterface;
+
+require_once \Codeception\Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
 
 /**
  * @group db
  */
-class MySqlDbTest extends TestsForDb
+final class MySqlDbTest extends AbstractDbTest
 {
     public function getPopulator()
     {
         $config = $this->getConfig();
         $password = $config['password'] ? '-p'.$config['password'] : '';
-        return "mysql -u \$user $password \$dbname < {$config['dump']}";
+        return sprintf('mysql -u $user %s $dbname < %s', $password, $config['dump']);
     }
 
     public function getConfig()
@@ -35,9 +40,9 @@ class MySqlDbTest extends TestsForDb
      */
     public function testConnectionIsResetOnEveryTestWhenReconnectIsTrue()
     {
-        $testCase1 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
-        $testCase2 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
-        $testCase3 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase1 = Stub::makeEmpty(TestInterface::class);
+        $testCase2 = Stub::makeEmpty(TestInterface::class);
+        $testCase3 = Stub::makeEmpty(TestInterface::class);
 
 
         $this->module->_setConfig(['reconnect' => false]);
@@ -45,6 +50,7 @@ class MySqlDbTest extends TestsForDb
 
         // Simulate a test that runs
         $this->module->_before($testCase1);
+        
         $connection1 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase1);
 
@@ -55,6 +61,7 @@ class MySqlDbTest extends TestsForDb
         $this->module->_afterSuite();
 
         $this->module->_setConfig(['reconnect' => true]);
+        
         $this->module->_before($testCase3);
         $connection3 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase3);
@@ -72,7 +79,8 @@ class MySqlDbTest extends TestsForDb
             'USE ' . $dbName . ';',
         ];
         $this->module->_reconfigure($config);
-        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(Stub::makeEmpty(TestInterface::class));
+        
         $usedDatabaseName = $this->module->dbh->query('SELECT DATABASE();')->fetch(PDO::FETCH_COLUMN);
 
         $this->assertEquals($dbName, $usedDatabaseName);
@@ -90,5 +98,4 @@ class MySqlDbTest extends TestsForDb
             ],
             $emails);
     }
-
 }

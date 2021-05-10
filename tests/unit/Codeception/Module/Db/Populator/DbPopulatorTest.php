@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 use Codeception\Lib\DbPopulator;
+use Codeception\Test\Unit;
 
 /**
  * @group db
  * Class DbPopulatorTest
  */
-class DbPopulatorTest extends \Codeception\Test\Unit
+final class DbPopulatorTest extends Unit
 {
     public function testCommandBuilderInterpolatesVariables()
     {
-        $populator = new DbPopulator(
+        $dbPopulator = new DbPopulator(
             [
                 'populate'  => true,
                 'dsn'       => 'mysql:host=127.0.0.1;dbname=my_db',
@@ -23,13 +26,13 @@ class DbPopulatorTest extends \Codeception\Test\Unit
 
         $this->assertEquals(
             ['mysql -u root -h 127.0.0.1 -D my_db < tests/data/dumps/sqlite.sql'],
-            $populator->buildCommands()
+            $dbPopulator->buildCommands()
         );
     }
 
     public function testCommandBuilderInterpolatesVariablesMultiDump()
     {
-        $populator = new DbPopulator(
+        $dbPopulator = new DbPopulator(
             [
                 'populate'  => true,
                 'dsn'       => 'mysql:host=127.0.0.1;dbname=my_db',
@@ -48,21 +51,19 @@ class DbPopulatorTest extends \Codeception\Test\Unit
                 'mysql -u root -h 127.0.0.1 -D my_db < tests/data/dumps/sqlite.sql',
                 'mysql -u root -h 127.0.0.1 -D my_db < tests/data/dumps/sqlite2.sql'
             ],
-            $populator->buildCommands()
+            $dbPopulator->buildCommands()
         );
     }
 
     public function testCommandBuilderWontTouchVariablesNotFound()
     {
-        $populator = new DbPopulator([
+        $dbPopulator = new DbPopulator([
             'populator' => 'noop_tool -u $user -h $host -D $dbname < $dump',
             'user' => 'root',
         ]);
         $this->assertEquals(
             ['noop_tool -u root -h $host -D $dbname < $dump'],
-            $populator->buildCommands()
+            $dbPopulator->buildCommands()
         );
-
     }
-
 }
