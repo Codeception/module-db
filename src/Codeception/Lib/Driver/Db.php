@@ -6,6 +6,7 @@ namespace Codeception\Lib\Driver;
 
 use Codeception\Exception\ModuleException;
 use Exception;
+use InvalidArgumentException;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -142,7 +143,10 @@ class Db
     {
     }
 
-    public function load($sql): void
+    /**
+     * @param string[] $sql
+     */
+    public function load(array $sql): void
     {
         $query = '';
         $delimiter = ';';
@@ -173,7 +177,7 @@ class Db
         }
     }
 
-    public function insert($tableName, array &$data): string
+    public function insert(string $tableName, array &$data): string
     {
         $columns = array_map(
             function ($name) {
@@ -190,12 +194,12 @@ class Db
         );
     }
 
-    public function select($column, $table, array &$criteria): string
+    public function select(string $column, string $tableName, array &$criteria): string
     {
         $where = $this->generateWhereClause($criteria);
 
         $query = "SELECT %s FROM %s %s";
-        return sprintf($query, $column, $this->getQuotedName($table), $where);
+        return sprintf($query, $column, $this->getQuotedName($tableName), $where);
     }
 
     private function getSupportedOperators(): array
@@ -253,25 +257,25 @@ class Db
         return 'WHERE ' . implode('AND ', $params);
     }
 
-    public function deleteQueryByCriteria($table, array $criteria): void
+    public function deleteQueryByCriteria(string $tableName, array $criteria): void
     {
         $where = $this->generateWhereClause($criteria);
 
-        $query = 'DELETE FROM ' . $this->getQuotedName($table) . ' ' . $where;
+        $query = 'DELETE FROM ' . $this->getQuotedName($tableName) . ' ' . $where;
         $this->executeQuery($query, array_values($criteria));
     }
 
-    public function lastInsertId($table): string
+    public function lastInsertId(string $tableName): string
     {
         return $this->getDbh()->lastInsertId();
     }
 
-    public function getQuotedName($name): string
+    public function getQuotedName(string $name): string
     {
         return '"' . str_replace('.', '"."', $name) . '"';
     }
 
-    public function sqlLine($sql): bool
+    protected function sqlLine(string $sql): bool
     {
         $sql = trim($sql);
         return (
@@ -281,7 +285,7 @@ class Db
         );
     }
 
-    public function sqlQuery($query): void
+    protected function sqlQuery(string $query): void
     {
         try {
             $this->dbh->exec($query);
@@ -332,10 +336,10 @@ class Db
         return empty($this->primaryKeys);
     }
 
-    public function update($table, array $data, array $criteria): string
+    public function update(string $tableName, array $data, array $criteria): string
     {
         if (empty($data)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Query update can't be prepared without data."
             );
         }
@@ -347,7 +351,7 @@ class Db
 
         $where = $this->generateWhereClause($criteria);
 
-        return sprintf('UPDATE %s SET %s %s', $this->getQuotedName($table), implode(', ', $set), $where);
+        return sprintf('UPDATE %s SET %s %s', $this->getQuotedName($tableName), implode(', ', $set), $where);
     }
 
     public function getOptions(): array

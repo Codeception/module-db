@@ -53,9 +53,9 @@ class Oci extends Db
      * IF you do not want to load triggers you can use the `;` characters
      * but in this case you need to change the $delimiter from `//` to `;`
      *
-     * @param $sql
+     * @param string[] $sql
      */
-    public function load($sql): void
+    public function load(array $sql): void
     {
         $query = '';
         $delimiter = '//';

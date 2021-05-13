@@ -6,6 +6,7 @@ namespace Codeception\Lib\Driver;
 
 use Codeception\Configuration;
 use Codeception\Exception\ModuleException;
+use PDO;
 
 class Sqlite extends Db
 {
@@ -17,7 +18,6 @@ class Sqlite extends Db
      * @var string
      */
     protected $filename = '';
-    protected $con;
 
     public function __construct($dsn, $user, $password, $options = null)
     {
@@ -39,12 +39,15 @@ class Sqlite extends Db
         $this->dbh = self::connect($this->dsn, $this->user, $this->password);
     }
 
-    public function load($sql): void
+    /**
+     * @param string[] $sql
+     */
+    public function load(array $sql): void
     {
         if ($this->hasSnapshot) {
             $this->dbh = null;
             copy($this->filename . '_snapshot', $this->filename);
-            $this->dbh = new \PDO($this->dsn, $this->user, $this->password);
+            $this->dbh = new PDO($this->dsn, $this->user, $this->password);
         } else {
             if (file_exists($this->filename . '_snapshot')) {
                 unlink($this->filename . '_snapshot');
@@ -68,7 +71,7 @@ class Sqlite extends Db
             $primaryKey = [];
             $query = 'PRAGMA table_info(' . $this->getQuotedName($tableName) . ')';
             $stmt = $this->executeQuery($query, []);
-            $columns = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($columns as $column) {
                 if ($column['pk'] !== '0') {
@@ -87,7 +90,7 @@ class Sqlite extends Db
         $params = ['type' => 'table', 'name' => $tableName];
         $select = $this->select('sql', 'sqlite_master', $params);
         $result = $this->executeQuery($select, $params);
-        $sql = $result->fetchColumn(0);
+        $sql = $result->fetchColumn();
         return strpos($sql, ') WITHOUT ROWID') === false;
     }
 }

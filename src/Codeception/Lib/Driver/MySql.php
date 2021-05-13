@@ -18,14 +18,14 @@ class MySql extends Db
         $this->dbh->exec('SET FOREIGN_KEY_CHECKS=1;');
     }
 
-    public function sqlQuery($query): void
+    public function sqlQuery(string $query): void
     {
         $this->dbh->exec('SET FOREIGN_KEY_CHECKS=0;');
         parent::sqlQuery($query);
         $this->dbh->exec('SET FOREIGN_KEY_CHECKS=1;');
     }
 
-    public function getQuotedName($name): string
+    public function getQuotedName(string $name): string
     {
         return '`' . str_replace('.', '`.`', $name) . '`';
     }

@@ -25,9 +25,9 @@ class PostgreSql extends Db
     /**
      * Loads a SQL file.
      *
-     * @param string $sql sql file
+     * @param string[] $sql sql file
      */
-    public function load($sql): void
+    public function load(array $sql): void
     {
         $query = '';
         $delimiter = ';';
@@ -77,7 +77,7 @@ class PostgreSql extends Db
         $this->dbh->exec('CREATE SCHEMA public;');
     }
 
-    public function sqlLine($sql): bool
+    public function sqlLine(string $sql): bool
     {
         if (!$this->putline) {
             return parent::sqlLine($sql);
@@ -95,7 +95,7 @@ class PostgreSql extends Db
         return true;
     }
 
-    public function sqlQuery($query): void
+    public function sqlQuery(string $query): void
     {
         if (strpos(trim($query), 'COPY ') === 0) {
             if (!extension_loaded('pgsql')) {
@@ -123,14 +123,14 @@ class PostgreSql extends Db
     /**
      * Get the last inserted ID of table.
      */
-    public function lastInsertId($table): string
+    public function lastInsertId(string $tableName): string
     {
         /*
          * We make an assumption that the sequence name for this table
          * is based on how postgres names sequences for SERIAL columns
          */
 
-        $sequenceName = $this->getQuotedName($table . '_id_seq');
+        $sequenceName = $this->getQuotedName($tableName . '_id_seq');
         $lastSequence = null;
 
         try {
@@ -142,9 +142,9 @@ class PostgreSql extends Db
         // here we check if for instance, it's something like table_primary_key_seq instead of table_id_seq
         // this could occur when you use some kind of import tool like pgloader
         if (!$lastSequence) {
-            $primaryKeys = $this->getPrimaryKey($table);
+            $primaryKeys = $this->getPrimaryKey($tableName);
             $pkName = array_shift($primaryKeys);
-            $lastSequence = $this->getDbh()->lastInsertId($this->getQuotedName($table . '_' . $pkName . '_seq'));
+            $lastSequence = $this->getDbh()->lastInsertId($this->getQuotedName($tableName . '_' . $pkName . '_seq'));
         }
 
         return $lastSequence;

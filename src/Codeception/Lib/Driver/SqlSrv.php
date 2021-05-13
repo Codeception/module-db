@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Codeception\Lib\Driver;
 
+use PDO;
+
 class SqlSrv extends Db
 {
     public function getDb()
@@ -51,7 +53,7 @@ class SqlSrv extends Db
         );
     }
 
-    public function getQuotedName($name): string
+    public function getQuotedName(string $name): string
     {
         return '[' . str_replace('.', '].[', $name) . ']';
     }
@@ -72,7 +74,7 @@ class SqlSrv extends Db
                     AND Col.Table_Name = Tab.Table_Name
                     AND Constraint_Type = 'PRIMARY KEY' AND Col.Table_Name = ?";
             $stmt = $this->executeQuery($query, [$tableName]);
-            $columns = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($columns as $column) {
                 $primaryKey []= $column['Column_Name'];
