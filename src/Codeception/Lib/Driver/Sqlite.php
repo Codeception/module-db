@@ -1,14 +1,23 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Codeception\Lib\Driver;
 
 use Codeception\Configuration;
 use Codeception\Exception\ModuleException;
+use PDO;
 
 class Sqlite extends Db
 {
+    /**
+     * @var bool
+     */
     protected $hasSnapshot = false;
+    /**
+     * @var string
+     */
     protected $filename = '';
-    protected $con = null;
 
     public function __construct($dsn, $user, $password, $options = null)
     {
@@ -22,7 +31,7 @@ class Sqlite extends Db
         parent::__construct($this->dsn, $user, $password, $options);
     }
 
-    public function cleanup()
+    public function cleanup(): void
     {
         $this->dbh = null;
         gc_collect_cycles();
@@ -30,12 +39,15 @@ class Sqlite extends Db
         $this->dbh = self::connect($this->dsn, $this->user, $this->password);
     }
 
-    public function load($sql)
+    /**
+     * @param string[] $sql
+     */
+    public function load(array $sql): void
     {
         if ($this->hasSnapshot) {
             $this->dbh = null;
             copy($this->filename . '_snapshot', $this->filename);
-            $this->dbh = new \PDO($this->dsn, $this->user, $this->password);
+            $this->dbh = new PDO($this->dsn, $this->user, $this->password);
         } else {
             if (file_exists($this->filename . '_snapshot')) {
                 unlink($this->filename . '_snapshot');
@@ -47,11 +59,9 @@ class Sqlite extends Db
     }
 
     /**
-     * @param string $tableName
-     *
-     * @return array[string]
+     * @return string[]
      */
-    public function getPrimaryKey($tableName)
+    public function getPrimaryKey(string $tableName): array
     {
         if (!isset($this->primaryKeys[$tableName])) {
             if ($this->hasRowId($tableName)) {
@@ -61,7 +71,7 @@ class Sqlite extends Db
             $primaryKey = [];
             $query = 'PRAGMA table_info(' . $this->getQuotedName($tableName) . ')';
             $stmt = $this->executeQuery($query, []);
-            $columns = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($columns as $column) {
                 if ($column['pk'] !== '0') {
@@ -75,16 +85,12 @@ class Sqlite extends Db
         return $this->primaryKeys[$tableName];
     }
 
-    /**
-     * @param $tableName
-     * @return bool
-     */
-    private function hasRowId($tableName)
+    private function hasRowId($tableName): bool
     {
         $params = ['type' => 'table', 'name' => $tableName];
         $select = $this->select('sql', 'sqlite_master', $params);
         $result = $this->executeQuery($select, $params);
-        $sql = $result->fetchColumn(0);
+        $sql = $result->fetchColumn();
         return strpos($sql, ') WITHOUT ROWID') === false;
     }
 }

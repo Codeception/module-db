@@ -1,8 +1,14 @@
 <?php
 
-use Codeception\Lib\Driver\Db;
+declare(strict_types=1);
 
-abstract class TestsForDb extends \Codeception\Test\Unit
+use Codeception\Lib\Driver\Db;
+use Codeception\Lib\ModuleContainer;
+use Codeception\Stub;
+use Codeception\Test\Unit;
+use Codeception\TestInterface;
+
+abstract class AbstractDbTest extends Unit
 {
     /**
      * @var \Codeception\Module\Db
@@ -17,23 +23,23 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $config = $this->getConfig();
         Db::create($config['dsn'], $config['user'], $config['password'])->cleanup();
 
-        $container = \Codeception\Stub::make('Codeception\Lib\ModuleContainer');
+        $container = Stub::make(ModuleContainer::class);
         $this->module = new \Codeception\Module\Db($container, $config);
         $this->module->_beforeSuite();
-        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(Stub::makeEmpty(TestInterface::class));
         $this->assertTrue($this->module->_isPopulated());
     }
 
     protected function _tearDown()
     {
         $this->module->_resetConfig();
-        $this->module->_after(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
     }
 
     public function testConnectionIsKeptForTheWholeSuite()
     {
-        $testCase1 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
-        $testCase2 = \Codeception\Stub::makeEmpty('\Codeception\TestInterface');
+        $testCase1 = Stub::makeEmpty(TestInterface::class);
+        $testCase2 = Stub::makeEmpty(TestInterface::class);
 
         $this->module->_reconfigure(['reconnect' => false]);
         $this->module->_beforeSuite();
@@ -49,6 +55,7 @@ abstract class TestsForDb extends \Codeception\Test\Unit
 
         // Simulate a second test that runs
         $this->module->_before($testCase2);
+        
         $driverAndConn2 = [
             $this->module->driver,
             $this->module->dbh
@@ -90,7 +97,7 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         // Since table does not exist it should fail
         // TODO: Catch this exception at the driver level and re-throw a general one
         // just for "table not found" across all the drivers
-        $this->expectException('PDOException');
+        $this->expectException(PDOException::class);
 
         $this->module->dontSeeInDatabase('users', ['name' => 'davert']);
     }
@@ -102,9 +109,9 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $this->assertIsInt($userId);
         $this->module->seeInDatabase('users', ['name' => 'john', 'email' => 'john@jon.com']);
         $this->module->dontSeeInDatabase('users', ['name' => 'john', 'email' => null]);
-        $this->module->_after(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
 
-        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(Stub::makeEmpty(TestInterface::class));
         $this->module->dontSeeInDatabase('users', ['name' => 'john']);
     }
 
@@ -114,13 +121,14 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         //this test checks that module does not delete columns by partial primary key
         $this->module->driver->executeQuery($insertQuery, [1, 2, 'test']);
         $this->module->driver->executeQuery($insertQuery, [2, 1, 'test2']);
+        
         $testData = ['id' => 2, 'group_id' => 2, 'status' => 'test3'];
         $this->module->haveInDatabase('composite_pk', $testData);
         $this->module->seeInDatabase('composite_pk', $testData);
         $this->module->_reconfigure(['cleanup' => false]);
-        $this->module->_after(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
 
-        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(Stub::makeEmpty(TestInterface::class));
         $this->module->dontSeeInDatabase('composite_pk', $testData);
         $this->module->seeInDatabase('composite_pk', ['group_id' => 1, 'id' => 2, 'status' => 'test']);
         $this->module->seeInDatabase('composite_pk', ['group_id' => 2, 'id' => 1, 'status' => 'test2']);
@@ -131,9 +139,9 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $testData = ['status' => 'test'];
         $this->module->haveInDatabase('no_pk', $testData);
         $this->module->seeInDatabase('no_pk', $testData);
-        $this->module->_after(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
 
-        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(Stub::makeEmpty(TestInterface::class));
         $this->module->dontSeeInDatabase('no_pk', $testData);
     }
 
@@ -159,8 +167,7 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $this->assertFalse($this->module->_isPopulated());
         try {
             $this->module->seeInDatabase('users', ['name' => 'davert']);
-        } catch (\PDOException $noTable) {
-            $noTable;
+        } catch (PDOException $pdoException) {
             // No table was found...
         }
         $this->module->_reconfigure(
@@ -194,9 +201,9 @@ abstract class TestsForDb extends \Codeception\Test\Unit
         $this->module->_insertInDatabase('no_pk', $testData);
         $this->module->seeInDatabase('no_pk', $testData);
         $this->module->_reconfigure(['cleanup' => false]);
-        $this->module->_after(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
 
-        $this->module->_before(\Codeception\Stub::makeEmpty('\Codeception\TestInterface'));
+        $this->module->_before(Stub::makeEmpty(TestInterface::class));
         $this->module->seeInDatabase('no_pk', $testData);
     }
 

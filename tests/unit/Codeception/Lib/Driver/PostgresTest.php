@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 use \Codeception\Lib\Driver\Db;
+use Codeception\Lib\Driver\PostgreSql;
 use \Codeception\Test\Unit;
 
 /**
  * @group appveyor
  * @group db
  */
-class PostgresTest extends Unit
+final class PostgresTest extends Unit
 {
+    /**
+     * @var array
+     */
     protected static $config = [
         'dsn' => 'pgsql:host=localhost;dbname=codeception_test',
         'user' => 'postgres',
@@ -16,6 +22,9 @@ class PostgresTest extends Unit
     ];
 
     protected static $sql;
+    /**
+     * @var \Codeception\Lib\Driver\Db|null
+     */
     protected $postgres;
 
     public static function _setUpBeforeClass()
@@ -25,7 +34,7 @@ class PostgresTest extends Unit
         }
         self::$config['password'] = getenv('PGPASSWORD') ? getenv('PGPASSWORD') : null;
         $sql = file_get_contents(codecept_data_dir('dumps/postgres.sql'));
-        $sql = preg_replace('%/\*(?:(?!\*/).)*\*/%s', '', $sql);
+        $sql = preg_replace('#/\*(?:(?!\*/).)*\*/#s', '', $sql);
         self::$sql = explode("\n", $sql);
     }
 
@@ -33,16 +42,15 @@ class PostgresTest extends Unit
     {
         try {
             $this->postgres = Db::create(self::$config['dsn'], self::$config['user'], self::$config['password']);
-            $this->postgres->cleanup();
-        } catch (\Exception $e) {
-            $this->markTestSkipped('Coudn\'t establish connection to database: ' . $e->getMessage());
+        } catch (Exception $e) {
+            $this->markTestSkipped("Coudn't establish connection to database: " . $e->getMessage());
         }
         $this->postgres->load(self::$sql);
     }
 
     public function _tearDown()
     {
-        if (isset($this->postgres)) {
+        if ($this->postgres !== null) {
             $this->postgres->cleanup();
         }
     }
@@ -131,9 +139,10 @@ class PostgresTest extends Unit
      */
     public function testLoadDumpEndingWithoutDelimiter()
     {
-        $newDriver = new \Codeception\Lib\Driver\PostgreSql(self::$config['dsn'], self::$config['user'], self::$config['password']);
-        $newDriver->load(['INSERT INTO empty_table VALUES(1, \'test\')']);
-        $res = $newDriver->getDbh()->query("select * from empty_table where field = 'test'");
+        $postgreSql = new PostgreSql(self::$config['dsn'], self::$config['user'], self::$config['password']);
+        $postgreSql->load(["INSERT INTO empty_table VALUES(1, 'test')"]);
+        
+        $res = $postgreSql->getDbh()->query("select * from empty_table where field = 'test'");
         $this->assertNotEquals(false, $res);
         $this->assertNotEmpty($res->fetchAll());
     }
