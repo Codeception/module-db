@@ -1,13 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codeception\Lib\Driver;
 
 use Codeception\Exception\ModuleException;
+use Exception;
+use InvalidArgumentException;
+use PDO;
+use PDOException;
+use PDOStatement;
 
 class Db
 {
     /**
-     * @var \PDO
+     * @var PDO
      */
     protected $dbh;
 
@@ -24,7 +31,7 @@ class Db
      *
      * @see http://php.net/manual/de/pdo.construct.php
      */
-    protected $options;
+    protected $options = [];
 
     /**
      * associative array with table name => primary-key
@@ -33,10 +40,10 @@ class Db
      */
     protected $primaryKeys = [];
 
-    public static function connect($dsn, $user, $password, $options = null)
+    public static function connect($dsn, $user, $password, $options = null): PDO
     {
-        $dbh = new \PDO($dsn, $user, $password, $options);
-        $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $dbh = new PDO($dsn, $user, $password, $options);
+        $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         return $dbh;
     }
@@ -54,7 +61,7 @@ class Db
      *
      * @return Db|SqlSrv|MySql|Oci|PostgreSql|Sqlite
      */
-    public static function create($dsn, $user, $password, $options = null)
+    public static function create($dsn, $user, $password, $options = null): Db
     {
         $provider = self::getProvider($dsn);
 
@@ -76,7 +83,7 @@ class Db
         }
     }
 
-    public static function getProvider($dsn)
+    public static function getProvider($dsn): string
     {
         return substr($dsn, 0, strpos($dsn, ':'));
     }
@@ -92,8 +99,8 @@ class Db
      */
     public function __construct($dsn, $user, $password, $options = null)
     {
-        $this->dbh = new \PDO($dsn, $user, $password, $options);
-        $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->dbh = new PDO($dsn, $user, $password, $options);
+        $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         $this->dsn = $dsn;
         $this->user = $user;
@@ -109,7 +116,7 @@ class Db
         $this->dbh = null;
     }
 
-    public function getDbh()
+    public function getDbh(): PDO
     {
         return $this->dbh;
     }
@@ -117,7 +124,7 @@ class Db
     public function getDb()
     {
         $matches = [];
-        $matched = preg_match('~dbname=(\w+)~s', $this->dsn, $matches);
+        $matched = preg_match('#dbname=(\w+)#s', $this->dsn, $matches);
         if (!$matched) {
             return false;
         }
@@ -131,32 +138,33 @@ class Db
 
     /**
      * Set the lock waiting interval for the database session
-     * @param int $seconds
-     * @return void
      */
-    public function setWaitLock($seconds)
+    public function setWaitLock(int $seconds): void
     {
     }
 
-    public function load($sql)
+    /**
+     * @param string[] $sql
+     */
+    public function load(array $sql): void
     {
         $query = '';
         $delimiter = ';';
         $delimiterLength = 1;
 
-        foreach ($sql as $sqlLine) {
-            if (preg_match('/DELIMITER ([\;\$\|\\\\]+)/i', $sqlLine, $match)) {
+        foreach ($sql as $singleSql) {
+            if (preg_match('#DELIMITER ([\;\$\|\\\]+)#i', $singleSql, $match)) {
                 $delimiter = $match[1];
                 $delimiterLength = strlen($delimiter);
                 continue;
             }
 
-            $parsed = $this->sqlLine($sqlLine);
+            $parsed = $this->sqlLine($singleSql);
             if ($parsed) {
                 continue;
             }
 
-            $query .= "\n" . rtrim($sqlLine);
+            $query .= "\n" . rtrim($singleSql);
 
             if (substr($query, -1 * $delimiterLength, $delimiterLength) == $delimiter) {
                 $this->sqlQuery(substr($query, 0, -1 * $delimiterLength));
@@ -169,10 +177,12 @@ class Db
         }
     }
 
-    public function insert($tableName, array &$data)
+    public function insert(string $tableName, array &$data): string
     {
         $columns = array_map(
-            [$this, 'getQuotedName'],
+            function ($name) {
+                return $this->getQuotedName($name);
+            },
             array_keys($data)
         );
 
@@ -184,15 +194,15 @@ class Db
         );
     }
 
-    public function select($column, $table, array &$criteria)
+    public function select(string $column, string $tableName, array &$criteria): string
     {
         $where = $this->generateWhereClause($criteria);
 
         $query = "SELECT %s FROM %s %s";
-        return sprintf($query, $column, $this->getQuotedName($table), $where);
+        return sprintf($query, $column, $this->getQuotedName($tableName), $where);
     }
 
-    private function getSupportedOperators()
+    private function getSupportedOperators(): array
     {
         return [
             'like',
@@ -204,7 +214,7 @@ class Db
         ];
     }
 
-    protected function generateWhereClause(array &$criteria)
+    protected function generateWhereClause(array &$criteria): string
     {
         if (empty($criteria)) {
             return '';
@@ -247,109 +257,104 @@ class Db
         return 'WHERE ' . implode('AND ', $params);
     }
 
-    public function deleteQueryByCriteria($table, array $criteria)
+    public function deleteQueryByCriteria(string $tableName, array $criteria): void
     {
         $where = $this->generateWhereClause($criteria);
 
-        $query = 'DELETE FROM ' . $this->getQuotedName($table) . ' ' . $where;
+        $query = 'DELETE FROM ' . $this->getQuotedName($tableName) . ' ' . $where;
         $this->executeQuery($query, array_values($criteria));
     }
 
-    public function lastInsertId($table)
+    public function lastInsertId(string $tableName): string
     {
         return $this->getDbh()->lastInsertId();
     }
 
-    public function getQuotedName($name)
+    public function getQuotedName(string $name): string
     {
         return '"' . str_replace('.', '"."', $name) . '"';
     }
 
-    protected function sqlLine($sql)
+    protected function sqlLine(string $sql): bool
     {
         $sql = trim($sql);
         return (
             $sql === ''
             || $sql === ';'
-            || preg_match('~^((--.*?)|(#))~s', $sql)
+            || preg_match('#^((--.*?)|(\#))#s', $sql)
         );
     }
 
-    protected function sqlQuery($query)
+    protected function sqlQuery(string $query): void
     {
         try {
             $this->dbh->exec($query);
-        } catch (\PDOException $e) {
+        } catch (PDOException $pdoException) {
             throw new ModuleException(
-                'Codeception\Module\Db',
-                $e->getMessage() . "\nSQL query being executed: " . $query
+                \Codeception\Module\Db::class,
+                $pdoException->getMessage() . "\nSQL query being executed: " . $query
             );
         }
     }
 
-    public function executeQuery($query, array $params)
+    public function executeQuery($query, array $params): PDOStatement
     {
-        $sth = $this->dbh->prepare($query);
-        if (!$sth) {
-            throw new \Exception("Query '$query' can't be prepared.");
+        $pdoStatement = $this->dbh->prepare($query);
+        if (!$pdoStatement) {
+            throw new Exception("Query '{$query}' can't be prepared.");
         }
 
         $i = 0;
-        foreach ($params as $value) {
-            $i++;
-            if (is_bool($value)) {
-                $type = \PDO::PARAM_BOOL;
-            } elseif (is_int($value)) {
-                $type = \PDO::PARAM_INT;
+        foreach ($params as $param) {
+            ++$i;
+            if (is_bool($param)) {
+                $type = PDO::PARAM_BOOL;
+            } elseif (is_int($param)) {
+                $type = PDO::PARAM_INT;
             } else {
-                $type = \PDO::PARAM_STR;
+                $type = PDO::PARAM_STR;
             }
-            $sth->bindValue($i, $value, $type);
+            $pdoStatement->bindValue($i, $param, $type);
         }
 
-        $sth->execute();
-        return $sth;
+        $pdoStatement->execute();
+        return $pdoStatement;
     }
 
     /**
-     * @param string $tableName
-     *
-     * @return array[string]
+     * @return string[]
      */
-    public function getPrimaryKey($tableName)
+    public function getPrimaryKey(string $tableName): array
     {
         return [];
     }
 
-    /**
-     * @return bool
-     */
-    protected function flushPrimaryColumnCache()
+    protected function flushPrimaryColumnCache(): bool
     {
         $this->primaryKeys = [];
 
         return empty($this->primaryKeys);
     }
 
-    public function update($table, array $data, array $criteria)
+    public function update(string $tableName, array $data, array $criteria): string
     {
         if (empty($data)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "Query update can't be prepared without data."
             );
         }
 
         $set = [];
-        foreach ($data as $column => $value) {
+        foreach (array_keys($data) as $column) {
             $set[] = $this->getQuotedName($column) . " = ?";
         }
 
         $where = $this->generateWhereClause($criteria);
 
-        return sprintf('UPDATE %s SET %s %s', $this->getQuotedName($table), implode(', ', $set), $where);
+        return sprintf('UPDATE %s SET %s %s', $this->getQuotedName($tableName), implode(', ', $set), $where);
     }
 
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
