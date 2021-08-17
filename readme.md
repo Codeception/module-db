@@ -17,6 +17,8 @@ composer require "codeception/module-db" --dev
 
 See [the module documentation](https://codeception.com/docs/modules/Db).
 
+[Changelog](https://github.com/Codeception/module-db/releases)
+
 ## License
 
 `Codeception Module DB` is open-sourced software licensed under the [MIT](/LICENSE) License.
