@@ -32,10 +32,36 @@ class Db
      * @var array
      */
     protected $primaryKeys = [];
+    /**
+     * @var string|null
+     */
+    protected $pdo_class;
 
-    public static function connect($dsn, $user, $password, $options = null)
+    /**
+     * @param string|null $pdo_class
+     * @return string
+     */
+    private static function pdoClass($pdo_class){
+        if (!$pdo_class){
+            // If empty or null we use regular PDO
+            return \PDO::class;
+        }
+
+        if (!class_exists($pdo_class)){
+            throw new ModuleException(
+                'Codeception\Module\Db',
+                "The class with provided config value 'pdo_class' ($pdo_class) does not exist"
+            );
+        }
+
+        return $pdo_class;
+    }
+
+    public static function connect($dsn, $user, $password, $options = null, $pdo_class = null)
     {
-        $dbh = new \PDO($dsn, $user, $password, $options);
+        $class_name = self::pdoClass($pdo_class);
+        $dbh = new $class_name($dsn, $user, $password, $options);
+        self::assertIsPdo($dbh, $pdo_class);
         $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         return $dbh;
@@ -48,31 +74,32 @@ class Db
      * @param $user
      * @param $password
      * @param [optional] $options
+     * @param [optional] $pdo_class
      *
      * @see http://php.net/manual/en/pdo.construct.php
      * @see http://php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
      *
      * @return Db|SqlSrv|MySql|Oci|PostgreSql|Sqlite
      */
-    public static function create($dsn, $user, $password, $options = null)
+    public static function create($dsn, $user, $password, $options = null, $pdo_class = null)
     {
         $provider = self::getProvider($dsn);
 
         switch ($provider) {
             case 'sqlite':
-                return new Sqlite($dsn, $user, $password, $options);
+                return new Sqlite($dsn, $user, $password, $options, $pdo_class);
             case 'mysql':
-                return new MySql($dsn, $user, $password, $options);
+                return new MySql($dsn, $user, $password, $options, $pdo_class);
             case 'pgsql':
-                return new PostgreSql($dsn, $user, $password, $options);
+                return new PostgreSql($dsn, $user, $password, $options, $pdo_class);
             case 'mssql':
             case 'dblib':
             case 'sqlsrv':
-                return new SqlSrv($dsn, $user, $password, $options);
+                return new SqlSrv($dsn, $user, $password, $options, $pdo_class);
             case 'oci':
-                return new Oci($dsn, $user, $password, $options);
+                return new Oci($dsn, $user, $password, $options, $pdo_class);
             default:
-                return new Db($dsn, $user, $password, $options);
+                return new Db($dsn, $user, $password, $options, $pdo_class);
         }
     }
 
@@ -86,19 +113,37 @@ class Db
      * @param $user
      * @param $password
      * @param [optional] $options
+     * @param [optional] $pdo_class
      *
      * @see http://php.net/manual/en/pdo.construct.php
      * @see http://php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
      */
-    public function __construct($dsn, $user, $password, $options = null)
+    public function __construct($dsn, $user, $password, $options = null, $pdo_class = null)
     {
-        $this->dbh = new \PDO($dsn, $user, $password, $options);
+        $class_name = self::pdoClass($pdo_class);
+        $this->dbh = new $class_name($dsn, $user, $password, $options);
+        self::assertIsPdo($this->dbh, $pdo_class);
         $this->dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         $this->dsn = $dsn;
         $this->user = $user;
         $this->password = $password;
         $this->options = $options;
+        $this->pdo_class = $pdo_class;
+    }
+
+    /**
+     * @param $dbh
+     * @param string|null $pdo_class
+     */
+    private static function assertIsPdo($dbh, $pdo_class)
+    {
+        if (!$dbh instanceof \PDO){
+            throw new ModuleException(
+                'Codeception\Module\Db',
+                "The provided config value 'pdo_class' ($pdo_class) did not resolve to a class that implements \\PDO"
+            );
+        }
     }
 
     public function __destruct()
