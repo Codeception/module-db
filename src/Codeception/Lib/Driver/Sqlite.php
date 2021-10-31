@@ -10,16 +10,11 @@ use PDO;
 
 class Sqlite extends Db
 {
-    /**
-     * @var bool
-     */
-    protected $hasSnapshot = false;
-    /**
-     * @var string
-     */
-    protected $filename = '';
+    protected bool $hasSnapshot = false;
+    
+    protected string $filename = '';
 
-    public function __construct($dsn, $user, $password, $options = null)
+    public function __construct(string $dsn, string $user, string $password, array $options = null)
     {
         $filename = substr($dsn, 7);
         if ($filename === ':memory:') {
@@ -52,6 +47,7 @@ class Sqlite extends Db
             if (file_exists($this->filename . '_snapshot')) {
                 unlink($this->filename . '_snapshot');
             }
+            
             parent::load($sql);
             copy($this->filename, $this->filename . '_snapshot');
             $this->hasSnapshot = true;

@@ -1,34 +1,32 @@
 {
-	"name": "codeception/module-db",
-	"description": "DB module for Codeception",
-	"keywords": [ "codeception", "db-testing", "database-testing" ],
-	"homepage": "http://codeception.com/",
-	"type": "library",
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Michael Bodnarchuk"
-		},
-		{
-			"name": "Gintautas Miselis"
-		}
-	],
-	"minimum-stability": "RC",
-	"require": {
-		"php": "^7.1 || ^8.0",
+    "name":"codeception/module-db",
+    "description":"DB module for Codeception",
+    "keywords":["codeception", "db-testing", "database-testing"],
+    "homepage":"https://codeception.com/",
+    "type":"library",
+    "license":"MIT",
+    "authors":[
+        {
+            "name": "Michael Bodnarchuk"
+        },
+        {
+            "name": "Gintautas Miselis"
+        }
+    ],
+    "minimum-stability": "RC",
+    "require": {
+        "php": "^7.4 | ^8.0",
 		"ext-json": "*",
 		"ext-pdo": "*",
-		"codeception/codeception": "*@dev"
-	},
-	"conflict": {
-		"codeception/codeception": "<4.0"
-	},
-	"autoload": {
-		"classmap": [
-			"src/"
-		]
-	},
-	"config": {
-		"classmap-authoritative": true
-	}
+        "codeception/codeception": "*@dev"
+    },
+    "conflict": {
+        "codeception/codeception": "<4.0"
+    },
+    "autoload":{
+        "classmap": ["src/"]
+    },
+    "config": {
+        "classmap-authoritative": true
+    }
 }

@@ -2,24 +2,25 @@
 
 declare(strict_types=1);
 
+use Codeception\Configuration;
 use Codeception\Stub;
 use Codeception\TestInterface;
 
-require_once \Codeception\Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
+require_once Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
 
 /**
  * @group db
  */
 final class MySqlDbTest extends AbstractDbTest
 {
-    public function getPopulator()
+    public function getPopulator(): string
     {
         $config = $this->getConfig();
         $password = $config['password'] ? '-p'.$config['password'] : '';
         return sprintf('mysql -u $user %s $dbname < %s', $password, $config['dump']);
     }
 
-    public function getConfig()
+    public function getConfig(): array
     {
         $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';
         $password = getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : '';
@@ -36,7 +37,7 @@ final class MySqlDbTest extends AbstractDbTest
     }
 
     /**
-     * Overriden, Using MYSQL CONNECTION_ID to get current connection
+     * Overridden, Using MYSQL CONNECTION_ID to get current connection
      */
     public function testConnectionIsResetOnEveryTestWhenReconnectIsTrue()
     {
@@ -56,13 +57,15 @@ final class MySqlDbTest extends AbstractDbTest
 
         // Simulate a second test that runs
         $this->module->_before($testCase2);
+
         $connection2 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase2);
         $this->module->_afterSuite();
 
         $this->module->_setConfig(['reconnect' => true]);
-        
+
         $this->module->_before($testCase3);
+
         $connection3 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase3);
 

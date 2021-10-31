@@ -18,7 +18,7 @@ class MySql extends Db
         $this->dbh->exec('SET FOREIGN_KEY_CHECKS=1;');
     }
 
-    public function sqlQuery(string $query): void
+    protected function sqlQuery(string $query): void
     {
         $this->dbh->exec('SET FOREIGN_KEY_CHECKS=0;');
         parent::sqlQuery($query);

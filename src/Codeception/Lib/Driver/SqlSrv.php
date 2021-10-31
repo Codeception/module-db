@@ -79,6 +79,7 @@ class SqlSrv extends Db
             foreach ($columns as $column) {
                 $primaryKey []= $column['Column_Name'];
             }
+
             $this->primaryKeys[$tableName] = $primaryKey;
         }
 

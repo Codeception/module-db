@@ -13,34 +13,25 @@ use PDOStatement;
 
 class Db
 {
-    /**
-     * @var PDO
-     */
-    protected $dbh;
+    protected ?PDO $dbh = null;
+
+    protected string $dsn;
+
+    protected string $user;
+
+    protected string $password;
 
     /**
-     * @var string
+     * @see https://www.php.net/manual/de/pdo.construct.php
      */
-    protected $dsn;
-
-    protected $user;
-    protected $password;
+    protected ?array $options = [];
 
     /**
-     * @var array
-     *
-     * @see http://php.net/manual/de/pdo.construct.php
+     * Associative array with table name => primary-key
      */
-    protected $options = [];
+    protected array $primaryKeys = [];
 
-    /**
-     * associative array with table name => primary-key
-     *
-     * @var array
-     */
-    protected $primaryKeys = [];
-
-    public static function connect($dsn, $user, $password, $options = null): PDO
+    public static function connect(string $dsn, string $user, string $password, array $options = null): PDO
     {
         $dbh = new PDO($dsn, $user, $password, $options);
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -51,17 +42,12 @@ class Db
     /**
      * @static
      *
-     * @param $dsn
-     * @param $user
-     * @param $password
-     * @param [optional] $options
-     *
-     * @see http://php.net/manual/en/pdo.construct.php
-     * @see http://php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
+     * @see https://www.php.net/manual/en/pdo.construct.php
+     * @see https://www.php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
      *
      * @return Db|SqlSrv|MySql|Oci|PostgreSql|Sqlite
      */
-    public static function create($dsn, $user, $password, $options = null): Db
+    public static function create(string $dsn, string $user, string $password, array $options = null): Db
     {
         $provider = self::getProvider($dsn);
 
@@ -89,15 +75,10 @@ class Db
     }
 
     /**
-     * @param $dsn
-     * @param $user
-     * @param $password
-     * @param [optional] $options
-     *
-     * @see http://php.net/manual/en/pdo.construct.php
-     * @see http://php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
+     * @see https://www.php.net/manual/en/pdo.construct.php
+     * @see https://www.php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
      */
-    public function __construct($dsn, $user, $password, $options = null)
+    public function __construct(string $dsn, string $user, string $password, array $options = null)
     {
         $this->dbh = new PDO($dsn, $user, $password, $options);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -113,6 +94,7 @@ class Db
         if ($this->dbh->inTransaction()) {
             $this->dbh->rollBack();
         }
+
         $this->dbh = null;
     }
 
@@ -132,7 +114,7 @@ class Db
         return $matches[1];
     }
 
-    public function cleanup()
+    public function cleanup(): void
     {
     }
 
@@ -180,9 +162,7 @@ class Db
     public function insert(string $tableName, array &$data): string
     {
         $columns = array_map(
-            function ($name) {
-                return $this->getQuotedName($name);
-            },
+            fn($name): string => $this->getQuotedName($name),
             array_keys($data)
         );
 
@@ -238,14 +218,14 @@ class Db
             $hasOperand = false; // search for equals - no additional operand given
 
             foreach ($operands as $operand) {
-                if (!stripos($k, " $operand") > 0) {
+                if (!stripos($k, " {$operand}") > 0) {
                     continue;
                 }
 
                 $hasOperand = true;
-                $k = str_ireplace(" $operand", '', $k);
+                $k = str_ireplace(" {$operand}", '', $k);
                 $operand = strtoupper($operand);
-                $params[] = $this->getQuotedName($k) . " $operand ? ";
+                $params[] = $this->getQuotedName($k) . " {$operand} ? ";
                 break;
             }
 
@@ -289,10 +269,10 @@ class Db
     {
         try {
             $this->dbh->exec($query);
-        } catch (PDOException $pdoException) {
+        } catch (PDOException $exception) {
             throw new ModuleException(
                 \Codeception\Module\Db::class,
-                $pdoException->getMessage() . "\nSQL query being executed: " . $query
+                $exception->getMessage() . "\nSQL query being executed: " . $query
             );
         }
     }
@@ -314,6 +294,7 @@ class Db
             } else {
                 $type = PDO::PARAM_STR;
             }
+
             $pdoStatement->bindValue($i, $param, $type);
         }
 

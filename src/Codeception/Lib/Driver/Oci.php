@@ -106,6 +106,7 @@ class Oci extends Db
             foreach ($columns as $column) {
                 $primaryKey []= $column['COLUMN_NAME'];
             }
+
             $this->primaryKeys[$tableName] = $primaryKey;
         }
 

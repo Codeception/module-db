@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
+use Codeception\Configuration;
 use Codeception\Stub;
 use Codeception\TestInterface;
 use Codeception\Util\ActionSequence;
 
-require_once \Codeception\Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
+require_once Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
 
 /**
  * @group appveyor
@@ -28,7 +29,7 @@ final class SqliteDbTest extends AbstractDbTest
         return 'cat '. $config['dump'] .' | sqlite3 tests/data/sqlite.db';
     }
 
-    public function getConfig()
+    public function getConfig(): array
     {
         return [
             'dsn' => 'sqlite:tests/data/sqlite.db',
@@ -47,25 +48,26 @@ final class SqliteDbTest extends AbstractDbTest
         $testCase2 = Stub::makeEmpty(TestInterface::class);
         $testCase3 = Stub::makeEmpty(TestInterface::class);
 
-
         $this->module->_setConfig(['reconnect' => false]);
         $this->module->_beforeSuite();
 
         // Simulate a test that runs
         $this->module->_before($testCase1);
-        
+
         $connection1 = spl_object_hash($this->module->dbh);
         $this->module->_after($testCase1);
 
         // Simulate a second test that runs
         $this->module->_before($testCase2);
+
         $connection2 = spl_object_hash($this->module->dbh);
         $this->module->_after($testCase2);
         $this->module->_afterSuite();
 
         $this->module->_setConfig(['reconnect' => true]);
-        
+
         $this->module->_before($testCase3);
+
         $connection3 = spl_object_hash($this->module->dbh);
         $this->module->_after($testCase3);
 
@@ -85,7 +87,7 @@ final class SqliteDbTest extends AbstractDbTest
             ]
         );
         $this->module->_beforeSuite();
-        
+
         $testDataInDb1 = ['name' => 'userdb1', 'email' => 'userdb1@example.org'];
         $testDataInDb2 = ['name' => 'userdb2', 'email' => 'userdb2@example.org'];
 
@@ -194,7 +196,7 @@ final class SqliteDbTest extends AbstractDbTest
             ]
         );
         $this->module->_beforeSuite();
-        
+
         $testDataInDb1 = ['name' => 'userdb1', 'email' => 'userdb1@example.org'];
         $testDataInDb2 = ['name' => 'userdb2', 'email' => 'userdb2@example.org'];
 
@@ -228,7 +230,7 @@ final class SqliteDbTest extends AbstractDbTest
         );
         $this->module->_beforeSuite();
         $this->module->_before($testCase1);
-        
+
         $testDataInDb1 = ['name' => 'userdb1', 'email' => 'userdb1@example.org'];
         $testDataInDb2 = ['name' => 'userdb2', 'email' => 'userdb2@example.org'];
 

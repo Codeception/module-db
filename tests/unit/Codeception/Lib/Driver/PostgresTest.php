@@ -139,10 +139,10 @@ final class PostgresTest extends Unit
      */
     public function testLoadDumpEndingWithoutDelimiter()
     {
-        $postgreSql = new PostgreSql(self::$config['dsn'], self::$config['user'], self::$config['password']);
-        $postgreSql->load(["INSERT INTO empty_table VALUES(1, 'test')"]);
-        
-        $res = $postgreSql->getDbh()->query("select * from empty_table where field = 'test'");
+        $newDriver = new PostgreSql(self::$config['dsn'], self::$config['user'], self::$config['password']);
+        $newDriver->load(["INSERT INTO empty_table VALUES(1, 'test')"]);
+
+        $res = $newDriver->getDbh()->query("select * from empty_table where field = 'test'");
         $this->assertNotEquals(false, $res);
         $this->assertNotEmpty($res->fetchAll());
     }

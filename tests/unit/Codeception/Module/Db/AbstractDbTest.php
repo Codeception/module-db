@@ -10,12 +10,10 @@ use Codeception\TestInterface;
 
 abstract class AbstractDbTest extends Unit
 {
-    /**
-     * @var \Codeception\Module\Db
-     */
-    protected $module;
+    protected ?\Codeception\Module\Db $module = null;
 
     abstract public function getConfig();
+
     abstract public function getPopulator();
 
     protected function _setUp()
@@ -55,7 +53,7 @@ abstract class AbstractDbTest extends Unit
 
         // Simulate a second test that runs
         $this->module->_before($testCase2);
-        
+
         $driverAndConn2 = [
             $this->module->driver,
             $this->module->dbh
@@ -65,7 +63,6 @@ abstract class AbstractDbTest extends Unit
 
         $this->module->_afterSuite();
     }
-
 
     public function testSeeInDatabase()
     {
@@ -121,7 +118,7 @@ abstract class AbstractDbTest extends Unit
         //this test checks that module does not delete columns by partial primary key
         $this->module->driver->executeQuery($insertQuery, [1, 2, 'test']);
         $this->module->driver->executeQuery($insertQuery, [2, 1, 'test2']);
-        
+
         $testData = ['id' => 2, 'group_id' => 2, 'status' => 'test3'];
         $this->module->haveInDatabase('composite_pk', $testData);
         $this->module->seeInDatabase('composite_pk', $testData);
@@ -170,6 +167,7 @@ abstract class AbstractDbTest extends Unit
         } catch (PDOException $pdoException) {
             // No table was found...
         }
+
         $this->module->_reconfigure(
             [
                 'populate'  => true,
@@ -181,17 +179,17 @@ abstract class AbstractDbTest extends Unit
         $this->assertTrue($this->module->_isPopulated());
         $this->module->seeInDatabase('users', ['name' => 'davert']);
     }
-    
+
     public function testUpdateInDatabase()
     {
         $this->module->seeInDatabase('users', ['name' => 'davert']);
         $this->module->dontSeeInDatabase('users', ['name' => 'user1']);
-        
+
         $this->module->updateInDatabase('users', ['name' => 'user1'], ['name' => 'davert']);
-        
+
         $this->module->dontSeeInDatabase('users', ['name' => 'davert']);
         $this->module->seeInDatabase('users', ['name' => 'user1']);
-        
+
         $this->module->updateInDatabase('users', ['name' => 'davert'], ['name' => 'user1']);
     }
 
@@ -206,5 +204,4 @@ abstract class AbstractDbTest extends Unit
         $this->module->_before(Stub::makeEmpty(TestInterface::class));
         $this->module->seeInDatabase('no_pk', $testData);
     }
-
 }

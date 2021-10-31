@@ -10,16 +10,16 @@ use PDOException;
 
 class PostgreSql extends Db
 {
-    /**
-     * @var bool
-     */
-    protected $putline = false;
+    protected bool $putline = false;
 
     /**
      * @var null|resource|bool
      */
     protected $connection;
 
+    /**
+     * @var mixed|null
+     */
     protected $searchPath;
 
     /**
@@ -104,6 +104,7 @@ class PostgreSql extends Db
                     "To run 'COPY' commands 'pgsql' extension should be installed"
                 );
             }
+
             $strConn = str_replace(';', ' ', substr($this->dsn, 6));
             $strConn .= ' user=' . $this->user;
             $strConn .= ' password=' . $this->password;
@@ -125,17 +126,16 @@ class PostgreSql extends Db
      */
     public function lastInsertId(string $tableName): string
     {
-        /*
+        /**
          * We make an assumption that the sequence name for this table
          * is based on how postgres names sequences for SERIAL columns
          */
-
         $sequenceName = $this->getQuotedName($tableName . '_id_seq');
         $lastSequence = null;
 
         try {
             $lastSequence = $this->getDbh()->lastInsertId($sequenceName);
-        } catch (PDOException $pdoException) {
+        } catch (PDOException $exception) {
             // in this case, the sequence name might be combined with the primary key name
         }
 
@@ -171,6 +171,7 @@ class PostgreSql extends Db
             foreach ($columns as $column) {
                 $primaryKey []= $column['attname'];
             }
+
             $this->primaryKeys[$tableName] = $primaryKey;
         }
 

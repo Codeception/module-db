@@ -9,33 +9,28 @@ namespace Codeception\Lib;
  */
 class DbPopulator
 {
-    /**
-     * @var array
-     */
-    protected $config = [];
+    protected array $config = [];
 
-    /**
-     * @var array
-     */
-    protected $commands = [];
+    protected array $commands = [];
 
     /**
      * Constructs a DbPopulator object for the given command and Db module.
      *
-     * @param $config
      * @internal param string $command The parameterized command to evaluate and execute later.
      * @internal param Codeception\Module\Db|null $dbModule The Db module used to build the populator command or null.
      */
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->config = $config;
         //Convert To Array Format
         if (!isset($this->config['dump'])) {
             return;
         }
+
         if (is_array($this->config['dump'])) {
             return;
         }
+
         $this->config['dump'] = [$this->config['dump']];
     }
 
@@ -58,7 +53,7 @@ class DbPopulator
      * @param string|null $dumpFile The dump file to build the command with.
      * @return string The resulting command string after evaluating any configuration's key
      */
-    protected function buildCommand(string $command, ?string $dumpFile = null): string
+    protected function buildCommand(string $command, string $dumpFile = null): string
     {
         $dsn = $this->config['dsn'] ?? '';
         $dsnVars = [];
@@ -84,6 +79,7 @@ class DbPopulator
 
             unset($vars[$key]);
         }
+
         return str_replace(array_keys($vars), $vars, $command);
     }
 
@@ -103,7 +99,7 @@ class DbPopulator
 
     private function runCommand($command): void
     {
-        codecept_debug(sprintf('[Db] Executing Populator: `%s`', $command));
+        codecept_debug("[Db] Executing Populator: `{$command}`");
 
         exec($command, $output, $exitCode);
 
@@ -125,6 +121,7 @@ class DbPopulator
         } elseif (!isset($this->config['dump']) || $this->config['dump'] === false) {
             return [$this->buildCommand($this->config['populator'])];
         }
+
         $this->commands = [];
 
         foreach ($this->config['dump'] as $dumpFile) {

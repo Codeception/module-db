@@ -16,11 +16,11 @@ final class SqliteTest extends Unit
     /**
      * @var array<string, string>
      */
-    protected static $config = array(
+    protected static $config = [
         'dsn' => 'sqlite:tests/data/sqlite.db',
         'user' => 'root',
         'password' => ''
-    );
+    ];
 
     /**
      * @var Sqlite
@@ -94,10 +94,10 @@ final class SqliteTest extends Unit
      */
     public function testLoadDumpEndingWithoutDelimiter()
     {
-        $sqlite = new Sqlite(self::$config['dsn'], '', '');
-        $sqlite->load(['INSERT INTO empty_table VALUES(1, "test")']);
-        
-        $res = $sqlite->getDbh()->query("select * from empty_table where field = 'test'");
+        $newDriver = new Sqlite(self::$config['dsn'], '', '');
+        $newDriver->load(['INSERT INTO empty_table VALUES(1, "test")']);
+
+        $res = $newDriver->getDbh()->query("select * from empty_table where field = 'test'");
         $this->assertNotEquals(false, $res);
         $this->assertNotEmpty($res->fetchAll());
     }
