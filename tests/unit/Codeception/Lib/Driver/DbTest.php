@@ -1,26 +1,28 @@
 <?php
 
-use \Codeception\Lib\Driver\Db;
-use \Codeception\Test\Unit;
-use \Codeception\Util\ReflectionHelper;
+declare(strict_types=1);
+
+use Codeception\Lib\Driver\Db;
+use Codeception\Test\Unit;
+use Codeception\Util\ReflectionHelper;
 
 /**
  * @group appveyor
  * @group db
  */
-class DbTest extends Unit
+final class DbTest extends Unit
 {
     /**
      * @dataProvider getWhereCriteria
      */
-    public function testGenerateWhereClause($criteria, $expectedResult)
+    public function testGenerateWhereClause(array $criteria, string $expectedResult)
     {
         $db = new Db('sqlite:tests/data/sqlite.db','root','');
         $result = ReflectionHelper::invokePrivateMethod($db, 'generateWhereClause', [&$criteria]);
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function getWhereCriteria()
+    public function getWhereCriteria(): array
     {
         return [
             'like'        => [['email like' => 'mail.ua'], 'WHERE "email" LIKE ? '],

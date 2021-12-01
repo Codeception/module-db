@@ -1,14 +1,17 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Codeception\Lib\Driver;
 
 class Oci extends Db
 {
-    public function setWaitLock($seconds)
+    public function setWaitLock(int $seconds): void
     {
-        $this->dbh->exec('ALTER SESSION SET ddl_lock_timeout = ' . (int) $seconds);
+        $this->dbh->exec('ALTER SESSION SET ddl_lock_timeout = ' . $seconds);
     }
 
-    public function cleanup()
+    public function cleanup(): void
     {
         $this->dbh->exec(
             "BEGIN
@@ -50,27 +53,27 @@ class Oci extends Db
      * IF you do not want to load triggers you can use the `;` characters
      * but in this case you need to change the $delimiter from `//` to `;`
      *
-     * @param $sql
+     * @param string[] $sql
      */
-    public function load($sql)
+    public function load(array $sql): void
     {
         $query = '';
         $delimiter = '//';
         $delimiterLength = 2;
 
-        foreach ($sql as $sqlLine) {
-            if (preg_match('/DELIMITER ([\;\$\|\\\\]+)/i', $sqlLine, $match)) {
+        foreach ($sql as $singleSql) {
+            if (preg_match('#DELIMITER ([\;\$\|\\\]+)#i', $singleSql, $match)) {
                 $delimiter = $match[1];
                 $delimiterLength = strlen($delimiter);
                 continue;
             }
 
-            $parsed = $this->sqlLine($sqlLine);
+            $parsed = $this->sqlLine($singleSql);
             if ($parsed) {
                 continue;
             }
 
-            $query .= "\n" . rtrim($sqlLine);
+            $query .= "\n" . rtrim($singleSql);
 
             if (substr($query, -1 * $delimiterLength, $delimiterLength) == $delimiter) {
                 $this->sqlQuery(substr($query, 0, -1 * $delimiterLength));
@@ -84,11 +87,9 @@ class Oci extends Db
     }
 
     /**
-     * @param string $tableName
-     *
-     * @return array[string]
+     * @return string[]
      */
-    public function getPrimaryKey($tableName)
+    public function getPrimaryKey(string $tableName): array
     {
         if (!isset($this->primaryKeys[$tableName])) {
             $primaryKey = [];
@@ -105,6 +106,7 @@ class Oci extends Db
             foreach ($columns as $column) {
                 $primaryKey []= $column['COLUMN_NAME'];
             }
+
             $this->primaryKeys[$tableName] = $primaryKey;
         }
 

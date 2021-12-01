@@ -1,12 +1,17 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Codeception\Lib\Driver;
+
+use PDO;
 
 class SqlSrv extends Db
 {
     public function getDb()
     {
         $matches = [];
-        $matched = preg_match('~Database=(.*);?~s', $this->dsn, $matches);
+        $matched = preg_match('#Database=(.*);?#s', $this->dsn, $matches);
 
         if (!$matched) {
             return false;
@@ -15,7 +20,7 @@ class SqlSrv extends Db
         return $matches[1];
     }
 
-    public function cleanup()
+    public function cleanup(): void
     {
         $this->dbh->exec(
             "
@@ -48,17 +53,15 @@ class SqlSrv extends Db
         );
     }
 
-    public function getQuotedName($name)
+    public function getQuotedName(string $name): string
     {
         return '[' . str_replace('.', '].[', $name) . ']';
     }
 
     /**
-     * @param string $tableName
-     *
-     * @return array[string]
+     * @return string[]
      */
-    public function getPrimaryKey($tableName)
+    public function getPrimaryKey(string $tableName): array
     {
         if (!isset($this->primaryKeys[$tableName])) {
             $primaryKey = [];
@@ -71,11 +74,12 @@ class SqlSrv extends Db
                     AND Col.Table_Name = Tab.Table_Name
                     AND Constraint_Type = 'PRIMARY KEY' AND Col.Table_Name = ?";
             $stmt = $this->executeQuery($query, [$tableName]);
-            $columns = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($columns as $column) {
                 $primaryKey []= $column['Column_Name'];
             }
+
             $this->primaryKeys[$tableName] = $primaryKey;
         }
 

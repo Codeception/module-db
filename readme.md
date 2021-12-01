@@ -7,6 +7,10 @@ A database module for Codeception.
 [![Total Downloads](https://poser.pugx.org/codeception/module-db/downloads)](https://packagist.org/packages/codeception/module-db)
 [![License](https://poser.pugx.org/codeception/module-db/license)](/LICENSE)
 
+## Requirements
+
+* `PHP 7.4` or higher.
+
 ## Installation
 
 ```

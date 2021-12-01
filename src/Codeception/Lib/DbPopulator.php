@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Codeception\Lib;
 
 /**
@@ -7,31 +9,29 @@ namespace Codeception\Lib;
  */
 class DbPopulator
 {
-    /**
-     * @var array
-     */
-    protected $config;
+    protected array $config = [];
 
-    /**
-     * @var array
-     */
-    protected $commands;
+    protected array $commands = [];
 
     /**
      * Constructs a DbPopulator object for the given command and Db module.
      *
-     * @param $config
      * @internal param string $command The parameterized command to evaluate and execute later.
      * @internal param Codeception\Module\Db|null $dbModule The Db module used to build the populator command or null.
      */
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->config = $config;
-
         //Convert To Array Format
-        if (isset($this->config['dump']) && !is_array($this->config['dump'])) {
-            $this->config['dump'] = [$this->config['dump']];
+        if (!isset($this->config['dump'])) {
+            return;
         }
+
+        if (is_array($this->config['dump'])) {
+            return;
+        }
+
+        $this->config['dump'] = [$this->config['dump']];
     }
 
     /**
@@ -53,15 +53,15 @@ class DbPopulator
      * @param string|null $dumpFile The dump file to build the command with.
      * @return string The resulting command string after evaluating any configuration's key
      */
-    protected function buildCommand($command, $dumpFile = null)
+    protected function buildCommand(string $command, string $dumpFile = null): string
     {
-        $dsn = isset($this->config['dsn']) ? $this->config['dsn'] : '';
+        $dsn = $this->config['dsn'] ?? '';
         $dsnVars = [];
-        $dsnWithoutDriver = preg_replace('/^[a-z]+:/i', '', $dsn);
+        $dsnWithoutDriver = preg_replace('#^[a-z]+:#i', '', $dsn);
         foreach (explode(';', $dsnWithoutDriver) as $item) {
             $keyValueTuple = explode('=', $item);
             if (count($keyValueTuple) > 1) {
-                list($k, $v) = array_values($keyValueTuple);
+                [$k, $v] = array_values($keyValueTuple);
                 $dsnVars[$k] = $v;
             }
         }
@@ -79,6 +79,7 @@ class DbPopulator
 
             unset($vars[$key]);
         }
+
         return str_replace(array_keys($vars), $vars, $command);
     }
 
@@ -86,10 +87,8 @@ class DbPopulator
      * Executes the command built using the Db module configuration.
      *
      * Uses the PHP `exec` to spin off a child process for the built command.
-     *
-     * @return bool
      */
-    public function run()
+    public function run(): bool
     {
         foreach ($this->buildCommands() as $command) {
             $this->runCommand($command);
@@ -98,16 +97,16 @@ class DbPopulator
         return true;
     }
 
-    private function runCommand($command)
+    private function runCommand($command): void
     {
-        codecept_debug("[Db] Executing Populator: `$command`");
+        codecept_debug("[Db] Executing Populator: `{$command}`");
 
         exec($command, $output, $exitCode);
 
         if (0 !== $exitCode) {
             throw new \RuntimeException(
                 "The populator command did not end successfully: \n" .
-                "  Exit code: $exitCode \n" .
+                "  Exit code: {$exitCode} \n" .
                 "  Output:" . implode("\n", $output)
             );
         }
@@ -115,9 +114,9 @@ class DbPopulator
         codecept_debug("[Db] Populator Finished.");
     }
 
-    public function buildCommands()
+    public function buildCommands(): array
     {
-        if ($this->commands !== null) {
+        if ($this->commands !== []) {
             return $this->commands;
         } elseif (!isset($this->config['dump']) || $this->config['dump'] === false) {
             return [$this->buildCommand($this->config['populator'])];

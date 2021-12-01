@@ -1,38 +1,42 @@
 <?php
 
-use \Codeception\Lib\Driver\Db;
-use \Codeception\Test\Unit;
+declare(strict_types=1);
+
+use Codeception\Exception\ModuleException;
+use Codeception\Lib\Driver\Db;
+use Codeception\Lib\Driver\Sqlite;
+use Codeception\Test\Unit;
 
 /**
  * @group db
  * Class SqliteTest
  */
-class SqliteTest extends Unit
+final class SqliteTest extends Unit
 {
-    protected static $config = array(
+    /**
+     * @var array<string, string>
+     */
+    protected static array $config = [
         'dsn' => 'sqlite:tests/data/sqlite.db',
         'user' => 'root',
         'password' => ''
-    );
+    ];
 
-    /**
-     * @var \Codeception\Lib\Driver\Sqlite
-     */
-    protected static $sqlite;
+    protected static ?Sqlite $sqlite = null;
+
     protected static $sql;
 
     public static function _setUpBeforeClass()
     {
         $dumpFile = '/dumps/sqlite.sql';
         $sql = file_get_contents(\Codeception\Configuration::dataDir() . $dumpFile);
-        $sql = preg_replace('%/\*(?:(?!\*/).)*\*/%s', "", $sql);
+        $sql = preg_replace('#/\*(?:(?!\*/).)*\*/#s', "", $sql);
         self::$sql = explode("\n", $sql);
     }
 
     public function _setUp()
     {
         self::$sqlite = Db::create(self::$config['dsn'], self::$config['user'], self::$config['password']);
-        self::$sqlite->cleanup();
         self::$sqlite->load(self::$sql);
     }
 
@@ -76,7 +80,7 @@ class SqliteTest extends Unit
 
     public function testThrowsExceptionIfInMemoryDatabaseIsUsed()
     {
-        $this->expectException('\Codeception\Exception\ModuleException');
+        $this->expectException(ModuleException::class);
         $this->expectExceptionMessage(':memory: database is not supported');
 
         Db::create('sqlite::memory:', '', '');
@@ -87,8 +91,9 @@ class SqliteTest extends Unit
      */
     public function testLoadDumpEndingWithoutDelimiter()
     {
-        $newDriver = new \Codeception\Lib\Driver\Sqlite(self::$config['dsn'], '', '');
+        $newDriver = new Sqlite(self::$config['dsn'], '', '');
         $newDriver->load(['INSERT INTO empty_table VALUES(1, "test")']);
+
         $res = $newDriver->getDbh()->query("select * from empty_table where field = 'test'");
         $this->assertNotEquals(false, $res);
         $this->assertNotEmpty($res->fetchAll());

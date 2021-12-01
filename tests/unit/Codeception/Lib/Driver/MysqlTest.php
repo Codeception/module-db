@@ -1,26 +1,28 @@
 <?php
 
-use \Codeception\Lib\Driver\Db;
-use \Codeception\Test\Unit;
+declare(strict_types=1);
+
+use Codeception\Exception\ModuleException;
+use Codeception\Lib\Driver\Db;
+use Codeception\Lib\Driver\MySql;
+use Codeception\Test\Unit;
 
 /**
  * @group appveyor
  * @group db
  */
-class MysqlTest extends Unit
+final class MysqlTest extends Unit
 {
-    protected static $config = [
+    protected static array $config = [
         'dsn' => 'mysql:host=localhost;dbname=codeception_test',
         'user' => 'root',
         'password' => ''
     ];
 
     protected static $sql;
-    /**
-     * @var \Codeception\Lib\Driver\MySql
-     */
-    protected $mysql;
-    
+
+    protected ?MySql $mysql = null;
+
     public static function _setUpBeforeClass()
     {
         $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';
@@ -28,12 +30,12 @@ class MysqlTest extends Unit
         self::$config['password'] = getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : '';
 
         $sql = file_get_contents(\Codeception\Configuration::dataDir() . '/dumps/mysql.sql');
-        $sql = preg_replace('%/\*(?:(?!\*/).)*\*/%s', "", $sql);
+        $sql = preg_replace('#/\*(?:(?!\*/).)*\*/#s', "", $sql);
         self::$sql = explode("\n", $sql);
         try {
             $mysql = Db::create(self::$config['dsn'], self::$config['user'], self::$config['password']);
             $mysql->cleanup();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
@@ -41,16 +43,15 @@ class MysqlTest extends Unit
     {
         try {
             $this->mysql = Db::create(self::$config['dsn'], self::$config['user'], self::$config['password']);
-        } catch (\Exception $e) {
-            $this->markTestSkipped('Couldn\'t establish connection to database: ' . $e->getMessage());
+        } catch (Exception $e) {
+            $this->markTestSkipped("Couldn't establish connection to database: " . $e->getMessage());
         }
-        $this->mysql->cleanup();
         $this->mysql->load(self::$sql);
     }
-    
+
     public function _tearDown()
     {
-        if (isset($this->mysql)) {
+        if ($this->mysql !== null) {
             $this->mysql->cleanup();
         }
     }
@@ -115,7 +116,7 @@ class MysqlTest extends Unit
         $expectedMessage = 'You have an error in your SQL syntax; ' .
             'check the manual that corresponds to your MySQL server version for the right syntax to use near ' .
             "'VALS('')' at line 1\nSQL query being executed: \n" . $sql;
-        $this->expectException('Codeception\Exception\ModuleException');
+        $this->expectException(ModuleException::class);
         $this->expectExceptionMessage( $expectedMessage);
         $this->mysql->load([$sql]);
     }
