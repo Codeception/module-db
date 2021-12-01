@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Codeception\Exception\ModuleException;
-use \Codeception\Lib\Driver\Db;
+use Codeception\Lib\Driver\Db;
 use Codeception\Lib\Driver\Sqlite;
-use \Codeception\Test\Unit;
+use Codeception\Test\Unit;
 
 /**
  * @group db
@@ -16,16 +16,13 @@ final class SqliteTest extends Unit
     /**
      * @var array<string, string>
      */
-    protected static $config = [
+    protected static array $config = [
         'dsn' => 'sqlite:tests/data/sqlite.db',
         'user' => 'root',
         'password' => ''
     ];
 
-    /**
-     * @var Sqlite
-     */
-    protected static $sqlite;
+    protected static ?Sqlite $sqlite = null;
 
     protected static $sql;
 

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Codeception\Module;
 
-use Codeception\Module;
 use Codeception\Configuration;
-use Codeception\Exception\ModuleException;
 use Codeception\Exception\ModuleConfigException;
-use Codeception\Lib\Interfaces\Db as DbInterface;
-use Codeception\Lib\Driver\Db as Driver;
+use Codeception\Exception\ModuleException;
 use Codeception\Lib\DbPopulator;
-use Codeception\TestInterface;
+use Codeception\Lib\Driver\Db as Driver;
+use Codeception\Lib\Interfaces\Db as DbInterface;
 use Codeception\Lib\Notification;
+use Codeception\Module;
+use Codeception\TestInterface;
 use Codeception\Util\ActionSequence;
 use Exception;
 use InvalidArgumentException;
@@ -270,7 +270,7 @@ class Db extends Module implements DbInterface
     /**
      * @var string
      */
-    const DEFAULT_DATABASE = 'default';
+    public const DEFAULT_DATABASE = 'default';
 
     /**
      * @var Driver[]
@@ -595,7 +595,7 @@ class Db extends Module implements DbInterface
         } catch (PDOException $exception) {
             $message = $exception->getMessage();
             if ($message === 'could not find driver') {
-                list ($missingDriver, ) = explode(':', $databaseConfig['dsn'], 2);
+                [$missingDriver, ] = explode(':', $databaseConfig['dsn'], 2);
                 $message = sprintf('could not find %s driver', $missingDriver);
             }
 
@@ -653,7 +653,7 @@ class Db extends Module implements DbInterface
             try {
                 $this->_getDriver()->deleteQueryByCriteria($row['table'], $row['primary']);
             } catch (Exception $e) {
-                $this->debug("Couldn't delete record " . json_encode($row['primary']) ." from {$row['table']}");
+                $this->debug("Couldn't delete record " . json_encode($row['primary'], JSON_THROW_ON_ERROR) ." from {$row['table']}");
             }
         }
 
@@ -818,7 +818,7 @@ class Db extends Module implements DbInterface
         $this->assertGreaterThan(
             0,
             $res,
-            'No matching records found for criteria ' . json_encode($criteria) . ' in table ' . $table
+            'No matching records found for criteria ' . json_encode($criteria, JSON_THROW_ON_ERROR) . ' in table ' . $table
         );
     }
 
@@ -844,7 +844,7 @@ class Db extends Module implements DbInterface
                 'The number of found rows (%d) does not match expected number %d for criteria %s in table %s',
                 $actualNumber,
                 $expectedNumber,
-                json_encode($criteria),
+                json_encode($criteria, JSON_THROW_ON_ERROR),
                 $table
             )
         );
@@ -856,7 +856,7 @@ class Db extends Module implements DbInterface
         $this->assertLessThan(
             1,
             $count,
-            'Unexpectedly found matching records for criteria ' . json_encode($criteria) . ' in table ' . $table
+            'Unexpectedly found matching records for criteria ' . json_encode($criteria, JSON_THROW_ON_ERROR) . ' in table ' . $table
         );
     }
 

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use \Codeception\Lib\Driver\Db;
-use \Codeception\Test\Unit;
-use \Codeception\Util\ReflectionHelper;
+use Codeception\Lib\Driver\Db;
+use Codeception\Test\Unit;
+use Codeception\Util\ReflectionHelper;
 
 /**
  * @group appveyor

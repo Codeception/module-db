@@ -3,8 +3,9 @@
 declare(strict_types=1);
 
 use Codeception\Exception\ModuleException;
-use \Codeception\Lib\Driver\Db;
-use \Codeception\Test\Unit;
+use Codeception\Lib\Driver\Db;
+use Codeception\Lib\Driver\MySql;
+use Codeception\Test\Unit;
 
 /**
  * @group appveyor
@@ -12,21 +13,16 @@ use \Codeception\Test\Unit;
  */
 final class MysqlTest extends Unit
 {
-    /**
-     * @var array
-     */
-    protected static $config = [
+    protected static array $config = [
         'dsn' => 'mysql:host=localhost;dbname=codeception_test',
         'user' => 'root',
         'password' => ''
     ];
 
     protected static $sql;
-    /**
-     * @var \Codeception\Lib\Driver\MySql
-     */
-    protected $mysql;
-    
+
+    protected ?MySql $mysql = null;
+
     public static function _setUpBeforeClass()
     {
         $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';

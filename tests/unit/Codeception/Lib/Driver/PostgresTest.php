@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use \Codeception\Lib\Driver\Db;
+use Codeception\Lib\Driver\Db;
 use Codeception\Lib\Driver\PostgreSql;
-use \Codeception\Test\Unit;
+use Codeception\Test\Unit;
 
 /**
  * @group appveyor
@@ -12,20 +12,15 @@ use \Codeception\Test\Unit;
  */
 final class PostgresTest extends Unit
 {
-    /**
-     * @var array
-     */
-    protected static $config = [
+    protected static array $config = [
         'dsn' => 'pgsql:host=localhost;dbname=codeception_test',
         'user' => 'postgres',
         'password' => null,
     ];
 
     protected static $sql;
-    /**
-     * @var \Codeception\Lib\Driver\Db|null
-     */
-    protected $postgres;
+
+    protected ?PostgreSql $postgres = null;
 
     public static function _setUpBeforeClass()
     {

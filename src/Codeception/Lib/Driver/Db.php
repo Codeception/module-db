@@ -182,6 +182,9 @@ class Db
         return sprintf($query, $column, $this->getQuotedName($tableName), $where);
     }
 
+    /**
+     * @return string[]
+     */
     private function getSupportedOperators(): array
     {
         return [
