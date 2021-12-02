@@ -78,7 +78,7 @@ class Db
      * @see https://www.php.net/manual/en/pdo.construct.php
      * @see https://www.php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
      */
-    public function __construct(string $dsn, string $user, string $password, array $options = null)
+    public function __construct(string $dsn, string $user = null, string $password = null, array $options = null)
     {
         $this->dbh = new PDO($dsn, $user, $password, $options);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
