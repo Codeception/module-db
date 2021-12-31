@@ -50,32 +50,32 @@ final class SqliteTest extends Unit
     public function testLoadDump()
     {
         $res = self::$sqlite->getDbh()->query("select * from users where name = 'davert'");
-        $this->assertNotEquals(false, $res);
+        $this->assertNotSame(false, $res);
         $this->assertNotEmpty($res->fetchAll());
 
         $res = self::$sqlite->getDbh()->query("select * from groups where name = 'coders'");
-        $this->assertNotEquals(false, $res);
+        $this->assertNotSame(false, $res);
         $this->assertNotEmpty($res->fetchAll());
     }
 
     public function testGetPrimaryKeyReturnsRowIdIfTableHasIt()
     {
-        $this->assertEquals(['_ROWID_'], self::$sqlite->getPrimaryKey('groups'));
+        $this->assertSame(['_ROWID_'], self::$sqlite->getPrimaryKey('groups'));
     }
 
     public function testGetPrimaryKeyReturnsRowIdIfTableHasNoPrimaryKey()
     {
-        $this->assertEquals(['_ROWID_'], self::$sqlite->getPrimaryKey('no_pk'));
+        $this->assertSame(['_ROWID_'], self::$sqlite->getPrimaryKey('no_pk'));
     }
 
     public function testGetSingleColumnPrimaryKeyWhenTableHasNoRowId()
     {
-        $this->assertEquals(['id'], self::$sqlite->getPrimaryKey('order'));
+        $this->assertSame(['id'], self::$sqlite->getPrimaryKey('order'));
     }
 
     public function testGetCompositePrimaryKeyWhenTableHasNoRowId()
     {
-        $this->assertEquals(['group_id', 'id'], self::$sqlite->getPrimaryKey('composite_pk'));
+        $this->assertSame(['group_id', 'id'], self::$sqlite->getPrimaryKey('composite_pk'));
     }
 
     public function testThrowsExceptionIfInMemoryDatabaseIsUsed()
@@ -95,7 +95,7 @@ final class SqliteTest extends Unit
         $newDriver->load(['INSERT INTO empty_table VALUES(1, "test")']);
 
         $res = $newDriver->getDbh()->query("select * from empty_table where field = 'test'");
-        $this->assertNotEquals(false, $res);
+        $this->assertNotSame(false, $res);
         $this->assertNotEmpty($res->fetchAll());
     }
 }

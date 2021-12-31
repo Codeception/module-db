@@ -19,7 +19,7 @@ final class DbTest extends Unit
     {
         $db = new Db('sqlite:tests/data/sqlite.db','root','');
         $result = ReflectionHelper::invokePrivateMethod($db, 'generateWhereClause', [&$criteria]);
-        $this->assertEquals($expectedResult, $result);
+        $this->assertSame($expectedResult, $result);
     }
 
     public function getWhereCriteria(): array

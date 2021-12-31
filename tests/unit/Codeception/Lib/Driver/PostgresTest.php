@@ -84,20 +84,20 @@ final class PostgresTest extends Unit
     public function testLoadDump()
     {
         $res = $this->postgres->getDbh()->query("select * from users where name = 'davert'");
-        $this->assertNotEquals(false, $res);
+        $this->assertNotSame(false, $res);
         $this->assertGreaterThan(0, $res->rowCount());
 
         $res = $this->postgres->getDbh()->query("select * from groups where name = 'coders'");
-        $this->assertNotEquals(false, $res);
+        $this->assertNotSame(false, $res);
         $this->assertGreaterThan(0, $res->rowCount());
 
         $res = $this->postgres->getDbh()->query("select * from users where email = 'user2@example.org'");
-        $this->assertNotEquals(false, $res);
+        $this->assertNotSame(false, $res);
         $this->assertGreaterThan(0, $res->rowCount());
 
         $res = $this->postgres->getDbh()
             ->query("select * from anotherschema.users where email = 'schemauser@example.org'");
-        $this->assertEquals(1, $res->rowCount());
+        $this->assertSame(1, $res->rowCount());
     }
 
     public function testSelectWithEmptyCriteria()
@@ -110,23 +110,23 @@ final class PostgresTest extends Unit
 
     public function testGetSingleColumnPrimaryKey()
     {
-        $this->assertEquals(['id'], $this->postgres->getPrimaryKey('order'));
+        $this->assertSame(['id'], $this->postgres->getPrimaryKey('order'));
     }
 
     public function testGetCompositePrimaryKey()
     {
-        $this->assertEquals(['group_id', 'id'], $this->postgres->getPrimaryKey('composite_pk'));
+        $this->assertSame(['group_id', 'id'], $this->postgres->getPrimaryKey('composite_pk'));
     }
 
     public function testGetEmptyArrayIfTableHasNoPrimaryKey()
     {
-        $this->assertEquals([], $this->postgres->getPrimaryKey('no_pk'));
+        $this->assertSame([], $this->postgres->getPrimaryKey('no_pk'));
     }
 
     public function testLastInsertIdReturnsSequenceValueWhenNonStandardSequenceNameIsUsed()
     {
         $this->postgres->executeQuery('INSERT INTO seqnames(name) VALUES(?)',['test']);
-        $this->assertEquals(1, $this->postgres->lastInsertId('seqnames'));
+        $this->assertSame('1', $this->postgres->lastInsertId('seqnames'));
     }
 
     /**
@@ -138,7 +138,7 @@ final class PostgresTest extends Unit
         $newDriver->load(["INSERT INTO empty_table VALUES(1, 'test')"]);
 
         $res = $newDriver->getDbh()->query("select * from empty_table where field = 'test'");
-        $this->assertNotEquals(false, $res);
+        $this->assertNotSame(false, $res);
         $this->assertNotEmpty($res->fetchAll());
     }
 }

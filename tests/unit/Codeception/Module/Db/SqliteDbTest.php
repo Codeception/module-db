@@ -71,8 +71,8 @@ final class SqliteDbTest extends AbstractDbTest
         $connection3 = spl_object_hash($this->module->dbh);
         $this->module->_after($testCase3);
 
-        $this->assertEquals($connection1, $connection2);
-        $this->assertNotEquals($connection3, $connection2);
+        $this->assertSame($connection1, $connection2);
+        $this->assertNotSame($connection3, $connection2);
     }
 
     public function testMultiDatabase()

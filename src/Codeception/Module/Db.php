@@ -837,7 +837,7 @@ class Db extends Module implements DbInterface
     public function seeNumRecords(int $expectedNumber, string $table, array $criteria = []): void
     {
         $actualNumber = $this->countInDatabase($table, $criteria);
-        $this->assertEquals(
+        $this->assertSame(
             $expectedNumber,
             $actualNumber,
             sprintf(
