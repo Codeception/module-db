@@ -24,7 +24,7 @@ final class DbPopulatorTest extends Unit
             ]
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             ['mysql -u root -h 127.0.0.1 -D my_db < tests/data/dumps/sqlite.sql'],
             $dbPopulator->buildCommands()
         );
@@ -46,7 +46,7 @@ final class DbPopulatorTest extends Unit
             ]
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'mysql -u root -h 127.0.0.1 -D my_db < tests/data/dumps/sqlite.sql',
                 'mysql -u root -h 127.0.0.1 -D my_db < tests/data/dumps/sqlite2.sql'
@@ -61,7 +61,7 @@ final class DbPopulatorTest extends Unit
             'populator' => 'noop_tool -u $user -h $host -D $dbname < $dump',
             'user' => 'root',
         ]);
-        $this->assertEquals(
+        $this->assertSame(
             ['noop_tool -u root -h $host -D $dbname < $dump'],
             $dbPopulator->buildCommands()
         );

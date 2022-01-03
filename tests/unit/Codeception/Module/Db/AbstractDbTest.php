@@ -59,7 +59,7 @@ abstract class AbstractDbTest extends Unit
             $this->module->dbh
         ];
         $this->module->_after($testCase2);
-        $this->assertEquals($driverAndConn2, $driverAndConn1);
+        $this->assertSame($driverAndConn2, $driverAndConn1);
 
         $this->module->_afterSuite();
     }
@@ -145,17 +145,17 @@ abstract class AbstractDbTest extends Unit
     public function testGrabFromDatabase()
     {
         $email = $this->module->grabFromDatabase('users', 'email', ['name' => 'davert']);
-        $this->assertEquals('davert@mail.ua', $email);
+        $this->assertSame('davert@mail.ua', $email);
     }
 
     public function testGrabNumRecords()
     {
         $num = $this->module->grabNumRecords('users', ['name' => 'davert']);
-        $this->assertEquals($num, 1);
+        $this->assertSame($num, 1);
         $num = $this->module->grabNumRecords('users', ['name' => 'davert', 'email' => 'xxx@yyy.zz']);
-        $this->assertEquals($num, 0);
+        $this->assertSame($num, 0);
         $num = $this->module->grabNumRecords('users', ['name' => 'user1']);
-        $this->assertEquals($num, 0);
+        $this->assertSame($num, 0);
     }
 
     public function testLoadWithPopulator()

@@ -69,33 +69,33 @@ final class MysqlTest extends Unit
     public function testLoadDump()
     {
         $res = $this->mysql->getDbh()->query("select * from users where name = 'davert'");
-        $this->assertNotEquals(false, $res);
+        $this->assertNotSame(false, $res);
         $this->assertGreaterThan(0, $res->rowCount());
 
         $res = $this->mysql->getDbh()->query("select * from groups where name = 'coders'");
-        $this->assertNotEquals(false, $res);
+        $this->assertNotSame(false, $res);
         $this->assertGreaterThan(0, $res->rowCount());
     }
 
     public function testGetSingleColumnPrimaryKey()
     {
-        $this->assertEquals(['id'], $this->mysql->getPrimaryKey('order'));
+        $this->assertSame(['id'], $this->mysql->getPrimaryKey('order'));
     }
 
     public function testGetCompositePrimaryKey()
     {
-        $this->assertEquals(['group_id', 'id'], $this->mysql->getPrimaryKey('composite_pk'));
+        $this->assertSame(['group_id', 'id'], $this->mysql->getPrimaryKey('composite_pk'));
     }
 
     public function testGetEmptyArrayIfTableHasNoPrimaryKey()
     {
-        $this->assertEquals([], $this->mysql->getPrimaryKey('no_pk'));
+        $this->assertSame([], $this->mysql->getPrimaryKey('no_pk'));
     }
 
     public function testSelectWithBooleanParam()
     {
         $res = $this->mysql->executeQuery("select `id` from `users` where `is_active` = ?", [false]);
-        $this->assertEquals(1, $res->rowCount());
+        $this->assertSame(1, $res->rowCount());
     }
 
     public function testInsertIntoBitField()
@@ -104,7 +104,7 @@ final class MysqlTest extends Unit
             "insert into `users`(`id`,`name`,`email`,`is_active`,`created_at`) values (?,?,?,?,?)",
             [5,'insert.test','insert.test@mail.ua',false,'2012-02-01 21:17:47']
         );
-        $this->assertEquals(1, $res->rowCount());
+        $this->assertSame(1, $res->rowCount());
     }
 
     /**

@@ -69,8 +69,8 @@ final class MySqlDbTest extends AbstractDbTest
         $connection3 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase3);
 
-        $this->assertEquals($connection1, $connection2);
-        $this->assertNotEquals($connection3, $connection2);
+        $this->assertSame($connection1, $connection2);
+        $this->assertNotSame($connection3, $connection2);
     }
 
     public function testInitialQueriesAreExecuted()
@@ -86,13 +86,13 @@ final class MySqlDbTest extends AbstractDbTest
         
         $usedDatabaseName = $this->module->dbh->query('SELECT DATABASE();')->fetch(PDO::FETCH_COLUMN);
 
-        $this->assertEquals($dbName, $usedDatabaseName);
+        $this->assertSame($dbName, $usedDatabaseName);
     }
 
     public function testGrabColumnFromDatabase()
     {
         $emails = $this->module->grabColumnFromDatabase('users', 'email');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'davert@mail.ua',
                 'nick@mail.ua',
