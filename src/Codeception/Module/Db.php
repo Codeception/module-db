@@ -260,6 +260,7 @@ class Db extends Module implements DbInterface
         'waitlock' => 0,
         'dump' => null,
         'populator' => null,
+        'no_cleanup_failed' => false,
     ];
 
     /**
@@ -635,6 +636,13 @@ class Db extends Module implements DbInterface
         parent::_before($test);
     }
 
+    public function _failed(TestInterface $test, $fail)
+    {
+        if ($this->config['no_cleanup_failed'] ?? false) {
+            $this->insertedRows = [];
+        }
+    }
+
     public function _after(TestInterface $test): void
     {
         $this->removeInsertedForDatabases();
@@ -748,7 +756,8 @@ class Db extends Module implements DbInterface
     }
 
     /**
-     * Inserts an SQL record into a database. This record will be erased after the test.
+     * Inserts an SQL record into a database. This record will be erased after the test, 
+     * unless you've configured "no_cleanup_failed", and the test fails. 
      *
      * ```php
      * <?php
