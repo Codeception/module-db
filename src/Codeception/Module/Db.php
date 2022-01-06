@@ -638,8 +638,10 @@ class Db extends Module implements DbInterface
 
     public function _failed(TestInterface $test, $fail)
     {
-        if ($this->config['no_cleanup_failed'] ?? false) {
-            $this->insertedRows = [];
+        foreach ($this->getDatabases() as $databaseKey => $databaseConfig) {
+            if ($databaseConfig['no_cleanup_failed'] ?? false) {
+                $this->insertedRows[$databaseKey] = [];
+            }
         }
     }
 
