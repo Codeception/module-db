@@ -251,9 +251,9 @@ use PDOException;
 class Db extends Module implements DbInterface
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    protected $config = [
+    protected array $config = [
         'populate' => false,
         'cleanup' => false,
         'reconnect' => false,
@@ -263,9 +263,9 @@ class Db extends Module implements DbInterface
     ];
 
     /**
-     * @var array
+     * @var string[]
      */
-    protected $requiredFields = ['dsn', 'user', 'password'];
+    protected array $requiredFields = ['dsn', 'user', 'password'];
 
     /**
      * @var string

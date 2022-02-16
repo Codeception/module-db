@@ -13,20 +13,21 @@
             "name": "Gintautas Miselis"
         }
     ],
-    "minimum-stability": "RC",
+    "minimum-stability": "dev",
     "require": {
-        "php": "^7.4 | ^8.0",
+        "php": "^8.0",
         "ext-json": "*",
         "ext-pdo": "*",
         "codeception/codeception": "*@dev"
     },
     "conflict": {
-        "codeception/codeception": "<4.0"
+        "codeception/codeception": "<5.0"
     },
     "autoload":{
         "classmap": ["src/"]
     },
     "config": {
-        "classmap-authoritative": true
+        "classmap-authoritative": true,
+        "sort-packages": true
     }
 }
