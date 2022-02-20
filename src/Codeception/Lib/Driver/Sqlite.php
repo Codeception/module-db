@@ -70,7 +70,7 @@ class Sqlite extends Db
             $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($columns as $column) {
-                if ($column['pk'] !== '0') {
+                if ($column['pk'] !== '0' && $column['pk'] !== 0) {
                     $primaryKey []= $column['name'];
                 }
             }
