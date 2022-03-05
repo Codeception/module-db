@@ -103,7 +103,7 @@ class Db
 
     public function __destruct()
     {
-        if ($this->dbh->inTransaction()) {
+        if ($this->dbh !== null && $this->dbh->inTransaction()) {
             $this->dbh->rollBack();
         }
         $this->dbh = null;
