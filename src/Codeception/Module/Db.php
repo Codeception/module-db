@@ -936,8 +936,8 @@ class Db extends Module implements DbInterface
      *
      * ```php
      * <?php
-     * $post = $I->grabFromDatabase('posts', ['num_comments >=' => 100]);
-     * $user = $I->grabFromDatabase('users', ['email like' => 'miles%']);
+     * $postNum = $I->grabFromDatabase('posts', 'num_comments', ['num_comments >=' => 100]);
+     * $mail = $I->grabFromDatabase('users', 'email', ['email like' => 'miles%']);
      * ```
      *
      * Supported operators: `<`, `>`, `>=`, `<=`, `!=`, `like`.
