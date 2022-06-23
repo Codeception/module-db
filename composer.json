@@ -18,10 +18,7 @@
         "php": "^7.4 | ^8.0",
         "ext-json": "*",
         "ext-pdo": "*",
-        "codeception/codeception": "*@dev"
-    },
-    "conflict": {
-        "codeception/codeception": "<4.0"
+        "codeception/codeception": "^4.1"
     },
     "autoload":{
         "classmap": ["src/"]
