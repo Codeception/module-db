@@ -22,12 +22,14 @@ final class MySqlDbTest extends AbstractDbTest
 
     public function getConfig(): array
     {
-        $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';
+        $dsn = getenv('MYSQL_DSN');
+        $host = getenv('MYSQL_HOST') ?? 'localhost';
+        $user = getenv('MYSQL_USER') ?? 'root';
         $password = getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : '';
 
         return [
-            'dsn' => 'mysql:host='.$host.';dbname=codeception_test',
-            'user' => 'root',
+            'dsn' => $dsn ?? 'mysql:host='.$host.';dbname=codeception_test',
+            'user' => $user,
             'password' => $password,
             'dump' => 'tests/data/dumps/mysql.sql',
             'reconnect' => true,
@@ -51,7 +53,7 @@ final class MySqlDbTest extends AbstractDbTest
 
         // Simulate a test that runs
         $this->module->_before($testCase1);
-        
+
         $connection1 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase1);
 
@@ -83,7 +85,7 @@ final class MySqlDbTest extends AbstractDbTest
         ];
         $this->module->_reconfigure($config);
         $this->module->_before(Stub::makeEmpty(TestInterface::class));
-        
+
         $usedDatabaseName = $this->module->dbh->query('SELECT DATABASE();')->fetch(PDO::FETCH_COLUMN);
 
         $this->assertSame($dbName, $usedDatabaseName);
