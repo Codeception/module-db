@@ -175,7 +175,7 @@ abstract class AbstractDbTest extends Unit
                 'cleanup'   => true,
             ]
         );
-        $this->module->_loadDump();
+        $this->module->_loadDump(null, $this->getConfig());
         $this->assertTrue($this->module->_isPopulated());
         $this->module->seeInDatabase('users', ['name' => 'davert']);
     }

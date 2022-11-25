@@ -51,7 +51,7 @@ final class MySqlDbTest extends AbstractDbTest
 
         // Simulate a test that runs
         $this->module->_before($testCase1);
-        
+
         $connection1 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase1);
 
@@ -83,7 +83,7 @@ final class MySqlDbTest extends AbstractDbTest
         ];
         $this->module->_reconfigure($config);
         $this->module->_before(Stub::makeEmpty(TestInterface::class));
-        
+
         $usedDatabaseName = $this->module->dbh->query('SELECT DATABASE();')->fetch(PDO::FETCH_COLUMN);
 
         $this->assertSame($dbName, $usedDatabaseName);
@@ -91,6 +91,7 @@ final class MySqlDbTest extends AbstractDbTest
 
     public function testGrabColumnFromDatabase()
     {
+        $this->module->_beforeSuite();
         $emails = $this->module->grabColumnFromDatabase('users', 'email');
         $this->assertSame(
             [
@@ -100,5 +101,50 @@ final class MySqlDbTest extends AbstractDbTest
                 'charlie@parker.com',
             ],
             $emails);
+    }
+
+    public function testGrabEntryFromDatabaseShouldReturnFalseIfNotFound()
+    {
+        $result = $this->module->grabEntryFromDatabase('users', ['email' => 'doesnot@exist.info']);
+        $this->assertEquals(false, $result);
+    }
+
+    public function testGrabEntryFromDatabaseShouldReturnASingleEntry()
+    {
+        $this->module->_beforeSuite();
+        $result = $this->module->grabEntryFromDatabase('users', ['is_active' => true]);
+
+        $this->assertEquals(false, array_key_exists(0, $result));
+    }
+
+    public function testGrabEntryFromDatabaseShouldReturnAnAssocArray()
+    {
+        $this->module->_beforeSuite();
+        $result = $this->module->grabEntryFromDatabase('users', ['is_active' => true]);
+
+        $this->assertEquals(true, array_key_exists('is_active', $result));
+    }
+
+    public function testGrabEntriesFromDatabaseShouldReturnAnEmptyArrayIfNoRowMatches()
+    {
+        $this->module->_beforeSuite();
+        $result = $this->module->grabEntriesFromDatabase('users', ['email' => 'doesnot@exist.info']);
+        $this->assertEquals([], $result);
+    }
+
+    public function testGrabEntriesFromDatabaseShouldReturnAllMatchedRows()
+    {
+        $this->module->_beforeSuite();
+        $result = $this->module->grabEntriesFromDatabase('users', ['is_active' => true]);
+
+        $this->assertEquals(3, count($result));
+    }
+
+    public function testGrabEntriesFromDatabaseShouldReturnASetOfAssocArray()
+    {
+        $this->module->_beforeSuite();
+        $result = $this->module->grabEntriesFromDatabase('users', ['is_active' => true]);
+
+        $this->assertEquals(true, array_key_exists('is_active', $result[0]));
     }
 }
