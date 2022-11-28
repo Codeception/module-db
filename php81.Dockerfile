@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.1-cli
 
 RUN apt-get update && \
     apt-get install -y \
@@ -16,14 +16,7 @@ RUN docker-php-ext-install zip
 RUN pecl install xdebug-3.1.5 && \
     echo zend_extension=xdebug.so > $PHP_INI_DIR/conf.d/xdebug.ini
 
-# Install composer
-RUN EXPECTED_CHECKSUM="$(wget -q -O - https://composer.github.io/installer.sig)" && \
-    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-    php composer-setup.php --quiet && \
-    RESULT=$? && \
-    rm composer-setup.php && \
-    mv composer.phar /usr/local/bin/composer && \
-    exit $RESULT
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
@@ -35,3 +28,6 @@ RUN composer install --no-autoloader
 COPY . .
 
 RUN composer dump-autoload -o
+
+ENTRYPOINT ["tail"]
+CMD ["-f", "/dev/null"]
