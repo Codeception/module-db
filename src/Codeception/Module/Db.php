@@ -729,7 +729,7 @@ class Db extends Module implements DbInterface
         $databaseKey = empty($databaseKey) ?  self::DEFAULT_DATABASE : $databaseKey;
         $databaseConfig = empty($databaseConfig) ?  $this->config : $databaseConfig;
 
-        if ($databaseConfig['populator']) {
+        if (array_key_exists('populator', $databaseConfig) && !empty($databaseConfig['populator'])) {
             $this->loadDumpUsingPopulator($databaseKey, $databaseConfig);
             return;
         }
@@ -759,8 +759,8 @@ class Db extends Module implements DbInterface
     }
 
     /**
-     * Inserts an SQL record into a database. This record will be erased after the test, 
-     * unless you've configured "skip_cleanup_if_failed", and the test fails. 
+     * Inserts an SQL record into a database. This record will be erased after the test,
+     * unless you've configured "skip_cleanup_if_failed", and the test fails.
      *
      * ```php
      * <?php
