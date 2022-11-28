@@ -106,7 +106,7 @@ final class MySqlDbTest extends AbstractDbTest
     public function testGrabEntryFromDatabaseShouldReturnFalseIfNotFound()
     {
         $result = $this->module->grabEntryFromDatabase('users', ['email' => 'doesnot@exist.info']);
-        $this->assertEquals(false, $result);
+        $this->assertFalse($result);
     }
 
     public function testGrabEntryFromDatabaseShouldReturnASingleEntry()
@@ -114,7 +114,7 @@ final class MySqlDbTest extends AbstractDbTest
         $this->module->_beforeSuite();
         $result = $this->module->grabEntryFromDatabase('users', ['is_active' => true]);
 
-        $this->assertEquals(false, array_key_exists(0, $result));
+        $this->assertArrayNotHasKey(0, $result);
     }
 
     public function testGrabEntryFromDatabaseShouldReturnAnAssocArray()
@@ -122,7 +122,7 @@ final class MySqlDbTest extends AbstractDbTest
         $this->module->_beforeSuite();
         $result = $this->module->grabEntryFromDatabase('users', ['is_active' => true]);
 
-        $this->assertEquals(true, array_key_exists('is_active', $result));
+        $this->assertArrayHasKey('is_active', $result);
     }
 
     public function testGrabEntriesFromDatabaseShouldReturnAnEmptyArrayIfNoRowMatches()
@@ -137,7 +137,7 @@ final class MySqlDbTest extends AbstractDbTest
         $this->module->_beforeSuite();
         $result = $this->module->grabEntriesFromDatabase('users', ['is_active' => true]);
 
-        $this->assertEquals(3, count($result));
+        $this->assertCount(3, $result);
     }
 
     public function testGrabEntriesFromDatabaseShouldReturnASetOfAssocArray()
