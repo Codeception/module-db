@@ -103,10 +103,14 @@ final class MySqlDbTest extends AbstractDbTest
             $emails);
     }
 
-    public function testGrabEntryFromDatabaseShouldReturnFalseIfNotFound()
+    public function testGrabEntryFromDatabaseShouldFailIfNotFound()
     {
-        $result = $this->module->grabEntryFromDatabase('users', ['email' => 'doesnot@exist.info']);
-        $this->assertFalse($result);
+        try {
+            $this->module->grabEntryFromDatabase('users', ['email' => 'doesnot@exist.info']);
+            $this->fail("should have thrown an exception");
+        } catch (\Throwable $t) {
+            $this->assertInstanceOf(AssertionError::class, $t);
+        }
     }
 
     public function testGrabEntryFromDatabaseShouldReturnASingleEntry()

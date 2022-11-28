@@ -951,6 +951,7 @@ class Db extends Module implements DbInterface
 
     /**
      * Fetches a whole entry from a database.
+     * Make the test fail if the entry is not found.
      * Provide table name, desired column and criteria.
      *
      * ``` php
@@ -967,7 +968,8 @@ class Db extends Module implements DbInterface
      *
      * Supported operators: `<`, `>`, `>=`, `<=`, `!=`, `like`.
      *
-     * @return mixed Returns a single entry value or false if it fails
+     * @return array Returns a single entry value
+     * @throws PDOException|Exception
      */
     public function grabEntryFromDatabase(string $table, array $criteria = [])
     {
@@ -977,7 +979,11 @@ class Db extends Module implements DbInterface
         $this->debugSection('Parameters', $parameters);
         $sth = $this->_getDriver()->executeQuery($query, $parameters);
 
-        return $sth->fetch(PDO::FETCH_ASSOC, 0);
+        $result = $sth->fetch(PDO::FETCH_ASSOC, 0);
+
+        if ($result === false) throw new \AssertionError("No matching row found");
+
+        return $result;
     }
 
     /**
@@ -998,7 +1004,8 @@ class Db extends Module implements DbInterface
      *
      * Supported operators: `<`, `>`, `>=`, `<=`, `!=`, `like`.
      *
-     * @return mixed Returns an array of all matched rows or false if it fails
+     * @return array Returns an array of all matched rows
+     * @throws PDOException|Exception
      */
     public function grabEntriesFromDatabase(string $table, array $criteria = [])
     {
