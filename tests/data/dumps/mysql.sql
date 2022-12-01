@@ -94,6 +94,16 @@ CREATE TABLE `no_pk` (
   `status` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `auto_increment_not_on_pk` (
+    `id` int(11) NOT NULL,
+    `counter` int(11) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE INDEX counter ON `auto_increment_not_on_pk` (counter);
+ALTER TABLE `auto_increment_not_on_pk`
+    MODIFY counter int AUTO_INCREMENT;
+
 CREATE TABLE `empty_table` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `field` varchar(255),
