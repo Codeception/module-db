@@ -101,4 +101,16 @@ final class MySqlDbTest extends AbstractDbTest
             ],
             $emails);
     }
+
+    public function testHaveInDatabaseAutoIncrementOnANonPrimaryKey()
+    {
+        $testData = [
+            'id' => 777,
+        ];
+        $this->module->haveInDatabase('auto_increment_not_on_pk', $testData);
+        $this->module->seeInDatabase('auto_increment_not_on_pk', $testData);
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
+
+        $this->module->dontSeeInDatabase('auto_increment_not_on_pk', $testData);
+    }
 }
