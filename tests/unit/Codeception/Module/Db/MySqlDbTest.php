@@ -51,7 +51,7 @@ final class MySqlDbTest extends AbstractDbTest
 
         // Simulate a test that runs
         $this->module->_before($testCase1);
-        
+
         $connection1 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase1);
 
@@ -83,7 +83,7 @@ final class MySqlDbTest extends AbstractDbTest
         ];
         $this->module->_reconfigure($config);
         $this->module->_before(Stub::makeEmpty(TestInterface::class));
-        
+
         $usedDatabaseName = $this->module->dbh->query('SELECT DATABASE();')->fetch(PDO::FETCH_COLUMN);
 
         $this->assertSame($dbName, $usedDatabaseName);
@@ -112,5 +112,17 @@ final class MySqlDbTest extends AbstractDbTest
         $this->module->_after(Stub::makeEmpty(TestInterface::class));
 
         $this->module->dontSeeInDatabase('auto_increment_not_on_pk', $testData);
+    }
+
+    public function testHaveInDatabaseAutoIncrementOnCompositePrimaryKey()
+    {
+        $testData = [
+            'id' => 777,
+        ];
+        $this->module->haveInDatabase('auto_increment_on_composite_pk', $testData);
+        $this->module->seeInDatabase('auto_increment_on_composite_pk', $testData);
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
+
+        $this->module->dontSeeInDatabase('auto_increment_on_composite_pk', $testData);
     }
 }
