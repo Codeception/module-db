@@ -729,7 +729,7 @@ class Db extends Module implements DbInterface
         $databaseKey = empty($databaseKey) ?  self::DEFAULT_DATABASE : $databaseKey;
         $databaseConfig = empty($databaseConfig) ?  $this->config : $databaseConfig;
 
-        if (array_key_exists('populator', $databaseConfig) && !empty($databaseConfig['populator'])) {
+        if (!empty($databaseConfig['populator'])) {
             $this->loadDumpUsingPopulator($databaseKey, $databaseConfig);
             return;
         }
@@ -981,7 +981,9 @@ class Db extends Module implements DbInterface
 
         $result = $sth->fetch(PDO::FETCH_ASSOC, 0);
 
-        if ($result === false) throw new \AssertionError("No matching row found");
+        if ($result === false) {
+            throw new \AssertionError("No matching row found");
+        }
 
         return $result;
     }
