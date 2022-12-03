@@ -529,7 +529,6 @@ class Db extends Module implements DbInterface
     }
 
     /**
-     * @return bool|null|string|string[]
      * @throws ModuleConfigException
      */
     private function readSqlFile(string $filePath): ?string
