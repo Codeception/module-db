@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  php81:
+    image: codeception-module-db-php81:2.2.0
+    build:
+      context: .
+      dockerfile: ./php81.Dockerfile
+    environment:
+      MYSQL_DSN: "mysql:host=host.docker.internal;port=3102;dbname=codeception"
+      MYSQL_USER: root
+      MYSQL_PASSWORD: codeception
+      XDEBUG_MODE: "debug"
+      XDEBUG_CONFIG: "client_host=host.docker.internal; client_port=9000; mode=debug; start_wih_request=1"
+      PHP_IDE_CONFIG: "serverName=codeception-module-db" # the name must be the same as in your PHP -> Server -> "name" field
+    volumes:
+      - ".:/var/www/html"
+
+  mariadb105:
+    image: mariadb:10.5
+    environment:
+      MARIADB_ROOT_PASSWORD: codeception
+      MARIADB_DATABASE: codeception
+    ports:
+      - "3102:3306"
+
