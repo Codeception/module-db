@@ -729,7 +729,7 @@ class Db extends Module implements DbInterface
         $databaseKey = empty($databaseKey) ?  self::DEFAULT_DATABASE : $databaseKey;
         $databaseConfig = empty($databaseConfig) ?  $this->config : $databaseConfig;
 
-        if ($databaseConfig['populator']) {
+        if (!empty($databaseConfig['populator'])) {
             $this->loadDumpUsingPopulator($databaseKey, $databaseConfig);
             return;
         }
@@ -954,6 +954,77 @@ class Db extends Module implements DbInterface
     public function grabFromDatabase(string $table, string $column, array $criteria = [])
     {
         return $this->proceedSeeInDatabase($table, $column, $criteria);
+    }
+
+    /**
+     * Fetches a whole entry from a database.
+     * Make the test fail if the entry is not found.
+     * Provide table name, desired column and criteria.
+     *
+     * ``` php
+     * <?php
+     * $mail = $I->grabEntryFromDatabase('users', array('name' => 'Davert'));
+     * ```
+     * Comparison expressions can be used as well:
+     *
+     * ```php
+     * <?php
+     * $post = $I->grabEntryFromDatabase('posts', ['num_comments >=' => 100]);
+     * $user = $I->grabEntryFromDatabase('users', ['email like' => 'miles%']);
+     * ```
+     *
+     * Supported operators: `<`, `>`, `>=`, `<=`, `!=`, `like`.
+     *
+     * @return array Returns a single entry value
+     * @throws PDOException|Exception
+     */
+    public function grabEntryFromDatabase(string $table, array $criteria = []): array
+    {
+        $query      = $this->_getDriver()->select('*', $table, $criteria);
+        $parameters = array_values($criteria);
+        $this->debugSection('Query', $query);
+        $this->debugSection('Parameters', $parameters);
+        $sth = $this->_getDriver()->executeQuery($query, $parameters);
+
+        $result = $sth->fetch(PDO::FETCH_ASSOC, 0);
+
+        if ($result === false) {
+            throw new \AssertionError("No matching row found");
+        }
+
+        return $result;
+    }
+
+    /**
+     * Fetches a set of entries from a database.
+     * Provide table name and criteria.
+     *
+     * ``` php
+     * <?php
+     * $mail = $I->grabEntriesFromDatabase('users', array('name' => 'Davert'));
+     * ```
+     * Comparison expressions can be used as well:
+     *
+     * ```php
+     * <?php
+     * $post = $I->grabEntriesFromDatabase('posts', ['num_comments >=' => 100]);
+     * $user = $I->grabEntriesFromDatabase('users', ['email like' => 'miles%']);
+     * ```
+     *
+     * Supported operators: `<`, `>`, `>=`, `<=`, `!=`, `like`.
+     *
+     * @return array<array<string, mixed>> Returns an array of all matched rows
+     * @throws PDOException|Exception
+     */
+    public function grabEntriesFromDatabase(string $table, array $criteria = []): array
+    {
+        $query      = $this->_getDriver()->select('*', $table, $criteria);
+        $parameters = array_values($criteria);
+        $this->debugSection('Query', $query);
+        $this->debugSection('Parameters', $parameters);
+        $sth = $this->_getDriver()->executeQuery($query, $parameters);
+
+        return $sth->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

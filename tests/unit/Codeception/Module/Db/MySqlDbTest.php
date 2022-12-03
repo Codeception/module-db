@@ -91,6 +91,7 @@ final class MySqlDbTest extends AbstractDbTest
 
     public function testGrabColumnFromDatabase()
     {
+        $this->module->_beforeSuite();
         $emails = $this->module->grabColumnFromDatabase('users', 'email');
         $this->assertSame(
             [
@@ -100,6 +101,55 @@ final class MySqlDbTest extends AbstractDbTest
                 'charlie@parker.com',
             ],
             $emails);
+    }
+
+    public function testGrabEntryFromDatabaseShouldFailIfNotFound()
+    {
+        try {
+            $this->module->grabEntryFromDatabase('users', ['email' => 'doesnot@exist.info']);
+            $this->fail("should have thrown an exception");
+        } catch (\Throwable $t) {
+            $this->assertInstanceOf(AssertionError::class, $t);
+        }
+    }
+
+    public function testGrabEntryFromDatabaseShouldReturnASingleEntry()
+    {
+        $this->module->_beforeSuite();
+        $result = $this->module->grabEntryFromDatabase('users', ['is_active' => true]);
+
+        $this->assertArrayNotHasKey(0, $result);
+    }
+
+    public function testGrabEntryFromDatabaseShouldReturnAnAssocArray()
+    {
+        $this->module->_beforeSuite();
+        $result = $this->module->grabEntryFromDatabase('users', ['is_active' => true]);
+
+        $this->assertArrayHasKey('is_active', $result);
+    }
+
+    public function testGrabEntriesFromDatabaseShouldReturnAnEmptyArrayIfNoRowMatches()
+    {
+        $this->module->_beforeSuite();
+        $result = $this->module->grabEntriesFromDatabase('users', ['email' => 'doesnot@exist.info']);
+        $this->assertEquals([], $result);
+    }
+
+    public function testGrabEntriesFromDatabaseShouldReturnAllMatchedRows()
+    {
+        $this->module->_beforeSuite();
+        $result = $this->module->grabEntriesFromDatabase('users', ['is_active' => true]);
+
+        $this->assertCount(3, $result);
+    }
+
+    public function testGrabEntriesFromDatabaseShouldReturnASetOfAssocArray()
+    {
+        $this->module->_beforeSuite();
+        $result = $this->module->grabEntriesFromDatabase('users', ['is_active' => true]);
+
+        $this->assertEquals(true, array_key_exists('is_active', $result[0]));
     }
 
     public function testHaveInDatabaseAutoIncrementOnANonPrimaryKey()
