@@ -23,11 +23,13 @@ final class MySqlDbTest extends AbstractDbTest
     public function getConfig(): array
     {
         $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';
+        $user = getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root';
         $password = getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : '';
+        $dsn = getenv('MYSQL_DSN') ? getenv('MYSQL_DSN') : 'mysql:host='.$host.';dbname=codeception_test';
 
         return [
-            'dsn' => 'mysql:host='.$host.';dbname=codeception_test',
-            'user' => 'root',
+            'dsn' => $dsn,
+            'user' => $user,
             'password' => $password,
             'dump' => 'tests/data/dumps/mysql.sql',
             'reconnect' => true,
