@@ -150,6 +150,7 @@ final class MySqlDbTest extends AbstractDbTest
         $result = $this->module->grabEntriesFromDatabase('users', ['is_active' => true]);
 
         $this->assertEquals(true, array_key_exists('is_active', $result[0]));
+    }
 
     public function testHaveInDatabaseAutoIncrementOnANonPrimaryKey()
     {
