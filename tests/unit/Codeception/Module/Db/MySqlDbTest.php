@@ -150,5 +150,28 @@ final class MySqlDbTest extends AbstractDbTest
         $result = $this->module->grabEntriesFromDatabase('users', ['is_active' => true]);
 
         $this->assertEquals(true, array_key_exists('is_active', $result[0]));
+
+    public function testHaveInDatabaseAutoIncrementOnANonPrimaryKey()
+    {
+        $testData = [
+            'id' => 777,
+        ];
+        $this->module->haveInDatabase('auto_increment_not_on_pk', $testData);
+        $this->module->seeInDatabase('auto_increment_not_on_pk', $testData);
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
+
+        $this->module->dontSeeInDatabase('auto_increment_not_on_pk', $testData);
+    }
+
+    public function testHaveInDatabaseAutoIncrementOnCompositePrimaryKey()
+    {
+        $testData = [
+            'id' => 777,
+        ];
+        $this->module->haveInDatabase('auto_increment_on_composite_pk', $testData);
+        $this->module->seeInDatabase('auto_increment_on_composite_pk', $testData);
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
+
+        $this->module->dontSeeInDatabase('auto_increment_on_composite_pk', $testData);
     }
 }
