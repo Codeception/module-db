@@ -759,8 +759,8 @@ class Db extends Module implements DbInterface
     }
 
     /**
-     * Inserts an SQL record into a database. This record will be erased after the test, 
-     * unless you've configured "skip_cleanup_if_failed", and the test fails. 
+     * Inserts an SQL record into a database. This record will be erased after the test,
+     * unless you've configured "skip_cleanup_if_failed", and the test fails.
      *
      * ```php
      * <?php
@@ -801,8 +801,15 @@ class Db extends Module implements DbInterface
         $primaryKey = $this->_getDriver()->getPrimaryKey($table);
         $primary = [];
         if ($primaryKey !== []) {
-            if ($id && count($primaryKey) === 1) {
-                $primary [$primaryKey[0]] = $id;
+            $filledKeys = array_intersect($primaryKey, array_keys($row));
+            $missingPrimaryKeyColumns = array_diff_key($primaryKey, $filledKeys);
+
+            if (count($missingPrimaryKeyColumns) === 0) {
+                $primary = array_intersect_key($row, array_flip($primaryKey));
+            } elseif (count($missingPrimaryKeyColumns) === 1) {
+                $primary = array_intersect_key($row, array_flip($primaryKey));
+                $missingColumn = reset($missingPrimaryKeyColumns);
+                $primary[$missingColumn] = $id;
             } else {
                 foreach ($primaryKey as $column) {
                     if (isset($row[$column])) {
