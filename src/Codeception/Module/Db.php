@@ -529,7 +529,7 @@ class Db extends Module implements DbInterface
     }
 
     /**
-     * @throws ModuleConfigException
+     * @throws ModuleConfigException|ModuleException
      */
     private function readSqlFile(string $filePath): ?string
     {
@@ -545,7 +545,16 @@ class Db extends Module implements DbInterface
         $sql = file_get_contents(Configuration::projectDir() . $filePath);
 
         // remove C-style comments (except MySQL directives)
-        return preg_replace('#/\*(?!!\d+).*?\*/#s', '', $sql);
+        $replaced = preg_replace('#/\*(?!!\d+).*?\*/#s', '', $sql);
+
+        if (!empty($sql) && is_null($replaced)) {
+            throw new ModuleException(
+                __CLASS__,
+                "Please, increase pcre.backtrack_limit value in PHP CLI config"
+            );
+        }
+
+        return $replaced;
     }
 
     private function connect($databaseKey, $databaseConfig): void
