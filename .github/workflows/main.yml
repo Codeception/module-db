@@ -32,7 +32,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      sqlsrv:
+      mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           SA_PASSWORD: yourStrong(!)Password
