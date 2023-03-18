@@ -28,6 +28,7 @@ SET default_with_oids = false;
 DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users (
     name character varying(30),
+    uuid bytea,
     email character varying(50),
     created_at timestamp without time zone DEFAULT now(),
     id integer NOT NULL
@@ -181,6 +182,7 @@ ALTER SEQUENCE permissions_id_seq OWNED BY permissions.id;
 DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users (
     name character varying(30),
+    uuid bytea,
     email character varying(50),
     created_at timestamp without time zone DEFAULT now(),
     id integer NOT NULL
@@ -332,11 +334,11 @@ SELECT pg_catalog.setval('permissions_id_seq', 10, true);
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY users (name, email, created_at, id) FROM stdin;
-davert	davert@mail.ua	\N	1
-nick	nick@mail.ua	2012-02-02 22:30:31.748	2
-miles	miles@davis.com	2012-02-02 22:30:52.166	3
-bird	charlie@parker.com	2012-02-02 22:32:13.107	4
+COPY users (name, uuid, email, created_at, id) FROM stdin;
+davert	\\x11edc34b01d972fa9c1d0242ac120006	davert@mail.ua	\N	1
+nick	NULL	nick@mail.ua	2012-02-02 22:30:31.748	2
+miles	NULL	miles@davis.com	2012-02-02 22:30:52.166	3
+bird	NULL	charlie@parker.com	2012-02-02 22:32:13.107	4
 \.
 
 
