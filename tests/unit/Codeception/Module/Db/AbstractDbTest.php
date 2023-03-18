@@ -64,6 +64,11 @@ abstract class AbstractDbTest extends Unit
         $this->module->_afterSuite();
     }
 
+    public function testSeeInDatabaseWithBinary()
+    {
+        $this->module->seeInDatabase('users', ['uuid' => hex2bin('11edc34b01d972fa9c1d0242ac120006')]);
+    }
+
     public function testSeeInDatabase()
     {
         $this->module->seeInDatabase('users', ['name' => 'davert']);
@@ -71,6 +76,7 @@ abstract class AbstractDbTest extends Unit
 
     public function testCountInDatabase()
     {
+        $this->module->seeNumRecords(1, 'users', ['uuid' => hex2bin('11edc34b01d972fa9c1d0242ac120006')]);
         $this->module->seeNumRecords(1, 'users', ['name' => 'davert']);
         $this->module->seeNumRecords(0, 'users', ['name' => 'davert', 'email' => 'xxx@yyy.zz']);
         $this->module->seeNumRecords(0, 'users', ['name' => 'user1']);
@@ -78,6 +84,7 @@ abstract class AbstractDbTest extends Unit
 
     public function testDontSeeInDatabase()
     {
+        $this->module->dontSeeInDatabase('users', ['uuid' => hex2bin('ffffffffffffffffffffffffffffffff')]);
         $this->module->dontSeeInDatabase('users', ['name' => 'user1']);
     }
 

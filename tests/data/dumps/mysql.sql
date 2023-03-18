@@ -16,6 +16,7 @@ insert  into `groups`(`id`,`name`,`enabled`,`created_at`) values (2,'jazzman',0,
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uuid` binary(16) DEFAULT NULL,
   `name` varchar(30) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `is_active` bit(1) DEFAULT b'1',
@@ -24,13 +25,13 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-insert  into `users`(`id`,`name`,`email`, `is_active`,`created_at`) values (1,'davert','davert@mail.ua', b'1','2012-02-01 21:17:04');
+insert  into `users`(`id`,`uuid`, `name`,`email`, `is_active`,`created_at`) values (1,0x11edc34b01d972fa9c1d0242ac120006,'davert','davert@mail.ua', b'1','2012-02-01 21:17:04');
 
-insert  into `users`(`id`,`name`,`email`, `is_active`,`created_at`) values (2,'nick','nick@mail.ua', b'1','2012-02-01 21:17:15');
+insert  into `users`(`id`,`uuid`, `name`,`email`, `is_active`,`created_at`) values (2,null,'nick','nick@mail.ua', b'1','2012-02-01 21:17:15');
 
-insert  into `users`(`id`,`name`,`email`, `is_active`,`created_at`) values (3,'miles','miles@davis.com', b'1','2012-02-01 21:17:25');
+insert  into `users`(`id`,`uuid`, `name`,`email`, `is_active`,`created_at`) values (3,null,'miles','miles@davis.com', b'1','2012-02-01 21:17:25');
 
-insert  into `users`(`id`,`name`,`email`, `is_active`,`created_at`) values (4,'bird','charlie@parker.com', b'0','2012-02-01 21:17:39');
+insert  into `users`(`id`,`uuid`, `name`,`email`, `is_active`,`created_at`) values (4,null,'bird','charlie@parker.com', b'0','2012-02-01 21:17:39');
 
 
 
