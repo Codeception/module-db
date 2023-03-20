@@ -2,19 +2,25 @@ version: "3.9"
 
 services:
   php81:
+    container_name: codeception-module-db
     image: codeception-module-db-php81:2.2.0
     build:
       context: .
       dockerfile: ./php81.Dockerfile
     environment:
       MYSQL_DSN: "mysql:host=host.docker.internal;port=3102;dbname=codeception"
+      MYSQL_HOST: "host.docker.internal"
       MYSQL_USER: root
       MYSQL_PASSWORD: codeception
       XDEBUG_MODE: "debug"
       XDEBUG_CONFIG: "client_host=host.docker.internal; client_port=9000; mode=debug; start_wih_request=1"
       PHP_IDE_CONFIG: "serverName=codeception-module-db" # the name must be the same as in your PHP -> Server -> "name" field
+      PGDSN: "pgsql:host=host.docker.internal;dbname=codeception_test"
+      PGPASSWORD: postgres
     volumes:
       - ".:/var/www/html"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   mariadb105:
     image: mariadb:10.5
@@ -24,3 +30,10 @@ services:
     ports:
       - "3102:3306"
 
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: codeception_test
+    ports:
+      - "5432:5432"
