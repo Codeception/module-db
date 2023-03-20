@@ -7,9 +7,10 @@ RUN apt-get update && \
         git \
         zlib1g-dev \
         libzip-dev \
-		mariadb-client-10.5
+        libpq-dev \
+        mariadb-client-10.5
 
-RUN docker-php-ext-install pdo pdo_mysql && docker-php-ext-enable pdo pdo_mysql
+RUN docker-php-ext-install pdo pdo_mysql pgsql pdo_pgsql && docker-php-ext-enable pdo pdo_mysql pgsql pdo_pgsql
 RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
 RUN docker-php-ext-install zip
 
@@ -21,7 +22,6 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 COPY composer.json .
-COPY composer.lock .
 
 RUN composer install --no-autoloader
 

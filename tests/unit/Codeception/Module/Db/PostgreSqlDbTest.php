@@ -23,9 +23,10 @@ final class PostgreSqlDbTest extends AbstractDbTest
         }
 
         $password = getenv('PGPASSWORD') ? getenv('PGPASSWORD') : null;
+        $dsn = getenv('PGDSN') ? getenv('PGDSN') : 'pgsql:host=localhost;dbname=codeception_test';
 
         return [
-            'dsn' => 'pgsql:host=localhost;dbname=codeception_test',
+            'dsn' => $dsn,
             'user' => 'postgres',
             'password' => $password,
             'dump' => 'tests/data/dumps/postgres.sql',
