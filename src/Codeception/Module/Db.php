@@ -529,7 +529,7 @@ class Db extends Module implements DbInterface
     }
 
     /**
-     * @throws ModuleConfigException
+     * @throws ModuleConfigException|ModuleException
      */
     private function readSqlFile(string $filePath): ?string
     {
@@ -545,7 +545,16 @@ class Db extends Module implements DbInterface
         $sql = file_get_contents(Configuration::projectDir() . $filePath);
 
         // remove C-style comments (except MySQL directives)
-        return preg_replace('#/\*(?!!\d+).*?\*/#s', '', $sql);
+        $replaced = preg_replace('#/\*(?!!\d+).*?\*/#s', '', $sql);
+
+        if (!empty($sql) && is_null($replaced)) {
+            throw new ModuleException(
+                __CLASS__,
+                "Please, increase pcre.backtrack_limit value in PHP CLI config"
+            );
+        }
+
+        return $replaced;
     }
 
     private function connect($databaseKey, $databaseConfig): void
@@ -836,7 +845,7 @@ class Db extends Module implements DbInterface
         $this->assertGreaterThan(
             0,
             $res,
-            'No matching records found for criteria ' . json_encode($criteria, JSON_THROW_ON_ERROR) . ' in table ' . $table
+            'No matching records found for criteria ' . json_encode($criteria, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE) . ' in table ' . $table
         );
     }
 
@@ -862,7 +871,7 @@ class Db extends Module implements DbInterface
                 'The number of found rows (%d) does not match expected number %d for criteria %s in table %s',
                 $actualNumber,
                 $expectedNumber,
-                json_encode($criteria, JSON_THROW_ON_ERROR),
+                json_encode($criteria, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE),
                 $table
             )
         );
@@ -874,7 +883,7 @@ class Db extends Module implements DbInterface
         $this->assertLessThan(
             1,
             $count,
-            'Unexpectedly found matching records for criteria ' . json_encode($criteria, JSON_THROW_ON_ERROR) . ' in table ' . $table
+            'Unexpectedly found matching records for criteria ' . json_encode($criteria, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE) . ' in table ' . $table
         );
     }
 

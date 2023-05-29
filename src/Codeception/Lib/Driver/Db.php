@@ -294,6 +294,8 @@ class Db
                 $type = PDO::PARAM_BOOL;
             } elseif (is_int($param)) {
                 $type = PDO::PARAM_INT;
+            } elseif ($this->isBinary($param)) {
+                $type = PDO::PARAM_LOB;
             } else {
                 $type = PDO::PARAM_STR;
             }
@@ -341,5 +343,10 @@ class Db
     public function getOptions(): array
     {
         return $this->options;
+    }
+
+    protected function isBinary(string $string): bool
+    {
+        return false === mb_detect_encoding($string, null, true);
     }
 }
