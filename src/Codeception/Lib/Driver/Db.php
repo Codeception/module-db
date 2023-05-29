@@ -250,7 +250,7 @@ class Db
 
     public function lastInsertId(string $tableName): string
     {
-        return $this->getDbh()->lastInsertId();
+        return (string)$this->getDbh()->lastInsertId();
     }
 
     public function getQuotedName(string $name): string
