@@ -176,4 +176,17 @@ final class MySqlDbTest extends AbstractDbTest
 
         $this->module->dontSeeInDatabase('auto_increment_on_composite_pk', $testData);
     }
+
+    public function testHaveInDatabaseWithoutAnyAutoIncrement()
+    {
+        $testData = [
+            'id' => 777,
+            'field' => 'codeception',
+        ];
+        $this->module->haveInDatabase('no_auto_increment_at_all', $testData);
+        $this->module->seeInDatabase('no_auto_increment_at_all', $testData);
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
+
+        $this->module->dontSeeInDatabase('no_auto_increment_at_all', $testData);
+    }
 }
