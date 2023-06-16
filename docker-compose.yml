@@ -2,12 +2,12 @@ version: "3.9"
 
 services:
   php81:
-    image: codeception-module-db-php81:2.2.0
+    image: codeception-module-db-php81:3.x
     build:
       context: .
       dockerfile: ./php81.Dockerfile
     environment:
-      MYSQL_DSN: "mysql:host=host.docker.internal;port=3102;dbname=codeception"
+      MYSQL_DSN: "mysql:host=mariadb105;port=3102;dbname=codeception"
       MYSQL_USER: root
       MYSQL_PASSWORD: codeception
       XDEBUG_MODE: "debug"
