@@ -32,7 +32,7 @@ WORKDIR /var/www/html
 COPY composer.json .
 COPY composer.lock .
 
-RUN composer install --no-autoloader
+RUN composer install --no-interaction --no-autoloader --prefer-dist
 
 COPY . .
 
