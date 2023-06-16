@@ -7,7 +7,7 @@ RUN apt-get update && \
         git \
         zlib1g-dev \
         libzip-dev \
-		mariadb-client-10.5
+		mariadb-client
 
 RUN docker-php-ext-install pdo pdo_mysql && docker-php-ext-enable pdo pdo_mysql
 RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
