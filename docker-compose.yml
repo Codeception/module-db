@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./php81.Dockerfile
     environment:
-      MYSQL_DSN: ${MYSQL_DSN:-mysql:host=mariadb105;port=3306;dbname=codeception}
+      MYSQL_DSN: ${MYSQL_DSN:-mysql:host=mysql57;port=3306;dbname=codeception}
       MYSQL_USER: ${MYSQL_USER:-root}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-codeception}
       XDEBUG_MODE: "debug"
@@ -16,11 +16,12 @@ services:
     volumes:
       - ".:/var/www/html"
 
-  mariadb105:
-    image: mariadb:10.5
+  mysql57:
+    image: mysql:5.7
+    platform: linux/amd64
     environment:
-      MARIADB_ROOT_PASSWORD: codeception
-      MARIADB_DATABASE: codeception
+      MYSQL_ROOT_PASSWORD: codeception
+      MYSQL_DATABASE: codeception
     ports:
       - "3102:3306"
 

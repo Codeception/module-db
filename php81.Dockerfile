@@ -30,9 +30,9 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 COPY composer.json .
-COPY composer.lock .
+COPY composer.loc[k] .
 
-RUN composer install --no-interaction --no-autoloader --prefer-dist
+RUN composer install --no-interaction --no-autoloader
 
 COPY . .
 
