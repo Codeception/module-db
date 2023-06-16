@@ -57,4 +57,4 @@ jobs:
       run: php vendor/bin/codecept run
       env:
         PGPASSWORD: postgres
-        MYSQL_HOST: 127.0.0.1
+        MYSQL_DSN: "mysql:host=127.0.0.1;port=3306;dbname=codeception_test"
