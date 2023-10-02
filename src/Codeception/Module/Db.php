@@ -52,6 +52,7 @@ use PDOException;
  * * password *required* - password
  * * dump - path to database dump
  * * populate: false - whether the the dump should be loaded before the test suite is started
+ * * connection_callback: false - use connection from some other module or create connection on your own way; Example: ['MyDb', 'getConnection'] # Call the static method `MyDb::getConnection`
  * * cleanup: false - whether the dump should be reloaded before each test
  * * reconnect: false - whether the module should reconnect to the database before each test
  * * waitlock: 0 - wait lock (in seconds) that the database session should use for DDL statements
@@ -261,6 +262,7 @@ class Db extends Module implements DbInterface
         'waitlock' => 0,
         'dump' => null,
         'populator' => null,
+        'connection_callback' => false,
         'skip_cleanup_if_failed' => false,
     ];
 
@@ -591,8 +593,13 @@ class Db extends Module implements DbInterface
         }
 
         try {
-            $this->debugSection('Connecting To Db', ['config' => $databaseConfig, 'options' => $options]);
-            $this->drivers[$databaseKey] = Driver::create($databaseConfig['dsn'], $databaseConfig['user'], $databaseConfig['password'], $options);
+            if (is_callable($databaseConfig['connection_callback'])) {
+                $this->debugSection('Using connection callback', []);
+                $this->drivers[$databaseKey] = call_user_func_array($databaseConfig['connection_callback'], [$databaseKey, $databaseConfig, $this]);
+            } else {
+                $this->debugSection('Connecting To Db', ['config' => $databaseConfig, 'options' => $options]);
+                $this->drivers[$databaseKey] = Driver::create($databaseConfig['dsn'], $databaseConfig['user'], $databaseConfig['password'], $options);
+            }
         } catch (PDOException $exception) {
             $message = $exception->getMessage();
             if ($message === 'could not find driver') {
