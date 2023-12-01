@@ -290,7 +290,9 @@ class Db
         $i = 0;
         foreach ($params as $param) {
             ++$i;
-            if (is_bool($param)) {
+            if (is_null($param)) {
+                $type = PDO::PARAM_NULL;
+            } elseif (is_bool($param)) {
                 $type = PDO::PARAM_BOOL;
             } elseif (is_int($param)) {
                 $type = PDO::PARAM_INT;

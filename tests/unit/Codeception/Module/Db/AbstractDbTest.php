@@ -69,6 +69,11 @@ abstract class AbstractDbTest extends Unit
         $this->module->seeInDatabase('users', ['uuid' => hex2bin('11edc34b01d972fa9c1d0242ac120006')]);
     }
 
+    public function testSeeInDatabaseWithNull()
+    {
+        $this->module->seeInDatabase('users', ['uuid' => null]);
+    }
+
     public function testSeeInDatabase()
     {
         $this->module->seeInDatabase('users', ['name' => 'davert']);
