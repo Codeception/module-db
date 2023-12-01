@@ -296,7 +296,7 @@ class Db
                 $type = PDO::PARAM_BOOL;
             } elseif (is_int($param)) {
                 $type = PDO::PARAM_INT;
-            } elseif ($this->isBinary($param)) {
+            } elseif (is_string($param) && $this->isBinary($param)) {
                 $type = PDO::PARAM_LOB;
             } else {
                 $type = PDO::PARAM_STR;
