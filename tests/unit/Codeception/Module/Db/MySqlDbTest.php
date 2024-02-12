@@ -22,10 +22,9 @@ final class MySqlDbTest extends AbstractDbTest
 
     public function getConfig(): array
     {
-        $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';
         $user = getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root';
         $password = getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : '';
-        $dsn = getenv('MYSQL_DSN') ? getenv('MYSQL_DSN') : 'mysql:host='.$host.';dbname=codeception_test';
+        $dsn = getenv('MYSQL_DSN') ? getenv('MYSQL_DSN') : '';
 
         return [
             'dsn' => $dsn,
@@ -176,5 +175,18 @@ final class MySqlDbTest extends AbstractDbTest
         $this->module->_after(Stub::makeEmpty(TestInterface::class));
 
         $this->module->dontSeeInDatabase('auto_increment_on_composite_pk', $testData);
+    }
+
+    public function testHaveInDatabaseWithoutAnyAutoIncrement()
+    {
+        $testData = [
+            'id' => 777,
+            'field' => 'codeception',
+        ];
+        $this->module->haveInDatabase('no_auto_increment_at_all', $testData);
+        $this->module->seeInDatabase('no_auto_increment_at_all', $testData);
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
+
+        $this->module->dontSeeInDatabase('no_auto_increment_at_all', $testData);
     }
 }

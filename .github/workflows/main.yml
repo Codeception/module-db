@@ -51,10 +51,10 @@ jobs:
       run: composer validate
 
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-interaction --no-suggest
+      run: composer install --no-progress --no-interaction
 
     - name: Run test suite
       run: php vendor/bin/codecept run
       env:
         PGPASSWORD: postgres
-        MYSQL_HOST: 127.0.0.1
+        MYSQL_DSN: "mysql:host=127.0.0.1;port=3306;dbname=codeception_test"

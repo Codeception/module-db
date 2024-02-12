@@ -112,6 +112,12 @@ CREATE TABLE `auto_increment_on_composite_pk` (
 PRIMARY KEY (`id`, `counter`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE `no_auto_increment_at_all` (
+    `id` int(11) NOT NULL,
+    `field` varchar(255) NOT NULL,
+PRIMARY KEY (`id`, `field`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `empty_table` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `field` varchar(255),
