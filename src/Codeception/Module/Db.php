@@ -63,29 +63,29 @@ use PDOException;
  * * databases - include more database configs and switch between them in tests.
  * * initial_queries - list of queries to be executed right after connection to the database has been initiated, i.e. creating the database if it does not exist or preparing the database collation
  * * skip_cleanup_if_failed - Do not perform the cleanup if the tests failed. If this is used, manual cleanup might be required when re-running
- * ## Example
  *
- *     modules:
- *        enabled:
- *           - Db:
- *              dsn: 'mysql:host=localhost;dbname=testdb'
- *              user: 'root'
- *              password: ''
- *              dump: 'tests/_data/dump.sql'
- *              populate: true
- *              cleanup: true
- *              reconnect: true
- *              waitlock: 10
- *              skip_cleanup_if_failed: true
- *              ssl_key: '/path/to/client-key.pem'
- *              ssl_cert: '/path/to/client-cert.pem'
- *              ssl_ca: '/path/to/ca-cert.pem'
- *              ssl_verify_server_cert: false
- *              ssl_cipher: 'AES256-SHA'
- *              initial_queries:
- *                  - 'CREATE DATABASE IF NOT EXISTS temp_db;'
- *                  - 'USE temp_db;'
- *                  - 'SET NAMES utf8;'
+ * ## Example
+ * modules:
+ *  enabled:
+ *   - Db:
+ *       dsn: 'mysql:host=localhost;dbname=testdb'
+ *       user: 'root'
+ *       password: ''
+ *       dump: 'tests/_data/dump.sql'
+ *       populate: true
+ *       cleanup: true
+ *       reconnect: true
+ *       waitlock: 10
+ *       skip_cleanup_if_failed: true
+ *       ssl_key: '/path/to/client-key.pem'
+ *       ssl_cert: '/path/to/client-cert.pem'
+ *       ssl_ca: '/path/to/ca-cert.pem'
+ *       ssl_verify_server_cert: false
+ *       ssl_cipher: 'AES256-SHA'
+ *       initial_queries:
+ *         - 'CREATE DATABASE IF NOT EXISTS temp_db;'
+ *         - 'USE temp_db;'
+ *         - 'SET NAMES utf8;'
  *
  * ## Example with multi-dumps
  *     modules:
