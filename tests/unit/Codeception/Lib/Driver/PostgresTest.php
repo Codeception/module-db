@@ -27,10 +27,26 @@ final class PostgresTest extends Unit
         if (!function_exists('pg_connect')) {
             return;
         }
-        self::$config['password'] = getenv('PGPASSWORD') ? getenv('PGPASSWORD') : null;
-        $sql = file_get_contents(codecept_data_dir('dumps/postgres.sql'));
+
+        $host = getenv('PG_HOST') ?: 'localhost';
+        $user = getenv('PG_USER') ?: 'postgres';
+        $password = getenv('PG_PASSWORD') ?: null;
+        $database = getenv('PG_DB') ?: 'codeception_test';
+        $dsn = getenv('PG_DSN') ?: 'pgsql:host=' . $host . ';dbname=' . $database;
+
+        self::$config['dsn'] = $dsn;
+        self::$config['user'] = $user;
+        self::$config['password'] = $password;
+
+        $sql = file_get_contents(\Codeception\Configuration::dataDir() . '/dumps/postgres.sql');
         $sql = preg_replace('#/\*(?:(?!\*/).)*\*/#s', '', $sql);
         self::$sql = explode("\n", $sql);
+
+        try {
+            $postgres = Db::create(self::$config['dsn'], self::$config['user'], self::$config['password']);
+            $postgres->cleanup();
+        } catch (Exception $e) {
+        }
     }
 
     public function _setUp()
