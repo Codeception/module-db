@@ -66,6 +66,13 @@ abstract class AbstractDbTest extends Unit
 
     public function testSeeInDatabaseWithBinary()
     {
+        if (
+            $this instanceof MssqlSqlSrvDbTest
+            || $this instanceof MssqlDblibDbTest
+        ) {
+            $this->markTestSkipped('Filter to binary field does not supported by SqlSrv driver');
+        }
+
         $this->module->seeInDatabase('users', ['uuid' => hex2bin('11edc34b01d972fa9c1d0242ac120006')]);
     }
 
@@ -81,16 +88,38 @@ abstract class AbstractDbTest extends Unit
 
     public function testCountInDatabase()
     {
-        $this->module->seeNumRecords(1, 'users', ['uuid' => hex2bin('11edc34b01d972fa9c1d0242ac120006')]);
         $this->module->seeNumRecords(1, 'users', ['name' => 'davert']);
         $this->module->seeNumRecords(0, 'users', ['name' => 'davert', 'email' => 'xxx@yyy.zz']);
         $this->module->seeNumRecords(0, 'users', ['name' => 'user1']);
     }
 
+    public function testCountInDatabaseWithBinary()
+    {
+        if (
+            $this instanceof MssqlSqlSrvDbTest
+            || $this instanceof MssqlDblibDbTest
+        ) {
+            $this->markTestSkipped('Filter to binary field does not supported by SqlSrv driver');
+        }
+
+        $this->module->seeNumRecords(1, 'users', ['uuid' => hex2bin('11edc34b01d972fa9c1d0242ac120006')]);
+    }
+
     public function testDontSeeInDatabase()
     {
-        $this->module->dontSeeInDatabase('users', ['uuid' => hex2bin('ffffffffffffffffffffffffffffffff')]);
         $this->module->dontSeeInDatabase('users', ['name' => 'user1']);
+    }
+
+    public function testDontSeeInDatabaseWithBinary()
+    {
+        if (
+            $this instanceof MssqlSqlSrvDbTest
+            || $this instanceof MssqlDblibDbTest
+        ) {
+            $this->markTestSkipped('Filter to binary field does not supported by SqlSrv driver');
+        }
+
+        $this->module->dontSeeInDatabase('users', ['uuid' => hex2bin('ffffffffffffffffffffffffffffffff')]);
     }
 
     public function testDontSeeInDatabaseWithEmptyTable()

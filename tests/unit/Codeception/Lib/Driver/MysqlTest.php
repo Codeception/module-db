@@ -25,9 +25,15 @@ final class MysqlTest extends Unit
 
     public static function _setUpBeforeClass()
     {
-        $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';
-        self::$config['dsn'] = 'mysql:host='.$host.';dbname=codeception_test';
-        self::$config['password'] = getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : '';
+        $host = getenv('MYSQL_HOST') ?: 'localhost';
+        $user = getenv('MYSQL_USER') ?: 'root';
+        $password = getenv('MYSQL_PASSWORD') ?: '';
+        $database = getenv('MYSQL_DB') ?: 'codeception_test';
+        $dsn = getenv('MYSQL_DSN') ?: 'mysql:host=' . $host . ';dbname=' . $database;
+
+        self::$config['dsn'] = $dsn;
+        self::$config['user'] = $user;
+        self::$config['password'] = $password;
 
         $sql = file_get_contents(\Codeception\Configuration::dataDir() . '/dumps/mysql.sql');
         $sql = preg_replace('#/\*(?:(?!\*/).)*\*/#s', "", $sql);

@@ -7,20 +7,46 @@ services:
       context: .
       dockerfile: ./php81.Dockerfile
     environment:
-      MYSQL_DSN: "mysql:host=host.docker.internal;port=3102;dbname=codeception"
-      MYSQL_USER: root
+      MYSQL_HOST: host.docker.internal
+      MYSQL_DB: codeception
       MYSQL_PASSWORD: codeception
+      PG_HOST: host.docker.internal
+      PG_DB: codeception
+      PG_PASSWORD: codeception
+      MSSQL_HOST: host.docker.internal
+      MSSQL_DB: codeception
+      MSSQL_PASSWORD: 'P@ssw0rd'
       XDEBUG_MODE: "debug"
       XDEBUG_CONFIG: "client_host=host.docker.internal; client_port=9000; mode=debug; start_wih_request=1"
       PHP_IDE_CONFIG: "serverName=codeception-module-db" # the name must be the same as in your PHP -> Server -> "name" field
     volumes:
       - ".:/var/www/html"
 
-  mariadb105:
-    image: mariadb:10.5
+  mysql:
+    image: mysql:5.7
     environment:
-      MARIADB_ROOT_PASSWORD: codeception
-      MARIADB_DATABASE: codeception
+      MYSQL_ROOT_PASSWORD: codeception
+      MYSQL_DATABASE: codeception
     ports:
-      - "3102:3306"
+      - "3306:3306"
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: codeception
+      POSTGRES_DB: codeception
+    ports:
+      - "5432:5432"
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: 'P@ssw0rd'
+      MSSQL_DATABASE: codeception
+      ACCEPT_EULA: 'Y'
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./tests/data/scripts:/scripts:ro
+    entrypoint: [ "/bin/bash", "-c", "/scripts/mssql.sh" ]
 
