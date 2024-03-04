@@ -1,4 +1,4 @@
-FROM php:8.1-cli
+FROM php:8.1-fpm
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 
@@ -10,7 +10,7 @@ RUN apt-get update && \
         zlib1g-dev \
         libzip-dev \
         libpq-dev \
-        mariadb-client-10.5
+        default-mysql-client
 
 RUN install-php-extensions \
     pdo_mysql-stable \
