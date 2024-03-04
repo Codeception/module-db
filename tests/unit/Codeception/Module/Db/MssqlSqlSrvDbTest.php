@@ -24,7 +24,7 @@ final class MssqlSqlSrvDbTest extends AbstractDbTest
         $user = getenv('MSSQL_USER') ?: 'sa';
         $password = getenv('MSSQL_PASSWORD') ?: '';
         $database = getenv('MSSQL_DB') ?: 'codeception_test';
-        $dsn = getenv('MSSQL_DSN') ?: 'sqlsrv:Server=' . $host . ';Database=' . $database;
+        $dsn = getenv('MSSQL_DSN') ?: 'sqlsrv:Server=' . $host . ';Database=' . $database . ';Encrypt=no;TrustServerCertificate=yes';
 
         return [
             'dsn' => $dsn,

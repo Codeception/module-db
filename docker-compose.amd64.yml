@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  php:
+    platform: linux/amd64
+
+  mysql:
+    platform: linux/amd64
+
+  postgres:
+    platform: linux/amd64
+
+  mssql:
+    platform: linux/amd64
+
+  wait:
+    platform: linux/amd64
