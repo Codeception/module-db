@@ -2,21 +2,15 @@
 
 declare(strict_types=1);
 
-use Codeception\Configuration;
 use Codeception\Stub;
 use Codeception\TestInterface;
 
-require_once Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
-
-/**
- * @group db
- */
 final class MySqlDbTest extends AbstractDbTest
 {
     public function getPopulator(): string
     {
         $config = $this->getConfig();
-        $password = $config['password'] ? '-p'.$config['password'] : '';
+        $password = $config['password'] ? '-p' . $config['password'] : '';
         return sprintf('mysql -u $user %s $dbname < %s', $password, $config['dump']);
     }
 
@@ -103,7 +97,8 @@ final class MySqlDbTest extends AbstractDbTest
                 'miles@davis.com',
                 'charlie@parker.com',
             ],
-            $emails);
+            $emails
+        );
     }
 
     public function testGrabEntryFromDatabaseShouldFailIfNotFound()

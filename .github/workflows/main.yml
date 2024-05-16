@@ -3,7 +3,28 @@ name: CI
 on: [push, pull_request]
 
 jobs:
+  phpcs:
+    name: Code style
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: phpcs
+
+      - name: Check production code style
+        run: composer cs-prod
+
+      - name: Check test code style
+        run: composer cs-tests
+
   tests:
+    name: Unit tests
     runs-on: ubuntu-latest
 
     services:
@@ -53,7 +74,7 @@ jobs:
       run: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd' -Q 'CREATE DATABASE codeception_test'
 
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2

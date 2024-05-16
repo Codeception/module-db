@@ -74,7 +74,7 @@ class DbPopulator
 
         foreach ($vars as $key => $value) {
             if (!is_array($value)) {
-                $vars['$'.$key] = $value;
+                $vars['$' . $key] = $value;
             }
 
             unset($vars[$key]);

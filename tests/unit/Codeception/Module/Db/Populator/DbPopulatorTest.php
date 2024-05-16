@@ -5,10 +5,6 @@ declare(strict_types=1);
 use Codeception\Lib\DbPopulator;
 use Codeception\Test\Unit;
 
-/**
- * @group db
- * Class DbPopulatorTest
- */
 final class DbPopulatorTest extends Unit
 {
     public function testCommandBuilderInterpolatesVariables()

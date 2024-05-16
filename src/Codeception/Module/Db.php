@@ -565,38 +565,43 @@ class Db extends Module implements DbInterface
 
         $options = [];
 
-        if (array_key_exists('ssl_key', $databaseConfig)
+        if (
+            array_key_exists('ssl_key', $databaseConfig)
             && !empty($databaseConfig['ssl_key'])
             && defined(PDO::class . '::MYSQL_ATTR_SSL_KEY')
         ) {
             $options[PDO::MYSQL_ATTR_SSL_KEY] = (string) $databaseConfig['ssl_key'];
         }
 
-        if (array_key_exists('ssl_cert', $databaseConfig)
+        if (
+            array_key_exists('ssl_cert', $databaseConfig)
             && !empty($databaseConfig['ssl_cert'])
             && defined(PDO::class . '::MYSQL_ATTR_SSL_CERT')
         ) {
             $options[PDO::MYSQL_ATTR_SSL_CERT] = (string) $databaseConfig['ssl_cert'];
         }
 
-        if (array_key_exists('ssl_ca', $databaseConfig)
+        if (
+            array_key_exists('ssl_ca', $databaseConfig)
             && !empty($databaseConfig['ssl_ca'])
             && defined(PDO::class . '::MYSQL_ATTR_SSL_CA')
         ) {
             $options[PDO::MYSQL_ATTR_SSL_CA] = (string) $databaseConfig['ssl_ca'];
         }
 
-        if (array_key_exists('ssl_cipher', $databaseConfig)
+        if (
+            array_key_exists('ssl_cipher', $databaseConfig)
             && !empty($databaseConfig['ssl_cipher'])
             && defined(PDO::class . '::MYSQL_ATTR_SSL_CIPHER')
         ) {
             $options[PDO::MYSQL_ATTR_SSL_CIPHER] = (string) $databaseConfig['ssl_cipher'];
         }
 
-        if (array_key_exists('ssl_verify_server_cert', $databaseConfig)
+        if (
+            array_key_exists('ssl_verify_server_cert', $databaseConfig)
             && defined(PDO::class . '::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')
         ) {
-            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = (boolean) $databaseConfig[ 'ssl_verify_server_cert' ];
+            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = (bool) $databaseConfig[ 'ssl_verify_server_cert' ];
         }
 
         try {
@@ -672,7 +677,7 @@ class Db extends Module implements DbInterface
             try {
                 $this->_getDriver()->deleteQueryByCriteria($row['table'], $row['primary']);
             } catch (Exception $e) {
-                $this->debug("Couldn't delete record " . json_encode($row['primary'], JSON_THROW_ON_ERROR) ." from {$row['table']}");
+                $this->debug("Couldn't delete record " . json_encode($row['primary'], JSON_THROW_ON_ERROR) . " from {$row['table']}");
             }
         }
 
