@@ -21,11 +21,25 @@
         "ext-pdo": "*",
         "codeception/codeception": "*@dev"
     },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "*"
+    },
     "conflict": {
         "codeception/codeception": "<5.0"
     },
     "autoload":{
         "classmap": ["src/"]
+    },
+    "autoload-dev": {
+        "classmap": ["tests/"]
+    },
+    "scripts": {
+        "cs-prod": "phpcs src/",
+        "cs-tests": "phpcs tests/ --standard=tests/phpcs.xml"
+    },
+    "scripts-descriptions": {
+        "cs-prod": "Check production code style",
+        "cs-tests": "Check test code style"
     },
     "config": {
         "classmap-authoritative": true,

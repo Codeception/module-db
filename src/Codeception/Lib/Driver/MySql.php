@@ -43,7 +43,7 @@ class MySql extends Db
             $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($columns as $column) {
-                $primaryKey []= $column['Column_name'];
+                $primaryKey[] = $column['Column_name'];
             }
             $this->primaryKeys[$tableName] = $primaryKey;
         }

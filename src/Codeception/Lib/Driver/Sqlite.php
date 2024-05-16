@@ -11,7 +11,7 @@ use PDO;
 class Sqlite extends Db
 {
     protected bool $hasSnapshot = false;
-    
+
     protected string $filename = '';
 
     public function __construct(string $dsn, string $user = null, string $password = null, array $options = null)
@@ -47,7 +47,7 @@ class Sqlite extends Db
             if (file_exists($this->filename . '_snapshot')) {
                 unlink($this->filename . '_snapshot');
             }
-            
+
             parent::load($sql);
             copy($this->filename, $this->filename . '_snapshot');
             $this->hasSnapshot = true;
@@ -71,7 +71,7 @@ class Sqlite extends Db
 
             foreach ($columns as $column) {
                 if ($column['pk'] !== '0' && $column['pk'] !== 0) {
-                    $primaryKey []= $column['name'];
+                    $primaryKey[] = $column['name'];
                 }
             }
 

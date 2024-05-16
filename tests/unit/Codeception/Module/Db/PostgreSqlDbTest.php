@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-use Codeception\Configuration;
-
-require_once Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
-
-/**
- * @group db
- */
 final class PostgreSqlDbTest extends AbstractDbTest
 {
     public function getPopulator(): string

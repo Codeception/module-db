@@ -169,7 +169,7 @@ class PostgreSql extends Db
             $stmt = $this->executeQuery($query, []);
             $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($columns as $column) {
-                $primaryKey []= $column['attname'];
+                $primaryKey[] = $column['attname'];
             }
 
             $this->primaryKeys[$tableName] = $primaryKey;

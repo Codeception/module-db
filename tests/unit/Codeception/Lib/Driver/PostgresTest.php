@@ -6,10 +6,6 @@ use Codeception\Lib\Driver\Db;
 use Codeception\Lib\Driver\PostgreSql;
 use Codeception\Test\Unit;
 
-/**
- * @group appveyor
- * @group db
- */
 final class PostgresTest extends Unit
 {
     protected static array $config = [
@@ -141,7 +137,7 @@ final class PostgresTest extends Unit
 
     public function testLastInsertIdReturnsSequenceValueWhenNonStandardSequenceNameIsUsed()
     {
-        $this->postgres->executeQuery('INSERT INTO seqnames(name) VALUES(?)',['test']);
+        $this->postgres->executeQuery('INSERT INTO seqnames(name) VALUES(?)', ['test']);
         $this->assertSame('1', $this->postgres->lastInsertId('seqnames'));
     }
 
