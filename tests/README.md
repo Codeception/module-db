@@ -31,6 +31,24 @@ make test
 
 This command will execute the tests inside the PHP container.
 
+## Running the Tests Pipeline
+
+To run the tests pipeline, use the following command:
+    
+```bash
+make pipeline
+```
+
+This command will start the containers, install dependencies, run the tests, and then stop the containers.
+
+## Running the Tests for Continuous Integration
+
+```bash
+make ci
+```
+
+This command will run the tests pipeline for all supported PHP versions.
+
 ## Other Commands
 
 - To stop and remove the Docker containers, use the following command:

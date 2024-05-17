@@ -25,7 +25,6 @@ start: ## Start the containers for testing
 	$(MAKE) -i stop
 	CURRENT_USER=$(CURRENT_USER) $(DOCKER_COMPOSE) up -d --build --force-recreate --remove-orphans
 	$(DOCKER_COMPOSE) run --rm wait -c mysql:3306,postgres:5432,mssql:1433 -t 60
-	$(MAKE) vendor
 
 stop: ## Stop and remove containers
 	$(DOCKER_COMPOSE) down --remove-orphans --volumes
@@ -34,7 +33,19 @@ php-cli: ## Open bash in PHP container
 	$(DOCKER_COMPOSE) exec -u $(CURRENT_USER) php bash
 
 vendor: ## Install dependencies
-	$(DOCKER_EXEC_PHP_WITH_USER) "composer install --no-interaction --prefer-dist"
+	$(DOCKER_EXEC_PHP_WITH_USER) "composer update --no-interaction --prefer-dist"
 
 test: ## Run the tests
 	$(DOCKER_EXEC_PHP_WITH_USER) "php vendor/bin/codecept run"
+
+pipeline: ## Run the tests pipeline
+	$(MAKE) start
+	$(MAKE) vendor
+	$(MAKE) test
+	$(MAKE) stop
+
+ci: ## Run the tests
+	$(MAKE) pipeline php=8.0
+	$(MAKE) pipeline php=8.1
+	$(MAKE) pipeline php=8.2
+	$(MAKE) pipeline php=8.3

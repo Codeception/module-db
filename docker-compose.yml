@@ -2,8 +2,7 @@ services:
   php:
     container_name: codeception-module-db
     build:
-      context: .
-      dockerfile: ./php81.Dockerfile
+      context: ./docker/php${php:-8.3}
     environment:
       COMPOSER_HOME: /tmp/.composer
       MYSQL_HOST: host.docker.internal
