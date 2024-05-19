@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.0-fpm
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 
@@ -21,7 +21,7 @@ RUN install-php-extensions \
     zip-stable \
     xdebug-3.1.5
 
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
