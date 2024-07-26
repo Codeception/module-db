@@ -684,7 +684,7 @@ class Db extends Module implements DbInterface
         $this->insertedRows[$databaseKey] = [];
     }
 
-    public function _cleanup(string $databaseKey = null, array $databaseConfig = null): void
+    public function _cleanup(?string $databaseKey = null, ?array $databaseConfig = null): void
     {
         $databaseKey = empty($databaseKey) ?  self::DEFAULT_DATABASE : $databaseKey;
         $databaseConfig = empty($databaseConfig) ?  $this->config : $databaseConfig;
@@ -737,7 +737,7 @@ class Db extends Module implements DbInterface
         return $this->databasesPopulated[$this->currentDatabase];
     }
 
-    public function _loadDump(string $databaseKey = null, array $databaseConfig = null): void
+    public function _loadDump(?string $databaseKey = null, ?array $databaseConfig = null): void
     {
         $databaseKey = empty($databaseKey) ?  self::DEFAULT_DATABASE : $databaseKey;
         $databaseConfig = empty($databaseConfig) ?  $this->config : $databaseConfig;
