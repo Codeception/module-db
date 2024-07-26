@@ -777,7 +777,7 @@ class Db extends Module implements DbInterface
      *
      * ```php
      * <?php
-     * $I->haveInDatabase('users', array('name' => 'miles', 'email' => 'miles@davis.com'));
+     * $I->haveInDatabase('users', ['name' => 'miles', 'email' => 'miles@davis.com']);
      * ```
      */
     public function haveInDatabase(string $table, array $data): int
@@ -930,7 +930,7 @@ class Db extends Module implements DbInterface
      *
      * ``` php
      * <?php
-     * $mails = $I->grabColumnFromDatabase('users', 'email', array('name' => 'RebOOter'));
+     * $mails = $I->grabColumnFromDatabase('users', 'email', ['name' => 'RebOOter']);
      * ```
      */
     public function grabColumnFromDatabase(string $table, string $column, array $criteria = []): array
@@ -950,7 +950,7 @@ class Db extends Module implements DbInterface
      *
      * ``` php
      * <?php
-     * $mail = $I->grabFromDatabase('users', 'email', array('name' => 'Davert'));
+     * $mail = $I->grabFromDatabase('users', 'email', ['name' => 'Davert']);
      * ```
      * Comparison expressions can be used as well:
      *
@@ -976,7 +976,7 @@ class Db extends Module implements DbInterface
      *
      * ``` php
      * <?php
-     * $mail = $I->grabEntryFromDatabase('users', array('name' => 'Davert'));
+     * $mail = $I->grabEntryFromDatabase('users', ['name' => 'Davert']);
      * ```
      * Comparison expressions can be used as well:
      *
@@ -1014,7 +1014,7 @@ class Db extends Module implements DbInterface
      *
      * ``` php
      * <?php
-     * $mail = $I->grabEntriesFromDatabase('users', array('name' => 'Davert'));
+     * $mail = $I->grabEntriesFromDatabase('users', ['name' => 'Davert']);
      * ```
      * Comparison expressions can be used as well:
      *
@@ -1057,7 +1057,7 @@ class Db extends Module implements DbInterface
      *
      * ```php
      * <?php
-     * $I->updateInDatabase('users', array('isAdmin' => true), array('email' => 'miles@davis.com'));
+     * $I->updateInDatabase('users', ['isAdmin' => true], ['email' => 'miles@davis.com']);
      * ```
      */
     public function updateInDatabase(string $table, array $data, array $criteria = []): void
