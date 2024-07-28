@@ -31,7 +31,7 @@ class Db
      */
     protected array $primaryKeys = [];
 
-    public static function connect(string $dsn, string $user = null, string $password = null, array $options = null): PDO
+    public static function connect(string $dsn, ?string $user = null, ?string $password = null, ?array $options = null): PDO
     {
         $dbh = new PDO($dsn, $user, $password, $options);
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -47,7 +47,7 @@ class Db
      *
      * @return Db|SqlSrv|MySql|Oci|PostgreSql|Sqlite
      */
-    public static function create(string $dsn, string $user = null, string $password = null, array $options = null): Db
+    public static function create(string $dsn, ?string $user = null, ?string $password = null, ?array $options = null): Db
     {
         $provider = self::getProvider($dsn);
 
@@ -78,7 +78,7 @@ class Db
      * @see https://www.php.net/manual/en/pdo.construct.php
      * @see https://www.php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
      */
-    public function __construct(string $dsn, string $user = null, string $password = null, array $options = null)
+    public function __construct(string $dsn, ?string $user = null, ?string $password = null, ?array $options = null)
     {
         $this->dbh = new PDO($dsn, $user, $password, $options);
         $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
