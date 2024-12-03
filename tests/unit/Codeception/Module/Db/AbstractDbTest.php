@@ -127,10 +127,10 @@ abstract class AbstractDbTest extends Unit
         $this->module->dontSeeInDatabase('empty_table');
     }
 
-    public function testCleanupDatabase()
+    public function testCleanupSchema()
     {
         $this->module->seeInDatabase('users', ['name' => 'davert']);
-        $this->module->_cleanup();
+        $this->module->_cleanUpSchema();
 
         // Since table does not exist it should fail
         // TODO: Catch this exception at the driver level and re-throw a general one
@@ -138,6 +138,34 @@ abstract class AbstractDbTest extends Unit
         $this->expectException(PDOException::class);
 
         $this->module->dontSeeInDatabase('users', ['name' => 'davert']);
+    }
+
+    public function testCleanupInserted()
+    {
+        $this->module->haveInDatabase('users', ['name' => 'john']);
+
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
+
+        $this->module->dontSeeInDatabase('users', ['name' => 'john']);
+    }
+
+    public function testDoesNotCleanupInserted()
+    {
+        $this->module->haveInDatabase('users', ['name' => 'john']);
+        $this->module->_reconfigure(['cleanup' => false]);
+
+        $this->module->_after(Stub::makeEmpty(TestInterface::class));
+
+        $this->module->seeInDatabase('users', ['name' => 'john']);
+    }
+
+    public function testSkipCleanupIfFailed()
+    {
+        $this->module->haveInDatabase('users', ['name' => 'john']);
+
+        $this->module->_failed(Stub::makeEmpty(TestInterface::class), new Exception('test'));
+
+        $this->module->seeInDatabase('users', ['name' => 'john']);
     }
 
     public function testHaveAndSeeInDatabase()
@@ -163,7 +191,7 @@ abstract class AbstractDbTest extends Unit
         $testData = ['id' => 2, 'group_id' => 2, 'status' => 'test3'];
         $this->module->haveInDatabase('composite_pk', $testData);
         $this->module->seeInDatabase('composite_pk', $testData);
-        $this->module->_reconfigure(['cleanup' => false]);
+        $this->module->_reconfigure(['repopulate' => false]);
         $this->module->_after(Stub::makeEmpty(TestInterface::class));
 
         $this->module->_before(Stub::makeEmpty(TestInterface::class));
@@ -201,7 +229,7 @@ abstract class AbstractDbTest extends Unit
 
     public function testLoadWithPopulator()
     {
-        $this->module->_cleanup();
+        $this->module->_cleanUpSchema();
         $this->assertFalse($this->module->_isPopulated());
         try {
             $this->module->seeInDatabase('users', ['name' => 'davert']);
@@ -213,7 +241,7 @@ abstract class AbstractDbTest extends Unit
             [
                 'populate'  => true,
                 'populator' => $this->getPopulator(),
-                'cleanup'   => true,
+                'repopulate' => true,
             ]
         );
         $this->module->_loadDump(null, $this->getConfig());
@@ -239,7 +267,7 @@ abstract class AbstractDbTest extends Unit
         $testData = ['status' => 'test'];
         $this->module->_insertInDatabase('no_pk', $testData);
         $this->module->seeInDatabase('no_pk', $testData);
-        $this->module->_reconfigure(['cleanup' => false]);
+        $this->module->_reconfigure(['repopulate' => false]);
         $this->module->_after(Stub::makeEmpty(TestInterface::class));
 
         $this->module->_before(Stub::makeEmpty(TestInterface::class));

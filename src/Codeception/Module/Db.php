@@ -52,7 +52,7 @@ use PDOException;
  * * password *required* - password
  * * dump - path to database dump
  * * populate: false - whether the the dump should be loaded before the test suite is started
- * * cleanup: false - whether the dump should be reloaded before each test
+ * * repopulate: false - whether the dump should be reloaded before each test
  * * reconnect: false - whether the module should reconnect to the database before each test
  * * waitlock: 0 - wait lock (in seconds) that the database session should use for DDL statements
  * * ssl_key - path to the SSL key (MySQL specific, @see https://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-key)
@@ -62,6 +62,7 @@ use PDOException;
  * * ssl_cipher - list of one or more permissible ciphers to use for SSL encryption (MySQL specific, @see https://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-cipher)
  * * databases - include more database configs and switch between them in tests.
  * * initial_queries - list of queries to be executed right after connection to the database has been initiated, i.e. creating the database if it does not exist or preparing the database collation
+ * * cleanup: true - whether the rows, inserted during the test with `haveInDatabase()` method, should be cleaned up after the test
  * * skip_cleanup_if_failed - Do not perform the cleanup if the tests failed. If this is used, manual cleanup might be required when re-running
  * ## Example
  *
@@ -73,7 +74,7 @@ use PDOException;
  *              password: ''
  *              dump: 'tests/_data/dump.sql'
  *              populate: true
- *              cleanup: true
+ *              repopulate: true
  *              reconnect: true
  *              waitlock: 10
  *              skip_cleanup_if_failed: true
@@ -82,6 +83,8 @@ use PDOException;
  *              ssl_ca: '/path/to/ca-cert.pem'
  *              ssl_verify_server_cert: false
  *              ssl_cipher: 'AES256-SHA'
+ *              cleanup: true
+ *              skip_cleanup_if_failed: true
  *              initial_queries:
  *                  - 'CREATE DATABASE IF NOT EXISTS temp_db;'
  *                  - 'USE temp_db;'
@@ -141,7 +144,7 @@ use PDOException;
  *          password: ''
  *          dump: 'tests/_data/dump.sql'
  *          populate: true # run populator before all tests
- *          cleanup: true # run populator before each test
+ *          repopulate: true # run populator before each test
  *          populator: 'mysql -u $user -h $host $dbname < $dump'
  * ```
  *
@@ -156,7 +159,7 @@ use PDOException;
  *          password: ''
  *          dump: 'tests/_data/db_backup.dump'
  *          populate: true # run populator before all tests
- *          cleanup: true # run populator before each test
+ *          repopulate: true # run populator before each test
  *          populator: 'pg_restore -u $user -h $host -D $dbname < $dump'
  * ```
  *
@@ -185,7 +188,7 @@ use PDOException;
  *          user: 'root'
  *          password: ''
  *          populate: true # load dump before all tests
- *          cleanup: true # load dump for each test
+ *          repopulate: true # load dump for each test
  *          dump: 'tests/_data/dump.sql'
  * ```
  *
@@ -256,11 +259,12 @@ class Db extends Module implements DbInterface
      */
     protected array $config = [
         'populate' => false,
-        'cleanup' => false,
+        'repopulate' => false,
         'reconnect' => false,
         'waitlock' => 0,
         'dump' => null,
         'populator' => null,
+        'cleanup' => true,
         'skip_cleanup_if_failed' => false,
     ];
 
@@ -300,11 +304,13 @@ class Db extends Module implements DbInterface
             foreach ($this->config['databases'] as $databaseKey => $databaseConfig) {
                 $databases[$databaseKey] = array_merge([
                     'populate' => false,
-                    'cleanup' => false,
+                    'repopulate' => false,
                     'reconnect' => false,
                     'waitlock' => 0,
                     'dump' => null,
+					'cleanup' => true,
                     'populator' => null,
+					'skip_cleanup_if_failed' => false,
                 ], $databaseConfig);
             }
         }
@@ -319,10 +325,10 @@ class Db extends Module implements DbInterface
         }
     }
 
-    protected function cleanUpDatabases(): void
+    protected function cleanUpSchemaForDatabases(): void
     {
         foreach ($this->getDatabases() as $databaseKey => $databaseConfig) {
-            $this->_cleanup($databaseKey, $databaseConfig);
+            $this->_cleanUpSchema($databaseKey, $databaseConfig);
         }
     }
 
@@ -350,11 +356,13 @@ class Db extends Module implements DbInterface
         }
     }
 
-    protected function removeInsertedForDatabases(): void
+    protected function cleanUpInsertedForDatabases(): void
     {
-        foreach (array_keys($this->getDatabases()) as $databaseKey) {
-            $this->amConnectedToDatabase($databaseKey);
-            $this->removeInserted($databaseKey);
+        foreach ($this->getDatabases() as $databaseKey => $databaseConfig) {
+            if ($databaseConfig['cleanup']) {
+                $this->amConnectedToDatabase($databaseKey);
+                $this->cleanUpInserted($databaseKey);
+            }
         }
     }
 
@@ -494,7 +502,7 @@ class Db extends Module implements DbInterface
     {
         $this->readSqlForDatabases();
         $this->connectToDatabases();
-        $this->cleanUpDatabases();
+        $this->cleanUpSchemaForDatabases();
         $this->populateDatabases('populate');
     }
 
@@ -504,7 +512,7 @@ class Db extends Module implements DbInterface
             return;
         }
 
-        if (!$databaseConfig['cleanup'] && !$databaseConfig['populate']) {
+        if (!$databaseConfig['repopulate'] && !$databaseConfig['populate']) {
             return;
         }
 
@@ -643,9 +651,9 @@ class Db extends Module implements DbInterface
         $this->reconnectDatabases();
         $this->amConnectedToDatabase(self::DEFAULT_DATABASE);
 
-        $this->cleanUpDatabases();
+        $this->cleanUpSchemaForDatabases();
 
-        $this->populateDatabases('cleanup');
+        $this->populateDatabases('repopulate');
 
         parent::_before($test);
     }
@@ -653,7 +661,7 @@ class Db extends Module implements DbInterface
     public function _failed(TestInterface $test, $fail)
     {
         foreach ($this->getDatabases() as $databaseKey => $databaseConfig) {
-            if ($databaseConfig['skip_cleanup_if_failed'] ?? false) {
+            if ($databaseConfig['skip_cleanup_if_failed']) {
                 $this->insertedRows[$databaseKey] = [];
             }
         }
@@ -661,11 +669,11 @@ class Db extends Module implements DbInterface
 
     public function _after(TestInterface $test): void
     {
-        $this->removeInsertedForDatabases();
+        $this->cleanUpInsertedForDatabases();
         parent::_after($test);
     }
 
-    protected function removeInserted($databaseKey = null): void
+    protected function cleanUpInserted($databaseKey = null): void
     {
         $databaseKey = empty($databaseKey) ?  self::DEFAULT_DATABASE : $databaseKey;
 
@@ -684,7 +692,7 @@ class Db extends Module implements DbInterface
         $this->insertedRows[$databaseKey] = [];
     }
 
-    public function _cleanup(?string $databaseKey = null, ?array $databaseConfig = null): void
+    public function _cleanUpSchema(?string $databaseKey = null, ?array $databaseConfig = null): void
     {
         $databaseKey = empty($databaseKey) ?  self::DEFAULT_DATABASE : $databaseKey;
         $databaseConfig = empty($databaseConfig) ?  $this->config : $databaseConfig;
@@ -693,7 +701,7 @@ class Db extends Module implements DbInterface
             return;
         }
 
-        if (!$databaseConfig['cleanup']) {
+        if (!$databaseConfig['repopulate']) {
             return;
         }
 
@@ -710,7 +718,7 @@ class Db extends Module implements DbInterface
         }
 
         try {
-            if (!$this->shouldCleanup($databaseConfig, $databaseKey)) {
+            if (!$this->shouldCleanupSchema($databaseConfig, $databaseKey)) {
                 return;
             }
 
@@ -721,7 +729,7 @@ class Db extends Module implements DbInterface
         }
     }
 
-    protected function shouldCleanup(array $databaseConfig, string $databaseKey): bool
+    protected function shouldCleanupSchema(array $databaseConfig, string $databaseKey): bool
     {
         // If using populator and it's not empty, clean up regardless
         if (!empty($databaseConfig['populator'])) {
@@ -773,7 +781,7 @@ class Db extends Module implements DbInterface
 
     /**
      * Inserts an SQL record into a database. This record will be erased after the test,
-     * unless you've configured "skip_cleanup_if_failed", and the test fails.
+     * unless you've configured "cleanup" to false, or "skip_cleanup_if_failed" to true and the test fails.
      *
      * ```php
      * <?php
