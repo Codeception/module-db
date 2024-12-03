@@ -5,7 +5,7 @@
 
 for i in {1..50};
 do
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -d master -Q "CREATE DATABASE $MSSQL_DATABASE;"
+    /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -No -d master -Q "CREATE DATABASE $MSSQL_DATABASE;"
     if [ $? -eq 0 ]
     then
         echo "database created"
