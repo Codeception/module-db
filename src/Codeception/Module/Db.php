@@ -51,7 +51,7 @@ use PDOException;
  * * user *required* - username to access database
  * * password *required* - password
  * * dump - path to database dump
- * * populate: false - whether the the dump should be loaded before the test suite is started
+ * * populate: false - whether the dump should be loaded before the test suite is started
  * * repopulate: false - whether the dump should be reloaded before each test
  * * reconnect: false - whether the module should reconnect to the database before each test
  * * waitlock: 0 - wait lock (in seconds) that the database session should use for DDL statements
@@ -63,7 +63,7 @@ use PDOException;
  * * databases - include more database configs and switch between them in tests.
  * * initial_queries - list of queries to be executed right after connection to the database has been initiated, i.e. creating the database if it does not exist or preparing the database collation
  * * cleanup: true - whether the rows, inserted during the test with `haveInDatabase()` method, should be cleaned up after the test
- * * skip_cleanup_if_failed - Do not perform the cleanup if the tests failed. If this is used, manual cleanup might be required when re-running
+ * * skip_cleanup_if_failed: false - do not perform the cleanup if the tests failed. If this is used, manual cleanup might be required when re-running
  * ## Example
  *
  *     modules:
@@ -308,9 +308,9 @@ class Db extends Module implements DbInterface
                     'reconnect' => false,
                     'waitlock' => 0,
                     'dump' => null,
-					'cleanup' => true,
                     'populator' => null,
-					'skip_cleanup_if_failed' => false,
+                    'cleanup' => true,
+                    'skip_cleanup_if_failed' => false,
                 ], $databaseConfig);
             }
         }
