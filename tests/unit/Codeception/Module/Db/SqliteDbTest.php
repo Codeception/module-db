@@ -23,7 +23,7 @@ final class SqliteDbTest extends AbstractDbTest
             'password' => '',
             'dump' => 'tests/data/dumps/sqlite.sql',
             'reconnect' => true,
-            'cleanup' => true,
+            'repopulate' => true,
             'populate' => true
         ];
     }
@@ -65,7 +65,7 @@ final class SqliteDbTest extends AbstractDbTest
     {
         $config = array_merge($this->getConfig(), [
             'dsn' => 'sqlite:tests/data/sqlite1.db',
-            'cleanup' => false
+            'repopulate' => false
         ]);
         $this->module->_reconfigure(
             [
@@ -92,7 +92,7 @@ final class SqliteDbTest extends AbstractDbTest
         $config = array_merge($this->getConfig(), ['dsn' => 'sqlite:tests/data/sqlite1.db']);
         $this->module->_reconfigure(
             [
-                'cleanup' => false,
+                'repopulate' => false,
                 'databases' => ['db2' => $config],
             ]
         );
@@ -124,7 +124,7 @@ final class SqliteDbTest extends AbstractDbTest
     {
         $config = array_merge($this->getConfig(), [
             'dsn' => 'sqlite:tests/data/sqlite1.db',
-            'cleanup' => false
+            'repopulate' => false
         ]);
         $this->module->_reconfigure(
             [
@@ -149,7 +149,7 @@ final class SqliteDbTest extends AbstractDbTest
     {
         $config = array_merge($this->getConfig(), [
             'dsn' => 'sqlite:tests/data/sqlite1.db',
-            'cleanup' => false
+            'repopulate' => false
         ]);
         $this->module->_reconfigure(
             [
@@ -176,7 +176,7 @@ final class SqliteDbTest extends AbstractDbTest
     {
         $config = array_merge($this->getConfig(), [
             'dsn' => 'sqlite:tests/data/sqlite1.db',
-            'cleanup' => false
+            'repopulate' => false
         ]);
         $this->module->_reconfigure(
             [
@@ -209,7 +209,7 @@ final class SqliteDbTest extends AbstractDbTest
         $testCase2 = Stub::makeEmpty(TestInterface::class);
         $config = array_merge($this->getConfig(), [
             'dsn' => 'sqlite:tests/data/sqlite1.db',
-            'cleanup' => false
+            'repopulate' => false
         ]);
         $this->module->_reconfigure(
             [
