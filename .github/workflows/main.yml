@@ -60,7 +60,7 @@ jobs:
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd' -d master -Q 'SELECT COUNT(*) FROM master.dbo.spt_values;'"
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd' -No -d master -Q 'SELECT COUNT(*) FROM master.dbo.spt_values;'"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -71,7 +71,7 @@ jobs:
 
     steps:
     - name: Create default database for sqlsrv as image does not support it
-      run: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd' -Q 'CREATE DATABASE codeception_test'
+      run: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd' -No -Q 'CREATE DATABASE codeception_test'
 
     - name: Checkout code
       uses: actions/checkout@v4
