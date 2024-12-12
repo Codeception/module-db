@@ -53,7 +53,7 @@ jobs:
         ports:
           - 5432:5432
       mssql:
-        image: mcr.microsoft.com/mssql/server:2019-latest
+        image: mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-20.04
         env:
           SA_PASSWORD: P@ssw0rd
           ACCEPT_EULA: 'Y'

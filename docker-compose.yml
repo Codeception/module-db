@@ -38,7 +38,7 @@ services:
       - "5432:5432"
 
   mssql:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-20.04
     environment:
       SA_PASSWORD: 'P@ssw0rd'
       MSSQL_DATABASE: codeception
