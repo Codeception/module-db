@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   phpcs:
     name: Code style
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -25,7 +25,7 @@ jobs:
 
   tests:
     name: Unit tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     services:
       mysql:
@@ -53,7 +53,7 @@ jobs:
         ports:
           - 5432:5432
       mssql:
-        image: mcr.microsoft.com/mssql/server:2019-latest
+        image: mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-20.04
         env:
           SA_PASSWORD: P@ssw0rd
           ACCEPT_EULA: 'Y'
