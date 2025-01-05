@@ -126,7 +126,7 @@ use PDOException;
  *             dsn: 'mysql:host=localhost;dbname=testdb'
  *             user: 'root'
  *             password: ''
- *             dump: 'tests/_data/dump.sql'
+ *             dump: 'tests/Support/Data/dump.sql'
  *             populate: true # run populator before all tests
  *             cleanup: true # run populator before each test
  *             populator: 'mysql -u $user -h $host $dbname < $dump'
