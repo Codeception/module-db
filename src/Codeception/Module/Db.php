@@ -52,7 +52,7 @@ use PDOException;
  *             dsn: 'mysql:host=localhost;dbname=testdb'
  *             user: 'root'
  *             password: ''
- *             dump: 'tests/_data/dump.sql'
+ *             dump: 'tests/Support/Data/dump.sql'
  *             populate: true # whether the dump should be loaded before the test suite is started
  *             cleanup: true # whether the dump should be reloaded before each test
  *             reconnect: true # whether the module should reconnect to the database before each test
