@@ -79,8 +79,8 @@ use PDOException;
  *             user: 'root'
  *             password: ''
  *             dump:
- *                 - 'tests/_data/dump.sql'
- *                 - 'tests/_data/dump-2.sql'
+ *                 - 'tests/Support/Data/dump.sql'
+ *                 - 'tests/Support/Data/dump-2.sql'
  * ```
  *
  * ## Example with multi-databases
