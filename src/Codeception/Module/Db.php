@@ -141,7 +141,7 @@ use PDOException;
  *             dsn: 'pgsql:host=localhost;dbname=testdb'
  *             user: 'root'
  *             password: ''
- *             dump: 'tests/_data/db_backup.dump'
+ *             dump: 'tests/Support/Data/db_backup.dump'
  *             populate: true # run populator before all tests
  *             cleanup: true # run populator before each test
  *             populator: 'pg_restore -u $user -h $host -D $dbname < $dump'
