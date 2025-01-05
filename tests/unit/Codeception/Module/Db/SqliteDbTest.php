@@ -40,13 +40,13 @@ final class SqliteDbTest extends AbstractDbTest
         // Simulate a test that runs
         $this->module->_before($testCase1);
 
-        $connection1 = spl_object_hash($this->module->dbh);
+        $connection1 = spl_object_hash($this->module->_getDbh());
         $this->module->_after($testCase1);
 
         // Simulate a second test that runs
         $this->module->_before($testCase2);
 
-        $connection2 = spl_object_hash($this->module->dbh);
+        $connection2 = spl_object_hash($this->module->_getDbh());
         $this->module->_after($testCase2);
         $this->module->_afterSuite();
 
@@ -54,7 +54,7 @@ final class SqliteDbTest extends AbstractDbTest
 
         $this->module->_before($testCase3);
 
-        $connection3 = spl_object_hash($this->module->dbh);
+        $connection3 = spl_object_hash($this->module->_getDbh());
         $this->module->_after($testCase3);
 
         $this->assertSame($connection1, $connection2);

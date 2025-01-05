@@ -46,8 +46,8 @@ abstract class AbstractDbTest extends Unit
         $this->module->_before($testCase1);
         // Save these object instances IDs
         $driverAndConn1 = [
-            $this->module->driver,
-            $this->module->dbh
+            $this->module->_getDriver(),
+            $this->module->_getDbh()
         ];
         $this->module->_after($testCase1);
 
@@ -55,8 +55,8 @@ abstract class AbstractDbTest extends Unit
         $this->module->_before($testCase2);
 
         $driverAndConn2 = [
-            $this->module->driver,
-            $this->module->dbh
+            $this->module->_getDriver(),
+            $this->module->_getDbh()
         ];
         $this->module->_after($testCase2);
         $this->assertSame($driverAndConn2, $driverAndConn1);
@@ -157,8 +157,8 @@ abstract class AbstractDbTest extends Unit
     {
         $insertQuery = 'INSERT INTO composite_pk (group_id, id, status) VALUES (?, ?, ?)';
         //this test checks that module does not delete columns by partial primary key
-        $this->module->driver->executeQuery($insertQuery, [1, 2, 'test']);
-        $this->module->driver->executeQuery($insertQuery, [2, 1, 'test2']);
+        $this->module->_getDriver()->executeQuery($insertQuery, [1, 2, 'test']);
+        $this->module->_getDriver()->executeQuery($insertQuery, [2, 1, 'test2']);
 
         $testData = ['id' => 2, 'group_id' => 2, 'status' => 'test3'];
         $this->module->haveInDatabase('composite_pk', $testData);

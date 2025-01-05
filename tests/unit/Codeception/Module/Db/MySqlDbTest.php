@@ -49,13 +49,13 @@ final class MySqlDbTest extends AbstractDbTest
         // Simulate a test that runs
         $this->module->_before($testCase1);
 
-        $connection1 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
+        $connection1 = $this->module->_getDbh()->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase1);
 
         // Simulate a second test that runs
         $this->module->_before($testCase2);
 
-        $connection2 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
+        $connection2 = $this->module->_getDbh()->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase2);
         $this->module->_afterSuite();
 
@@ -63,7 +63,7 @@ final class MySqlDbTest extends AbstractDbTest
 
         $this->module->_before($testCase3);
 
-        $connection3 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
+        $connection3 = $this->module->_getDbh()->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase3);
 
         $this->assertSame($connection1, $connection2);
@@ -81,7 +81,7 @@ final class MySqlDbTest extends AbstractDbTest
         $this->module->_reconfigure($config);
         $this->module->_before(Stub::makeEmpty(TestInterface::class));
 
-        $usedDatabaseName = $this->module->dbh->query('SELECT DATABASE();')->fetch(PDO::FETCH_COLUMN);
+        $usedDatabaseName = $this->module->_getDbh()->query('SELECT DATABASE();')->fetch(PDO::FETCH_COLUMN);
 
         $this->assertSame($dbName, $usedDatabaseName);
     }
