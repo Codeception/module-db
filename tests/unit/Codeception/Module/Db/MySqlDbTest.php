@@ -28,7 +28,7 @@ final class MySqlDbTest extends AbstractDbTest
             'password' => $password,
             'dump' => 'tests/data/dumps/mysql.sql',
             'reconnect' => true,
-            'cleanup' => true,
+            'repopulate' => true,
             'populate' => true
         ];
     }

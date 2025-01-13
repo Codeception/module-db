@@ -29,7 +29,7 @@ final class PostgreSqlDbTest extends AbstractDbTest
             'password' => $password,
             'dump' => 'tests/data/dumps/postgres.sql',
             'reconnect' => true,
-            'cleanup' => true,
+            'repopulate' => true,
             'populate' => true
         ];
     }
