@@ -518,18 +518,24 @@ class Db extends Module implements DbInterface
     /**
      * @throws ModuleConfigException|ModuleException
      */
-    private function readSqlFile(string $filePath): ?string
+    private function readSqlFile(string $configPath): ?string
     {
-        if (!file_exists(Configuration::projectDir() . $filePath)) {
+        if(file_exists($configPath)) {
+           $dumpFile = $configPath;
+        }elseif (file_exists(Configuration::projectDir().$configPath)){
+            $dumpFile = Configuration::projectDir().$configPath;
+        }else {
             throw new ModuleConfigException(
                 __CLASS__,
-                "\nFile with dump doesn't exist.\n"
-                . "Please, check path for sql file: "
-                . $filePath
+                sprintf(
+                    "Could not find dump file from config value.\nTried:\n%s\nand\n%s",
+                    $configPath,
+                    Configuration::projectDir().$configPath
+                )
             );
         }
-
-        $sql = file_get_contents(Configuration::projectDir() . $filePath);
+        
+        $sql = file_get_contents($dumpFile);
 
         // remove C-style comments (except MySQL directives)
         $replaced = preg_replace('#/\*(?!!\d+).*?\*/#s', '', $sql);
