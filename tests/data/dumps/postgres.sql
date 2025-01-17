@@ -448,6 +448,10 @@ CREATE TABLE "no_pk" (
     "status" VARCHAR NOT NULL
 );
 
+CREATE TABLE "NoPk" (
+    "Status" VARCHAR NOT NULL
+);
+
 CREATE TABLE "order" (
     "id" INTEGER NOT NULL PRIMARY KEY,
     "name" VARCHAR NOT NULL,
