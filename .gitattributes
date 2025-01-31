@@ -7,3 +7,5 @@
 /*.md            export-ignore
 /*.xml           export-ignore
 /*.yml           export-ignore
+/.github         export-ignore
+/phpcs.xml       export-ignore
