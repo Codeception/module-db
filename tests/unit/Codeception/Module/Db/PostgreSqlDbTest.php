@@ -34,7 +34,7 @@ final class PostgreSqlDbTest extends AbstractDbTest
         ];
     }
 
-    public function testHaveInDatabaseWithIllegalTableName()
+    public function testHaveInDatabaseWithUppercaseTableName()
     {
         $testData = ['Status' => 'test'];
         $this->module->haveInDatabase('NoPk', $testData);

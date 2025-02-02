@@ -164,7 +164,7 @@ class PostgreSql extends Db
                 FROM   pg_index i
                 JOIN   pg_attribute a ON a.attrelid = i.indrelid
                                      AND a.attnum = ANY(i.indkey)
-                WHERE  i.indrelid = " . $this->postgreQuotedName($tableName) . "::regclass
+                WHERE  i.indrelid = '\"{$tableName}\"'::regclass
                 AND    i.indisprimary";
             $stmt = $this->executeQuery($query, []);
             $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -176,14 +176,5 @@ class PostgreSql extends Db
         }
 
         return $this->primaryKeys[$tableName];
-    }
-
-    private function postgreQuotedName(string $tableName): string
-    {
-        if (preg_match("/[A-Z\-]/", $tableName)) {
-            $tableName = sprintf('"%s"', $tableName);
-        }
-
-        return "'" . $tableName . "'";
     }
 }
