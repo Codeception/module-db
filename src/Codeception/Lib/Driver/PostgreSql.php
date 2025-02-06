@@ -164,7 +164,7 @@ class PostgreSql extends Db
                 FROM   pg_index i
                 JOIN   pg_attribute a ON a.attrelid = i.indrelid
                                      AND a.attnum = ANY(i.indkey)
-                WHERE  i.indrelid = '{$tableName}'::regclass
+                WHERE  i.indrelid = '\"{$tableName}\"'::regclass
                 AND    i.indisprimary";
             $stmt = $this->executeQuery($query, []);
             $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
