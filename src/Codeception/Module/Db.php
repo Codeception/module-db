@@ -800,7 +800,9 @@ class Db extends Module implements DbInterface
     {
         $primaryKey = $this->_getDriver()->getPrimaryKey($table);
         $primary = [];
-        if ($primaryKey !== []) {
+        if (count($primaryKey) == 1 && is_null($row[$primaryKey[0]])) {
+            $primary[$primaryKey[0]] = $id; 
+        } elseif ($primaryKey !== []) {
             $filledKeys = array_intersect($primaryKey, array_keys($row));
             $missingPrimaryKeyColumns = array_diff_key($primaryKey, $filledKeys);
 
