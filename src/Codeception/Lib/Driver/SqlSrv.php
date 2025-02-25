@@ -77,7 +77,7 @@ class SqlSrv extends Db
             $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             foreach ($columns as $column) {
-                $primaryKey []= $column['Column_Name'];
+                $primaryKey[] = $column['Column_Name'];
             }
 
             $this->primaryKeys[$tableName] = $primaryKey;

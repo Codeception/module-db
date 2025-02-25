@@ -2,30 +2,25 @@
 
 declare(strict_types=1);
 
-use Codeception\Configuration;
 use Codeception\Stub;
 use Codeception\TestInterface;
 
-require_once Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
-
-/**
- * @group db
- */
 final class MySqlDbTest extends AbstractDbTest
 {
     public function getPopulator(): string
     {
         $config = $this->getConfig();
-        $password = $config['password'] ? '-p'.$config['password'] : '';
+        $password = $config['password'] ? '-p' . $config['password'] : '';
         return sprintf('mysql -u $user %s $dbname < %s', $password, $config['dump']);
     }
 
     public function getConfig(): array
     {
-        $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';
-        $user = getenv('MYSQL_USER') ? getenv('MYSQL_USER') : 'root';
-        $password = getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : '';
-        $dsn = getenv('MYSQL_DSN') ? getenv('MYSQL_DSN') : 'mysql:host='.$host.';dbname=codeception_test';
+        $host = getenv('MYSQL_HOST') ?: 'localhost';
+        $user = getenv('MYSQL_USER') ?: 'root';
+        $password = getenv('MYSQL_PASSWORD') ?: '';
+        $database = getenv('MYSQL_DB') ?: 'codeception_test';
+        $dsn = getenv('MYSQL_DSN') ?: 'mysql:host=' . $host . ';dbname=' . $database;
 
         return [
             'dsn' => $dsn,
@@ -54,13 +49,13 @@ final class MySqlDbTest extends AbstractDbTest
         // Simulate a test that runs
         $this->module->_before($testCase1);
 
-        $connection1 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
+        $connection1 = $this->module->_getDbh()->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase1);
 
         // Simulate a second test that runs
         $this->module->_before($testCase2);
 
-        $connection2 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
+        $connection2 = $this->module->_getDbh()->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase2);
         $this->module->_afterSuite();
 
@@ -68,7 +63,7 @@ final class MySqlDbTest extends AbstractDbTest
 
         $this->module->_before($testCase3);
 
-        $connection3 = $this->module->dbh->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
+        $connection3 = $this->module->_getDbh()->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
         $this->module->_after($testCase3);
 
         $this->assertSame($connection1, $connection2);
@@ -86,7 +81,7 @@ final class MySqlDbTest extends AbstractDbTest
         $this->module->_reconfigure($config);
         $this->module->_before(Stub::makeEmpty(TestInterface::class));
 
-        $usedDatabaseName = $this->module->dbh->query('SELECT DATABASE();')->fetch(PDO::FETCH_COLUMN);
+        $usedDatabaseName = $this->module->_getDbh()->query('SELECT DATABASE();')->fetch(PDO::FETCH_COLUMN);
 
         $this->assertSame($dbName, $usedDatabaseName);
     }
@@ -102,7 +97,8 @@ final class MySqlDbTest extends AbstractDbTest
                 'miles@davis.com',
                 'charlie@parker.com',
             ],
-            $emails);
+            $emails
+        );
     }
 
     public function testGrabEntryFromDatabaseShouldFailIfNotFound()

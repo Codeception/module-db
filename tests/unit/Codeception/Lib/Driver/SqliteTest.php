@@ -7,10 +7,6 @@ use Codeception\Lib\Driver\Db;
 use Codeception\Lib\Driver\Sqlite;
 use Codeception\Test\Unit;
 
-/**
- * @group db
- * Class SqliteTest
- */
 final class SqliteTest extends Unit
 {
     /**

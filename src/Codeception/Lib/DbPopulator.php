@@ -53,7 +53,7 @@ class DbPopulator
      * @param string|null $dumpFile The dump file to build the command with.
      * @return string The resulting command string after evaluating any configuration's key
      */
-    protected function buildCommand(string $command, string $dumpFile = null): string
+    protected function buildCommand(string $command, ?string $dumpFile = null): string
     {
         $dsn = $this->config['dsn'] ?? '';
         $dsnVars = [];
@@ -74,7 +74,7 @@ class DbPopulator
 
         foreach ($vars as $key => $value) {
             if (!is_array($value)) {
-                $vars['$'.$key] = $value;
+                $vars['$' . $key] = $value;
             }
 
             unset($vars[$key]);

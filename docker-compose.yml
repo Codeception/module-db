@@ -1,26 +1,53 @@
-version: "3.9"
-
 services:
-  php81:
-    image: codeception-module-db-php81:2.2.0
+  php:
+    container_name: codeception-module-db
     build:
-      context: .
-      dockerfile: ./php81.Dockerfile
+      context: ./docker/php${php:-8.3}
     environment:
-      MYSQL_DSN: "mysql:host=host.docker.internal;port=3102;dbname=codeception"
-      MYSQL_USER: root
+      COMPOSER_HOME: /tmp/.composer
+      MYSQL_HOST: host.docker.internal
+      MYSQL_DB: codeception
       MYSQL_PASSWORD: codeception
+      PG_HOST: host.docker.internal
+      PG_DB: codeception
+      PG_PASSWORD: codeception
+      MSSQL_HOST: host.docker.internal
+      MSSQL_DB: codeception
+      MSSQL_PASSWORD: 'P@ssw0rd'
       XDEBUG_MODE: "debug"
       XDEBUG_CONFIG: "client_host=host.docker.internal; client_port=9000; mode=debug; start_wih_request=1"
       PHP_IDE_CONFIG: "serverName=codeception-module-db" # the name must be the same as in your PHP -> Server -> "name" field
     volumes:
-      - ".:/var/www/html"
+      - ${HOME}/.composer:/tmp/.composer
+      - .:/var/www/html
 
-  mariadb105:
-    image: mariadb:10.5
+  mysql:
+    image: mysql:5.7
     environment:
-      MARIADB_ROOT_PASSWORD: codeception
-      MARIADB_DATABASE: codeception
+      MYSQL_ROOT_PASSWORD: codeception
+      MYSQL_DATABASE: codeception
     ports:
-      - "3102:3306"
+      - "3306:3306"
 
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: codeception
+      POSTGRES_DB: codeception
+    ports:
+      - "5432:5432"
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-20.04
+    environment:
+      SA_PASSWORD: 'P@ssw0rd'
+      MSSQL_DATABASE: codeception
+      ACCEPT_EULA: 'Y'
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./tests/data/scripts:/scripts:ro
+    entrypoint: [ "/bin/bash", "-c", "/scripts/mssql.sh" ]
+
+  wait:
+    image: dokku/wait

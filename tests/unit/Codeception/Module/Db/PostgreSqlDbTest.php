@@ -2,18 +2,13 @@
 
 declare(strict_types=1);
 
-use Codeception\Configuration;
-
-require_once Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
-
-/**
- * @group db
- */
 final class PostgreSqlDbTest extends AbstractDbTest
 {
     public function getPopulator(): string
     {
-        return "psql -h localhost -d codeception_test -U postgres  < tests/data/dumps/postgres.sql";
+        $config = $this->getConfig();
+
+        return sprintf('psql -h $host -d $dbname -U $user < %s', $config['dump']);
     }
 
     public function getConfig(): array
@@ -22,16 +17,26 @@ final class PostgreSqlDbTest extends AbstractDbTest
             $this->markTestSkipped();
         }
 
-        $password = getenv('PGPASSWORD') ? getenv('PGPASSWORD') : null;
+        $host = getenv('PG_HOST') ?: 'localhost';
+        $user = getenv('PG_USER') ?: 'postgres';
+        $password = getenv('PG_PASSWORD') ?: null;
+        $database = getenv('PG_DB') ?: 'codeception_test';
+        $dsn = getenv('PG_DSN') ?: 'pgsql:host=' . $host . ';dbname=' . $database;
 
         return [
-            'dsn' => 'pgsql:host=localhost;dbname=codeception_test',
-            'user' => 'postgres',
+            'dsn' => $dsn,
+            'user' => $user,
             'password' => $password,
             'dump' => 'tests/data/dumps/postgres.sql',
             'reconnect' => true,
             'cleanup' => true,
             'populate' => true
         ];
+    }
+
+    public function testHaveInDatabaseWithUppercaseTableName()
+    {
+        $testData = ['Status' => 'test'];
+        $this->module->haveInDatabase('NoPk', $testData);
     }
 }

@@ -2,31 +2,17 @@
 
 declare(strict_types=1);
 
-use Codeception\Configuration;
 use Codeception\Stub;
 use Codeception\TestInterface;
 use Codeception\Util\ActionSequence;
 
-require_once Configuration::testsDir().'unit/Codeception/Module/Db/AbstractDbTest.php';
-
-/**
- * @group appveyor
- * @group db
- * Class SqliteDbTest
- */
 final class SqliteDbTest extends AbstractDbTest
 {
     public function getPopulator()
     {
-        if (getenv('APPVEYOR')) {
-            $this->markTestSkipped('Disabled on Appveyor');
-        }
-
-        $this->markTestSkipped('Currently Travis CI uses old SQLite :(');
-
         $config = $this->getConfig();
         @chmod('tests/data/sqlite.db', 0777);
-        return 'cat '. $config['dump'] .' | sqlite3 tests/data/sqlite.db';
+        return 'cat ' . $config['dump'] . ' | sqlite3 tests/data/sqlite.db';
     }
 
     public function getConfig(): array
@@ -54,13 +40,13 @@ final class SqliteDbTest extends AbstractDbTest
         // Simulate a test that runs
         $this->module->_before($testCase1);
 
-        $connection1 = spl_object_hash($this->module->dbh);
+        $connection1 = spl_object_hash($this->module->_getDbh());
         $this->module->_after($testCase1);
 
         // Simulate a second test that runs
         $this->module->_before($testCase2);
 
-        $connection2 = spl_object_hash($this->module->dbh);
+        $connection2 = spl_object_hash($this->module->_getDbh());
         $this->module->_after($testCase2);
         $this->module->_afterSuite();
 
@@ -68,7 +54,7 @@ final class SqliteDbTest extends AbstractDbTest
 
         $this->module->_before($testCase3);
 
-        $connection3 = spl_object_hash($this->module->dbh);
+        $connection3 = spl_object_hash($this->module->_getDbh());
         $this->module->_after($testCase3);
 
         $this->assertSame($connection1, $connection2);
@@ -83,7 +69,7 @@ final class SqliteDbTest extends AbstractDbTest
         ]);
         $this->module->_reconfigure(
             [
-                'databases'   => ['db2' => $config],
+                'databases' => ['db2' => $config],
             ]
         );
         $this->module->_beforeSuite();
@@ -107,7 +93,7 @@ final class SqliteDbTest extends AbstractDbTest
         $this->module->_reconfigure(
             [
                 'cleanup' => false,
-                'databases'   => ['db2' => $config],
+                'databases' => ['db2' => $config],
             ]
         );
         $this->module->_beforeSuite();
@@ -142,7 +128,7 @@ final class SqliteDbTest extends AbstractDbTest
         ]);
         $this->module->_reconfigure(
             [
-                'databases'   => ['db2' => $config],
+                'databases' => ['db2' => $config],
             ]
         );
         $this->module->_beforeSuite();
@@ -167,7 +153,7 @@ final class SqliteDbTest extends AbstractDbTest
         ]);
         $this->module->_reconfigure(
             [
-                'databases'   => ['db2' => $config],
+                'databases' => ['db2' => $config],
             ]
         );
         $this->module->_beforeSuite();
@@ -176,9 +162,11 @@ final class SqliteDbTest extends AbstractDbTest
         $testDataInDb2 = ['name' => 'userdb2', 'email' => 'userdb2@example.org'];
 
         $this->module->_insertInDatabase('users', $testDataInDb1);
-        $this->module->performInDatabase('db2', ActionSequence::build()
-            ->haveInDatabase('users', $testDataInDb2)
-            ->seeInDatabase('users', $testDataInDb2)
+        $this->module->performInDatabase(
+            'db2',
+            ActionSequence::build()
+                ->haveInDatabase('users', $testDataInDb2)
+                ->seeInDatabase('users', $testDataInDb2)
         );
         $this->module->seeInDatabase('users', $testDataInDb1);
         $this->module->dontSeeInDatabase('users', $testDataInDb2);
@@ -192,7 +180,7 @@ final class SqliteDbTest extends AbstractDbTest
         ]);
         $this->module->_reconfigure(
             [
-                'databases'   => ['db2' => $config],
+                'databases' => ['db2' => $config],
             ]
         );
         $this->module->_beforeSuite();
@@ -225,7 +213,7 @@ final class SqliteDbTest extends AbstractDbTest
         ]);
         $this->module->_reconfigure(
             [
-                'databases'   => ['db2' => $config],
+                'databases' => ['db2' => $config],
             ]
         );
         $this->module->_beforeSuite();

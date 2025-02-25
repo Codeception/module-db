@@ -7,10 +7,6 @@ use Codeception\Lib\Driver\Db;
 use Codeception\Lib\Driver\MySql;
 use Codeception\Test\Unit;
 
-/**
- * @group appveyor
- * @group db
- */
 final class MysqlTest extends Unit
 {
     protected static array $config = [
@@ -25,9 +21,15 @@ final class MysqlTest extends Unit
 
     public static function _setUpBeforeClass()
     {
-        $host = getenv('MYSQL_HOST') ? getenv('MYSQL_HOST') : 'localhost';
-        self::$config['dsn'] = 'mysql:host='.$host.';dbname=codeception_test';
-        self::$config['password'] = getenv('MYSQL_PASSWORD') ? getenv('MYSQL_PASSWORD') : '';
+        $host = getenv('MYSQL_HOST') ?: 'localhost';
+        $user = getenv('MYSQL_USER') ?: 'root';
+        $password = getenv('MYSQL_PASSWORD') ?: '';
+        $database = getenv('MYSQL_DB') ?: 'codeception_test';
+        $dsn = getenv('MYSQL_DSN') ?: 'mysql:host=' . $host . ';dbname=' . $database;
+
+        self::$config['dsn'] = $dsn;
+        self::$config['user'] = $user;
+        self::$config['password'] = $password;
 
         $sql = file_get_contents(\Codeception\Configuration::dataDir() . '/dumps/mysql.sql');
         $sql = preg_replace('#/\*(?:(?!\*/).)*\*/#s', "", $sql);
@@ -63,9 +65,6 @@ final class MysqlTest extends Unit
         $this->assertEmpty($this->mysql->getDbh()->query("SHOW TABLES")->fetchAll());
     }
 
-    /**
-     * @group appveyor
-     */
     public function testLoadDump()
     {
         $res = $this->mysql->getDbh()->query("select * from users where name = 'davert'");
@@ -102,7 +101,7 @@ final class MysqlTest extends Unit
     {
         $res = $this->mysql->executeQuery(
             "insert into `users`(`id`,`name`,`email`,`is_active`,`created_at`) values (?,?,?,?,?)",
-            [5,'insert.test','insert.test@mail.ua',false,'2012-02-01 21:17:47']
+            [5, 'insert.test', 'insert.test@mail.ua', false, '2012-02-01 21:17:47']
         );
         $this->assertSame(1, $res->rowCount());
     }
@@ -117,7 +116,7 @@ final class MysqlTest extends Unit
             'check the manual that corresponds to your MySQL server version for the right syntax to use near ' .
             "'VALS('')' at line 1\nSQL query being executed: \n" . $sql;
         $this->expectException(ModuleException::class);
-        $this->expectExceptionMessage( $expectedMessage);
+        $this->expectExceptionMessage($expectedMessage);
         $this->mysql->load([$sql]);
     }
 }

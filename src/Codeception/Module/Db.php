@@ -26,7 +26,7 @@ use PDOException;
  * This module also provides actions to perform checks in a database, e.g. [seeInDatabase()](https://codeception.com/docs/modules/Db#seeInDatabase)
  *
  * In order to have your database populated with data you need a raw SQL dump.
- * Simply put the dump in the `tests/_data` directory (by default) and specify the path in the config.
+ * Simply put the dump in the `tests/Support/Data` directory (by default) and specify the path in the config.
  * The next time after the database is cleared, all your data will be restored from the dump.
  * Don't forget to include `CREATE TABLE` statements in the dump.
  *
@@ -41,86 +41,73 @@ use PDOException;
  * * MS SQL
  * * Oracle
  *
- * Connection is done by database Drivers, which are stored in the `Codeception\Lib\Driver` namespace.
- * [Check out the drivers](https://github.com/Codeception/Codeception/tree/2.4/src/Codeception/Lib/Driver)
- * if you run into problems loading dumps and cleaning databases.
+ * Connection is done by database drivers, which are stored in the `Codeception\Lib\Driver` namespace.
+ * Check out the drivers if you run into problems loading dumps and cleaning databases.
  *
- * ## Config
- *
- * * dsn *required* - PDO DSN
- * * user *required* - username to access database
- * * password *required* - password
- * * dump - path to database dump
- * * populate: false - whether the the dump should be loaded before the test suite is started
- * * connection_callback: false - use connection from some other module or create connection on your own way; Example: ['MyDb', 'getConnection'] # Call the static method `MyDb::getConnection`
- * * cleanup: false - whether the dump should be reloaded before each test
- * * reconnect: false - whether the module should reconnect to the database before each test
- * * waitlock: 0 - wait lock (in seconds) that the database session should use for DDL statements
- * * ssl_key - path to the SSL key (MySQL specific, @see https://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-key)
- * * ssl_cert - path to the SSL certificate (MySQL specific, @see https://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-ssl-cert)
- * * ssl_ca - path to the SSL certificate authority (MySQL specific, @see https://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-ssl-ca)
- * * ssl_verify_server_cert - disables certificate CN verification (MySQL specific, @see https://php.net/manual/de/ref.pdo-mysql.php)
- * * ssl_cipher - list of one or more permissible ciphers to use for SSL encryption (MySQL specific, @see https://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-cipher)
- * * databases - include more database configs and switch between them in tests.
- * * initial_queries - list of queries to be executed right after connection to the database has been initiated, i.e. creating the database if it does not exist or preparing the database collation
- * * skip_cleanup_if_failed - Do not perform the cleanup if the tests failed. If this is used, manual cleanup might be required when re-running
- * ## Example
- *
- *     modules:
- *        enabled:
- *           - Db:
- *              dsn: 'mysql:host=localhost;dbname=testdb'
- *              user: 'root'
- *              password: ''
- *              dump: 'tests/_data/dump.sql'
- *              populate: true
- *              cleanup: true
- *              reconnect: true
- *              waitlock: 10
- *              skip_cleanup_if_failed: true
- *              ssl_key: '/path/to/client-key.pem'
- *              ssl_cert: '/path/to/client-cert.pem'
- *              ssl_ca: '/path/to/ca-cert.pem'
- *              ssl_verify_server_cert: false
- *              ssl_cipher: 'AES256-SHA'
- *              initial_queries:
- *                  - 'CREATE DATABASE IF NOT EXISTS temp_db;'
- *                  - 'USE temp_db;'
- *                  - 'SET NAMES utf8;'
+ * ## Example `Functional.suite.yml`
+ * ```yaml
+ * modules:
+ *     enabled:
+ *         - Db:
+ *             dsn: 'mysql:host=localhost;dbname=testdb'
+ *             user: 'root'
+ *             password: ''
+ *             dump: 'tests/Support/Data/dump.sql'
+ *             populate: true # whether the dump should be loaded before the test suite is started
+ *             cleanup: true # whether the dump should be reloaded before each test
+ *             reconnect: true # whether the module should reconnect to the database before each test
+ *             connection_callback: false # use connection from some other module or create connection on your own way; Example: ['MyDb', 'getConnection']
+ *             waitlock: 10 # wait lock (in seconds) that the database session should use for DDL statements
+ *             databases: # include more database configs and switch between them in tests.
+ *             skip_cleanup_if_failed: true # Do not perform the cleanup if the tests failed. If this is used, manual cleanup might be required when re-running
+ *             ssl_key: '/path/to/client-key.pem' # path to the SSL key (MySQL specific, see https://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-key)
+ *             ssl_cert: '/path/to/client-cert.pem' # path to the SSL certificate (MySQL specific, see https://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-ssl-cert)
+ *             ssl_ca: '/path/to/ca-cert.pem' # path to the SSL certificate authority (MySQL specific, see https://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-ssl-ca)
+ *             ssl_verify_server_cert: false # disables certificate CN verification (MySQL specific, see https://php.net/manual/de/ref.pdo-mysql.php)
+ *             ssl_cipher: 'AES256-SHA' # list of one or more permissible ciphers to use for SSL encryption (MySQL specific, see https://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-cipher)
+ *             initial_queries: # list of queries to be executed right after connection to the database has been initiated, i.e. creating the database if it does not exist or preparing the database collation
+ *                 - 'CREATE DATABASE IF NOT EXISTS temp_db;'
+ *                 - 'USE temp_db;'
+ *                 - 'SET NAMES utf8;'
+ * ```
  *
  * ## Example with multi-dumps
- *     modules:
- *          enabled:
- *             - Db:
- *                dsn: 'mysql:host=localhost;dbname=testdb'
- *                user: 'root'
- *                password: ''
- *                dump:
- *                   - 'tests/_data/dump.sql'
- *                   - 'tests/_data/dump-2.sql'
+ * ```yaml
+ * modules:
+ *     enabled:
+ *         - Db:
+ *             dsn: 'mysql:host=localhost;dbname=testdb'
+ *             user: 'root'
+ *             password: ''
+ *             dump:
+ *                 - 'tests/Support/Data/dump.sql'
+ *                 - 'tests/Support/Data/dump-2.sql'
+ * ```
  *
  * ## Example with multi-databases
- *
- *     modules:
- *        enabled:
- *           - Db:
- *              dsn: 'mysql:host=localhost;dbname=testdb'
- *              user: 'root'
- *              password: ''
- *              databases:
+ * ```yaml
+ * modules:
+ *     enabled:
+ *         - Db:
+ *             dsn: 'mysql:host=localhost;dbname=testdb'
+ *             user: 'root'
+ *             password: ''
+ *             databases:
  *                 db2:
- *                    dsn: 'mysql:host=localhost;dbname=testdb2'
- *                    user: 'userdb2'
- *                    password: ''
+ *                     dsn: 'mysql:host=localhost;dbname=testdb2'
+ *                     user: 'userdb2'
+ *                     password: ''
+ * ```
  *
- * ## Example with Sqlite
- *
- *     modules:
- *        enabled:
- *           - Db:
- *              dsn: 'sqlite:relative/path/to/sqlite-database.db'
- *              user: ''
- *              password: ''
+ * ## Example with SQLite
+ * ```yaml
+ * modules:
+ *     enabled:
+ *         - Db:
+ *             dsn: 'sqlite:relative/path/to/sqlite-database.db'
+ *             user: ''
+ *             password: ''
+ * ```
  *
  * ## SQL data dump
  *
@@ -135,30 +122,30 @@ use PDOException;
  *
  * ```yaml
  * modules:
- *    enabled:
- *       - Db:
- *          dsn: 'mysql:host=localhost;dbname=testdb'
- *          user: 'root'
- *          password: ''
- *          dump: 'tests/_data/dump.sql'
- *          populate: true # run populator before all tests
- *          cleanup: true # run populator before each test
- *          populator: 'mysql -u $user -h $host $dbname < $dump'
+ *     enabled:
+ *         - Db:
+ *             dsn: 'mysql:host=localhost;dbname=testdb'
+ *             user: 'root'
+ *             password: ''
+ *             dump: 'tests/Support/Data/dump.sql'
+ *             populate: true # run populator before all tests
+ *             cleanup: true # run populator before each test
+ *             populator: 'mysql -u $user -h $host $dbname < $dump'
  * ```
  *
- * For PostgreSQL (using pg_restore)
+ * For PostgreSQL (using `pg_restore`)
  *
- * ```
+ * ```yaml
  * modules:
- *    enabled:
- *       - Db:
- *          dsn: 'pgsql:host=localhost;dbname=testdb'
- *          user: 'root'
- *          password: ''
- *          dump: 'tests/_data/db_backup.dump'
- *          populate: true # run populator before all tests
- *          cleanup: true # run populator before each test
- *          populator: 'pg_restore -u $user -h $host -D $dbname < $dump'
+ *     enabled:
+ *         - Db:
+ *             dsn: 'pgsql:host=localhost;dbname=testdb'
+ *             user: 'root'
+ *             password: ''
+ *             dump: 'tests/Support/Data/db_backup.dump'
+ *             populate: true # run populator before all tests
+ *             cleanup: true # run populator before each test
+ *             populator: 'pg_restore -u $user -h $host -D $dbname < $dump'
  * ```
  *
  *  Variable names are being taken from config and DSN which has a `keyword=value` format, so you should expect to have a variable named as the
@@ -531,7 +518,7 @@ class Db extends Module implements DbInterface
     }
 
     /**
-     * @throws ModuleConfigException
+     * @throws ModuleConfigException|ModuleException
      */
     private function readSqlFile(string $filePath): ?string
     {
@@ -547,7 +534,16 @@ class Db extends Module implements DbInterface
         $sql = file_get_contents(Configuration::projectDir() . $filePath);
 
         // remove C-style comments (except MySQL directives)
-        return preg_replace('#/\*(?!!\d+).*?\*/#s', '', $sql);
+        $replaced = preg_replace('#/\*(?!!\d+).*?\*/#s', '', $sql);
+
+        if (!empty($sql) && is_null($replaced)) {
+            throw new ModuleException(
+                __CLASS__,
+                "Please, increase pcre.backtrack_limit value in PHP CLI config"
+            );
+        }
+
+        return $replaced;
     }
 
     private function connect($databaseKey, $databaseConfig): void
@@ -558,38 +554,43 @@ class Db extends Module implements DbInterface
 
         $options = [];
 
-        if (array_key_exists('ssl_key', $databaseConfig)
+        if (
+            array_key_exists('ssl_key', $databaseConfig)
             && !empty($databaseConfig['ssl_key'])
             && defined(PDO::class . '::MYSQL_ATTR_SSL_KEY')
         ) {
             $options[PDO::MYSQL_ATTR_SSL_KEY] = (string) $databaseConfig['ssl_key'];
         }
 
-        if (array_key_exists('ssl_cert', $databaseConfig)
+        if (
+            array_key_exists('ssl_cert', $databaseConfig)
             && !empty($databaseConfig['ssl_cert'])
             && defined(PDO::class . '::MYSQL_ATTR_SSL_CERT')
         ) {
             $options[PDO::MYSQL_ATTR_SSL_CERT] = (string) $databaseConfig['ssl_cert'];
         }
 
-        if (array_key_exists('ssl_ca', $databaseConfig)
+        if (
+            array_key_exists('ssl_ca', $databaseConfig)
             && !empty($databaseConfig['ssl_ca'])
             && defined(PDO::class . '::MYSQL_ATTR_SSL_CA')
         ) {
             $options[PDO::MYSQL_ATTR_SSL_CA] = (string) $databaseConfig['ssl_ca'];
         }
 
-        if (array_key_exists('ssl_cipher', $databaseConfig)
+        if (
+            array_key_exists('ssl_cipher', $databaseConfig)
             && !empty($databaseConfig['ssl_cipher'])
             && defined(PDO::class . '::MYSQL_ATTR_SSL_CIPHER')
         ) {
             $options[PDO::MYSQL_ATTR_SSL_CIPHER] = (string) $databaseConfig['ssl_cipher'];
         }
 
-        if (array_key_exists('ssl_verify_server_cert', $databaseConfig)
+        if (
+            array_key_exists('ssl_verify_server_cert', $databaseConfig)
             && defined(PDO::class . '::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')
         ) {
-            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = (boolean) $databaseConfig[ 'ssl_verify_server_cert' ];
+            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = (bool) $databaseConfig[ 'ssl_verify_server_cert' ];
         }
 
         try {
@@ -670,14 +671,14 @@ class Db extends Module implements DbInterface
             try {
                 $this->_getDriver()->deleteQueryByCriteria($row['table'], $row['primary']);
             } catch (Exception $e) {
-                $this->debug("Couldn't delete record " . json_encode($row['primary'], JSON_THROW_ON_ERROR) ." from {$row['table']}");
+                $this->debug("Couldn't delete record " . json_encode($row['primary'], JSON_THROW_ON_ERROR) . " from {$row['table']}");
             }
         }
 
         $this->insertedRows[$databaseKey] = [];
     }
 
-    public function _cleanup(string $databaseKey = null, array $databaseConfig = null): void
+    public function _cleanup(?string $databaseKey = null, ?array $databaseConfig = null): void
     {
         $databaseKey = empty($databaseKey) ?  self::DEFAULT_DATABASE : $databaseKey;
         $databaseConfig = empty($databaseConfig) ?  $this->config : $databaseConfig;
@@ -730,7 +731,7 @@ class Db extends Module implements DbInterface
         return $this->databasesPopulated[$this->currentDatabase];
     }
 
-    public function _loadDump(string $databaseKey = null, array $databaseConfig = null): void
+    public function _loadDump(?string $databaseKey = null, ?array $databaseConfig = null): void
     {
         $databaseKey = empty($databaseKey) ?  self::DEFAULT_DATABASE : $databaseKey;
         $databaseConfig = empty($databaseConfig) ?  $this->config : $databaseConfig;
@@ -770,7 +771,7 @@ class Db extends Module implements DbInterface
      *
      * ```php
      * <?php
-     * $I->haveInDatabase('users', array('name' => 'miles', 'email' => 'miles@davis.com'));
+     * $I->haveInDatabase('users', ['name' => 'miles', 'email' => 'miles@davis.com']);
      * ```
      */
     public function haveInDatabase(string $table, array $data): int
@@ -843,7 +844,7 @@ class Db extends Module implements DbInterface
         $this->assertGreaterThan(
             0,
             $res,
-            'No matching records found for criteria ' . json_encode($criteria, JSON_THROW_ON_ERROR) . ' in table ' . $table
+            'No matching records found for criteria ' . json_encode($criteria, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE) . ' in table ' . $table
         );
     }
 
@@ -869,7 +870,7 @@ class Db extends Module implements DbInterface
                 'The number of found rows (%d) does not match expected number %d for criteria %s in table %s',
                 $actualNumber,
                 $expectedNumber,
-                json_encode($criteria, JSON_THROW_ON_ERROR),
+                json_encode($criteria, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE),
                 $table
             )
         );
@@ -881,7 +882,7 @@ class Db extends Module implements DbInterface
         $this->assertLessThan(
             1,
             $count,
-            'Unexpectedly found matching records for criteria ' . json_encode($criteria, JSON_THROW_ON_ERROR) . ' in table ' . $table
+            'Unexpectedly found matching records for criteria ' . json_encode($criteria, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE) . ' in table ' . $table
         );
     }
 
@@ -923,7 +924,7 @@ class Db extends Module implements DbInterface
      *
      * ``` php
      * <?php
-     * $mails = $I->grabColumnFromDatabase('users', 'email', array('name' => 'RebOOter'));
+     * $mails = $I->grabColumnFromDatabase('users', 'email', ['name' => 'RebOOter']);
      * ```
      */
     public function grabColumnFromDatabase(string $table, string $column, array $criteria = []): array
@@ -943,7 +944,7 @@ class Db extends Module implements DbInterface
      *
      * ``` php
      * <?php
-     * $mail = $I->grabFromDatabase('users', 'email', array('name' => 'Davert'));
+     * $mail = $I->grabFromDatabase('users', 'email', ['name' => 'Davert']);
      * ```
      * Comparison expressions can be used as well:
      *
@@ -969,7 +970,7 @@ class Db extends Module implements DbInterface
      *
      * ``` php
      * <?php
-     * $mail = $I->grabEntryFromDatabase('users', array('name' => 'Davert'));
+     * $mail = $I->grabEntryFromDatabase('users', ['name' => 'Davert']);
      * ```
      * Comparison expressions can be used as well:
      *
@@ -1007,7 +1008,7 @@ class Db extends Module implements DbInterface
      *
      * ``` php
      * <?php
-     * $mail = $I->grabEntriesFromDatabase('users', array('name' => 'Davert'));
+     * $mail = $I->grabEntriesFromDatabase('users', ['name' => 'Davert']);
      * ```
      * Comparison expressions can be used as well:
      *
@@ -1050,7 +1051,7 @@ class Db extends Module implements DbInterface
      *
      * ```php
      * <?php
-     * $I->updateInDatabase('users', array('isAdmin' => true), array('email' => 'miles@davis.com'));
+     * $I->updateInDatabase('users', ['isAdmin' => true], ['email' => 'miles@davis.com']);
      * ```
      */
     public function updateInDatabase(string $table, array $data, array $criteria = []): void
