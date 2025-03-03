@@ -17,20 +17,20 @@ final class PostgreSqlDbTest extends AbstractDbTest
             $this->markTestSkipped();
         }
 
-        $host = getenv('PG_HOST') ?: 'localhost';
-        $user = getenv('PG_USER') ?: 'postgres';
+        $host     = getenv('PG_HOST') ?: 'localhost';
+        $user     = getenv('PG_USER') ?: 'postgres';
         $password = getenv('PG_PASSWORD') ?: null;
         $database = getenv('PG_DB') ?: 'codeception_test';
-        $dsn = getenv('PG_DSN') ?: 'pgsql:host=' . $host . ';dbname=' . $database;
+        $dsn      = getenv('PG_DSN') ?: 'pgsql:host=' . $host . ';dbname=' . $database;
 
         return [
-            'dsn' => $dsn,
-            'user' => $user,
-            'password' => $password,
-            'dump' => 'tests/data/dumps/postgres.sql',
+            'dsn'       => $dsn,
+            'user'      => $user,
+            'password'  => $password,
+            'dump'      => 'tests/data/dumps/postgres.sql',
             'reconnect' => true,
-            'cleanup' => true,
-            'populate' => true
+            'cleanup'   => true,
+            'populate'  => true,
         ];
     }
 
@@ -38,5 +38,13 @@ final class PostgreSqlDbTest extends AbstractDbTest
     {
         $testData = ['Status' => 'test'];
         $this->module->haveInDatabase('NoPk', $testData);
+    }
+
+    public function testHaveInDatabaseWithAnotherSchema()
+    {
+        $userId = $this->module->haveInDatabase('anotherschema.users', ['name' => 'anotherschema', 'email' => 'anotherschema@test.com']);
+        $this->assertIsInt($userId);
+
+        $this->module->seeInDatabase('anotherschema.users', ['name' => 'anotherschema', 'email' => 'anotherschema@test.com']);
     }
 }
