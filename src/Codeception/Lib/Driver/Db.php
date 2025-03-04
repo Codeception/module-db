@@ -91,8 +91,8 @@ class Db
 
     public function __destruct()
     {
-        if ($this->dbh !== null && $this->dbh->inTransaction()) {
-            $this->dbh->rollBack();
+        if ($this->getDbh() !== null && $this->getDbh()->inTransaction()) {
+            $this->getDbh()->rollBack();
         }
 
         $this->dbh = null;
@@ -271,7 +271,7 @@ class Db
     protected function sqlQuery(string $query): void
     {
         try {
-            $this->dbh->exec($query);
+            $this->getDbh()->exec($query);
         } catch (PDOException $exception) {
             throw new ModuleException(
                 \Codeception\Module\Db::class,
@@ -282,7 +282,7 @@ class Db
 
     public function executeQuery($query, array $params): PDOStatement
     {
-        $pdoStatement = $this->dbh->prepare($query);
+        $pdoStatement = $this->getDbh()->prepare($query);
         if (!$pdoStatement) {
             throw new Exception("Query '{$query}' can't be prepared.");
         }

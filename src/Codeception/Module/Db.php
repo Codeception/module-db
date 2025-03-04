@@ -56,6 +56,7 @@ use PDOException;
  *             populate: true # whether the dump should be loaded before the test suite is started
  *             cleanup: true # whether the dump should be reloaded before each test
  *             reconnect: true # whether the module should reconnect to the database before each test
+ *             connection_callback: false # use connection from some other module or create connection on your own way; Example: ['MyDb', 'getConnection']
  *             waitlock: 10 # wait lock (in seconds) that the database session should use for DDL statements
  *             databases: # include more database configs and switch between them in tests.
  *             skip_cleanup_if_failed: true # Do not perform the cleanup if the tests failed. If this is used, manual cleanup might be required when re-running
@@ -248,6 +249,7 @@ class Db extends Module implements DbInterface
         'waitlock' => 0,
         'dump' => null,
         'populator' => null,
+        'connection_callback' => false,
         'skip_cleanup_if_failed' => false,
     ];
 
@@ -592,8 +594,13 @@ class Db extends Module implements DbInterface
         }
 
         try {
-            $this->debugSection('Connecting To Db', ['config' => $databaseConfig, 'options' => $options]);
-            $this->drivers[$databaseKey] = Driver::create($databaseConfig['dsn'], $databaseConfig['user'], $databaseConfig['password'], $options);
+            if (is_callable($databaseConfig['connection_callback'])) {
+                $this->debugSection('Using connection callback', []);
+                $this->drivers[$databaseKey] = call_user_func_array($databaseConfig['connection_callback'], [$databaseKey, $databaseConfig, $this]);
+            } else {
+                $this->debugSection('Connecting To Db', ['config' => $databaseConfig, 'options' => $options]);
+                $this->drivers[$databaseKey] = Driver::create($databaseConfig['dsn'], $databaseConfig['user'], $databaseConfig['password'], $options);
+            }
         } catch (PDOException $exception) {
             $message = $exception->getMessage();
             if ($message === 'could not find driver') {
